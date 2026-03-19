@@ -18,6 +18,7 @@ HUM is a lightweight utility repository (no package manager, no build step, no l
 | Network namespace status | `bash scripts/hum-dev-netns.sh status` | Requires `iproute2` |
 | Network namespace up/down | `sudo bash scripts/hum-dev-netns.sh up` | Requires root + `iproute2` |
 | DeepSeek importer | `python3 scripts/deepseek_db_link.py --source <dir> --database <db>` | Stdlib-only Python 3 |
+| Snap bypass | `bash scripts/hum-snap-bypass.sh <subcommand>` | Requires `squashfs-tools`, `squashfuse`, `xz-utils`, `file`, `fuse3` |
 
 ### Linting
 
@@ -29,6 +30,10 @@ No project-level lint config exists. Use these tools for quality checks:
 ### Docker / Dev Container build
 
 Building the `.devcontainer/Dockerfile` requires pulling `mcr.microsoft.com/devcontainers/base:ubuntu-24.04` from Microsoft Container Registry. This will fail in environments with restricted egress (e.g., Cursor Cloud VMs). The Dockerfile itself is valid and builds successfully on unrestricted networks.
+
+### Snap bypass script
+
+`scripts/hum-snap-bypass.sh` lets you extract, mount, inspect, and run snap packages (squashfs + xz) without snapd/systemd/cgroups. Run `bash scripts/hum-snap-bypass.sh deps` to check required host tooling. See `README.md` for full usage.
 
 ### Key caveats
 

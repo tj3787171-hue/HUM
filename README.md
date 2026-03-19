@@ -109,6 +109,43 @@ sqlite3 data/deepseek_backup.db "SELECT COUNT(*) FROM conversations;"
 sqlite3 data/deepseek_backup.db "SELECT COUNT(*) FROM messages;"
 ```
 
+## Snap package bypass (no snapd / no cgroups)
+
+Snap packages are squashfs images compressed with xz.  Normally `snapd` manages
+them via systemd, cgroup scopes, and AppArmor profiles.  In environments where
+those subsystems are missing (containers, Penguin terminals, minimal VMs) you
+can use the bypass script instead:
+
+```bash
+bash scripts/hum-snap-bypass.sh deps          # check required tools
+bash scripts/hum-snap-bypass.sh info  foo.snap # squashfs metadata + snap.yaml
+bash scripts/hum-snap-bypass.sh extract foo.snap [dest]
+bash scripts/hum-snap-bypass.sh mount   foo.snap [mountpoint]
+bash scripts/hum-snap-bypass.sh unmount <mountpoint>
+bash scripts/hum-snap-bypass.sh run     foo.snap <binary> [args...]
+bash scripts/hum-snap-bypass.sh list           # active FUSE mounts
+```
+
+### How it works
+
+1. **extract** uses `unsquashfs` to decompress the xz-compressed squashfs
+   image into a plain directory tree—no snapd, no cgroup scope, no AppArmor.
+2. **mount** uses `squashfuse` to FUSE-mount the `.snap` file read-only.
+   No kernel squashfs module or root privileges needed (FUSE runs in userspace).
+3. **run** extracts once, sets the `SNAP*` environment variables and
+   `LD_LIBRARY_PATH` that snaps expect, then execs the binary directly.
+
+### Required host packages
+
+```bash
+sudo apt-get install -y squashfs-tools squashfuse xz-utils file fuse3
+```
+
+These are already included in the dev container Dockerfile.
+
+All paths can be overridden via `HUM_SNAP_EXTRACT_ROOT` and
+`HUM_SNAP_MOUNT_ROOT` environment variables.  Run `--help` for full usage.
+
 ## Dev container status indicator (`<>`)
 
 If you see the `<>` style status indicator in the bottom-right status area in
