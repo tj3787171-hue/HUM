@@ -58,3 +58,60 @@ All names can be overridden through `HUM_*` environment variables shown by:
 ```bash
 bash scripts/hum-dev-netns.sh --help
 ```
+
+## DeepSeek backup -> SQLite database linking
+
+If your DeepSeek standalone backup lives on an attached SSD, you can index it
+into a local SQLite database so conversations and files are queryable.
+
+### 1) Mount the SSD (Linux host)
+
+```bash
+lsblk -f
+sudo mkdir -p /mnt/deepseek-ssd
+sudo mount /dev/<your-device-partition> /mnt/deepseek-ssd
+```
+
+Example device names are `nvme1n1p1`, `sdb1`, etc. Use the output from
+`lsblk -f` to choose the right one.
+
+### 2) Build the DeepSeek backup database
+
+From this repository root:
+
+```bash
+python3 scripts/deepseek_db_link.py \
+  --source /mnt/deepseek-ssd \
+  --database data/deepseek_backup.db
+```
+
+Optional: include file hashes (slower for large backups):
+
+```bash
+python3 scripts/deepseek_db_link.py \
+  --source /mnt/deepseek-ssd \
+  --database data/deepseek_backup.db \
+  --compute-sha256
+```
+
+The importer will:
+
+- index every file path/size/mtime in `source_files`
+- parse chat-like `.json` and `.jsonl` exports into:
+  - `conversations`
+  - `messages`
+
+### 3) Quick database checks
+
+```bash
+sqlite3 data/deepseek_backup.db "SELECT COUNT(*) FROM source_files;"
+sqlite3 data/deepseek_backup.db "SELECT COUNT(*) FROM conversations;"
+sqlite3 data/deepseek_backup.db "SELECT COUNT(*) FROM messages;"
+```
+
+## Dev container status indicator (`<>`)
+
+If you see the `<>` style status indicator in the bottom-right status area in
+Chromium/Electron VS Code, it generally means the remote/dev environment is
+active. In this project, that corresponds to running inside the configured
+Dev Container.
