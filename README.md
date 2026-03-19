@@ -27,3 +27,34 @@ LAN-ready development container configuration for online/local development.
 - This setup is optimized for Linux with Docker engine networking.
 - `--network=host` allows services in the container to be reachable on the host/LAN stack.
 - On non-Linux hosts, host-network support can be limited by Docker Desktop behavior.
+
+## Penguin terminal dev naming (Proxy + Docker + Dummy)
+
+If you want the laptop Penguin terminal to use stable developer names that parallel
+the original proxy/docker/dummy model, use:
+
+```bash
+sudo bash scripts/hum-dev-netns.sh up
+```
+
+Requirement: `ip` command from `iproute2` must be installed in the Penguin terminal.
+
+This creates/maintains:
+
+- proxy namespace: `hum-proxy-ns`
+- proxy veth pair: `hum-proxy-host0` (root) <-> `hum-proxy-ns0` (inside netns)
+- dummy interface: `hum-dummy0`
+- a status view that also reports `docker0` if present
+
+Useful commands:
+
+```bash
+sudo bash scripts/hum-dev-netns.sh status
+sudo bash scripts/hum-dev-netns.sh down
+```
+
+All names can be overridden through `HUM_*` environment variables shown by:
+
+```bash
+bash scripts/hum-dev-netns.sh --help
+```
