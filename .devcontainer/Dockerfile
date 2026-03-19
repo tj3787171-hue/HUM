@@ -9,3 +9,13 @@ RUN apt-get update \
         net-tools \
         traceroute \
     && rm -rf /var/lib/apt/lists/*
+
+# squashfs / xz tooling for working with snap packages without snapd.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        file \
+        fuse3 \
+        squashfs-tools \
+        squashfuse \
+        xz-utils \
+    && rm -rf /var/lib/apt/lists/*
