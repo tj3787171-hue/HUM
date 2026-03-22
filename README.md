@@ -77,6 +77,7 @@ Useful commands:
 
 ```bash
 sudo bash scripts/hum-dev-netns.sh status
+sudo bash scripts/hum-dev-netns.sh status --json
 sudo bash scripts/hum-dev-netns.sh down
 ```
 
