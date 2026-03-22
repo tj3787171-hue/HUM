@@ -132,3 +132,24 @@ The scanner emits normalized flags like:
 - `AI`
 - `TELEGRAPHY`
 - `BROWSER_HOOK`
+
+Browser polling example (every 3s):
+
+```html
+<input id="telemetry" />
+<script src="scripts/scanTelemetry.js"></script>
+<script>
+  setInterval(() => {
+    const el = document.getElementById("telemetry");
+    if (el) scanTelemetry(el.value);
+  }, 3000);
+</script>
+```
+
+Or use the built-in helper:
+
+```html
+<script>
+  startTelemetryPolling("telemetry", 3000);
+</script>
+```

@@ -39,8 +39,33 @@ function scanTelemetry(text, options = {}) {
   return flags;
 }
 
+/**
+ * Browser helper to repeatedly scan input element text.
+ *
+ * @param {string} [elementId]
+ * @param {number} [intervalMs]
+ * @param {{ patterns?: Record<string, RegExp>, log?: (msg: string) => void }} [options]
+ * @returns {ReturnType<typeof setInterval> | null}
+ */
+function startTelemetryPolling(elementId = "telemetry", intervalMs = 3000, options = {}) {
+  if (typeof document === "undefined") return null;
+
+  const input = document.getElementById(elementId);
+  if (!input) return null;
+
+  return setInterval(() => {
+    const value = typeof input.value === "string" ? input.value : "";
+    scanTelemetry(value, options);
+  }, intervalMs);
+}
+
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = { scanTelemetry, DEFAULT_PATTERNS };
+  module.exports = { scanTelemetry, startTelemetryPolling, DEFAULT_PATTERNS };
+}
+
+if (typeof globalThis !== "undefined") {
+  globalThis.scanTelemetry = scanTelemetry;
+  globalThis.startTelemetryPolling = startTelemetryPolling;
 }
 
 if (typeof require !== "undefined" && require.main === module) {
