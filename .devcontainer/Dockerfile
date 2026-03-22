@@ -7,5 +7,6 @@ RUN apt-get update \
         iproute2 \
         iputils-ping \
         net-tools \
+        tcpdump \
         traceroute \
     && rm -rf /var/lib/apt/lists/*
