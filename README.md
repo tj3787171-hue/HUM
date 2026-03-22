@@ -115,3 +115,20 @@ If you see the `<>` style status indicator in the bottom-right status area in
 Chromium/Electron VS Code, it generally means the remote/dev environment is
 active. In this project, that corresponds to running inside the configured
 Dev Container.
+
+## Telemetry scanner helper (including browser hooks)
+
+Use this helper to flag potentially relevant terms in free text, including
+browser/electron/chromium hook-up phrases:
+
+```bash
+node scripts/scanTelemetry.js "hook redirect force browser chromium agent"
+```
+
+The scanner emits normalized flags like:
+
+- `PHONE`
+- `TRAP`
+- `AI`
+- `TELEGRAPHY`
+- `BROWSER_HOOK`
