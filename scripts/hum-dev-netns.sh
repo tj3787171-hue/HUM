@@ -156,10 +156,14 @@ up() {
   ip -n "$PROXY_NS" -6 route replace default via "${PROXY_HOST_LL6%%/*}" dev "$PROXY_NS_IF"
 
   if ! root_link_exists "$DUMMY_IF"; then
-    ip link add "$DUMMY_IF" type dummy
+    if ! ip link add "$DUMMY_IF" type dummy 2>/dev/null; then
+      echo "Warning: dummy interface type is unavailable; skipping $DUMMY_IF." >&2
+    fi
   fi
-  ip link set "$DUMMY_IF" up
-  ip addr replace "$DUMMY_CIDR" dev "$DUMMY_IF"
+  if root_link_exists "$DUMMY_IF"; then
+    ip link set "$DUMMY_IF" up
+    ip addr replace "$DUMMY_CIDR" dev "$DUMMY_IF"
+  fi
 
   status
 }
