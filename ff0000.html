@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FF0000 Navigation Screen</title>
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: Arial, Helvetica, sans-serif;
+        background: #ff0000;
+        color: #fff;
+        display: grid;
+        place-items: center;
+      }
+
+      .screen {
+        width: min(720px, 92vw);
+        border: 2px solid rgba(255, 255, 255, 0.5);
+        border-radius: 16px;
+        padding: 2rem;
+        background: rgba(0, 0, 0, 0.18);
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+      }
+
+      .screen[hidden] {
+        display: none;
+      }
+
+      h1 {
+        margin-top: 0;
+        margin-bottom: 0.75rem;
+        font-size: clamp(1.6rem, 4vw, 2.4rem);
+      }
+
+      p {
+        line-height: 1.5;
+      }
+
+      button {
+        border: 0;
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 0.75rem;
+      }
+
+      .next {
+        background: #111;
+        color: #fff;
+      }
+
+      .back {
+        background: #fff;
+        color: #111;
+      }
+    </style>
+  </head>
+  <body>
+    <main aria-live="polite">
+      <section id="screen-1" class="screen">
+        <h1>FF0000 Navigation</h1>
+        <p>This is the current screen for <code>/ff0000.html</code>.</p>
+        <button class="next" id="next-btn" type="button">Bring up next navigation screen</button>
+      </section>
+
+      <section id="screen-2" class="screen" hidden>
+        <h1>Next Navigation Screen</h1>
+        <p>The next screen is now active on top of the FF0000 theme.</p>
+        <button class="back" id="back-btn" type="button">Back</button>
+      </section>
+    </main>
+
+    <script>
+      const screen1 = document.getElementById("screen-1");
+      const screen2 = document.getElementById("screen-2");
+      const nextButton = document.getElementById("next-btn");
+      const backButton = document.getElementById("back-btn");
+
+      function showScreen2() {
+        screen1.hidden = true;
+        screen2.hidden = false;
+        history.replaceState(null, "", "#next");
+      }
+
+      function showScreen1() {
+        screen1.hidden = false;
+        screen2.hidden = true;
+        history.replaceState(null, "", "#start");
+      }
+
+      nextButton.addEventListener("click", showScreen2);
+      backButton.addEventListener("click", showScreen1);
+
+      if (window.location.hash === "#next") {
+        showScreen2();
+      } else {
+        showScreen1();
+      }
+    </script>
+  </body>
+</html>
