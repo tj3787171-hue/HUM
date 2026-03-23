@@ -65,6 +65,65 @@
         background: #fff;
         color: #111;
       }
+
+      .grid-panel {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.3);
+      }
+
+      .control-row {
+        display: grid;
+        gap: 0.75rem;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        align-items: end;
+      }
+
+      .control-row label {
+        display: grid;
+        gap: 0.35rem;
+        font-weight: 600;
+        font-size: 0.95rem;
+      }
+
+      .control-row input {
+        width: 100%;
+      }
+
+      .control-buttons {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+
+      .control-buttons button {
+        margin-top: 0;
+      }
+
+      .grid {
+        margin-top: 1rem;
+        display: grid;
+        gap: 4px;
+        min-height: 180px;
+      }
+
+      .grid-cell {
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.12);
+        min-height: 16px;
+      }
+
+      .grid-log {
+        margin-top: 1rem;
+        max-height: 140px;
+        overflow: auto;
+        padding-left: 1.25rem;
+      }
+
+      .grid-log li {
+        font-family: "Courier New", Courier, monospace;
+        font-size: 0.9rem;
+      }
     </style>
   </head>
   <body>
@@ -79,6 +138,35 @@
         <h1>Next Navigation Screen</h1>
         <p>The next screen is now active on top of the FF0000 theme.</p>
         <button class="back" id="back-btn" type="button">Back</button>
+
+        <div class="grid-panel">
+          <h2>Auto Grid Refresh</h2>
+          <p>Grid redraw speed increases as velocity approaches 1.00.</p>
+          <div class="control-row">
+            <label for="lines-input">
+              Lines
+              <input id="lines-input" type="number" min="1" max="20" value="8" />
+            </label>
+
+            <label for="columns-input">
+              Columns
+              <input id="columns-input" type="number" min="1" max="20" value="8" />
+            </label>
+
+            <label for="velocity-input">
+              Velocity (<span id="velocity-value">0.50</span>)
+              <input id="velocity-input" type="range" min="0" max="1" step="0.01" value="0.5" />
+            </label>
+          </div>
+
+          <div class="control-buttons">
+            <button id="start-auto-btn" type="button">Start auto refresh</button>
+            <button id="stop-auto-btn" type="button">Stop auto refresh</button>
+          </div>
+
+          <div id="grid" class="grid" aria-live="polite" aria-label="Auto-refreshing grid"></div>
+          <ul id="grid-log" class="grid-log" aria-label="Grid refresh log"></ul>
+        </div>
       </section>
     </main>
 
@@ -87,21 +175,112 @@
       const screen2 = document.getElementById("screen-2");
       const nextButton = document.getElementById("next-btn");
       const backButton = document.getElementById("back-btn");
+      const linesInput = document.getElementById("lines-input");
+      const columnsInput = document.getElementById("columns-input");
+      const velocityInput = document.getElementById("velocity-input");
+      const velocityValue = document.getElementById("velocity-value");
+      const startAutoButton = document.getElementById("start-auto-btn");
+      const stopAutoButton = document.getElementById("stop-auto-btn");
+      const gridElement = document.getElementById("grid");
+      const gridLogElement = document.getElementById("grid-log");
+
+      let autoTimer = null;
+
+      function log(message) {
+        const row = document.createElement("li");
+        const stamp = new Date().toLocaleTimeString();
+        row.textContent = `${stamp}  ${message}`;
+        gridLogElement.prepend(row);
+        while (gridLogElement.children.length > 8) {
+          gridLogElement.removeChild(gridLogElement.lastChild);
+        }
+      }
+
+      function drawGrid(lines, columns, velocity) {
+        const safeLines = Math.max(1, Math.floor(lines));
+        const safeColumns = Math.max(1, Math.floor(columns));
+        const v = Math.max(0, Math.min(1, velocity));
+        const activeChance = 0.2 + v * 0.6;
+
+        gridElement.style.gridTemplateColumns = `repeat(${safeColumns}, minmax(0, 1fr))`;
+
+        const cells = document.createDocumentFragment();
+        for (let i = 0; i < safeLines * safeColumns; i += 1) {
+          const cell = document.createElement("div");
+          cell.className = "grid-cell";
+          if (Math.random() < activeChance) {
+            const red = 170 + Math.floor(Math.random() * 85);
+            const alpha = 0.35 + v * 0.55;
+            cell.style.background = `rgba(${red}, 0, 0, ${alpha.toFixed(2)})`;
+          }
+          cells.appendChild(cell);
+        }
+        gridElement.replaceChildren(cells);
+      }
+
+      function getSettings() {
+        return {
+          lines: Number(linesInput.value) || 8,
+          columns: Number(columnsInput.value) || 8,
+          velocity: Number(velocityInput.value) || 0.5,
+        };
+      }
 
       function showScreen2() {
         screen1.hidden = true;
         screen2.hidden = false;
         history.replaceState(null, "", "#next");
+
+        const { lines, columns, velocity } = getSettings();
+        startAutoGrid(lines, columns, velocity);
       }
 
       function showScreen1() {
         screen1.hidden = false;
         screen2.hidden = true;
         history.replaceState(null, "", "#start");
+        stopAutoGrid();
+      }
+
+      function startAutoGrid(lines, columns, velocity) {
+        if (autoTimer) clearInterval(autoTimer);
+
+        const v = Math.max(0, Math.min(1, velocity)); // clamp 0..1
+        const interval = Math.max(500, 5000 - v * 4000);
+
+        // Run once immediately so user doesn't wait for first interval
+        drawGrid(lines, columns, v);
+        log(`Auto-grid refresh @ velocity=${v.toFixed(2)}`);
+
+        autoTimer = setInterval(() => {
+          drawGrid(lines, columns, v);
+          log(`Auto-grid refresh @ velocity=${v.toFixed(2)}`);
+        }, interval);
+      }
+
+      function stopAutoGrid() {
+        if (!autoTimer) return;
+        clearInterval(autoTimer);
+        autoTimer = null;
+        log("Auto-grid refresh stopped");
       }
 
       nextButton.addEventListener("click", showScreen2);
       backButton.addEventListener("click", showScreen1);
+
+      function restartFromControls() {
+        const { lines, columns, velocity } = getSettings();
+        velocityValue.textContent = velocity.toFixed(2);
+        if (!screen2.hidden) {
+          startAutoGrid(lines, columns, velocity);
+        }
+      }
+
+      linesInput.addEventListener("change", restartFromControls);
+      columnsInput.addEventListener("change", restartFromControls);
+      velocityInput.addEventListener("input", restartFromControls);
+      startAutoButton.addEventListener("click", restartFromControls);
+      stopAutoButton.addEventListener("click", stopAutoGrid);
 
       if (window.location.hash === "#next") {
         showScreen2();
