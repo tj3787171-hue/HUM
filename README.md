@@ -42,9 +42,11 @@ Requirement: `ip` command from `iproute2` must be installed in the Penguin termi
 This creates/maintains:
 
 - proxy namespace: `hum-proxy-ns`
-- proxy veth pair: `hum-proxy-host0` (root) <-> `hum-proxy-ns0` (inside netns)
+- peer namespace: `hum-peer-ns`
+- upstream proxy veth pair: `hum-proxy-host0` (root) <-> `hum-proxy-ns0` (proxy ns)
+- downstream peer chain pair: `hum-proxy-peer0` (proxy ns) <-> `hum-peer-ns0` (peer ns)
 - dummy interface: `hum-dummy0`
-- a status view that also reports `docker0` if present
+- a status view that reports full chain recv-ready state and `docker0` if present
 
 Useful commands:
 
@@ -60,17 +62,31 @@ All names can be overridden through `HUM_*` environment variables shown by:
 bash scripts/hum-dev-netns.sh --help
 ```
 
-The proxy veth pair now also carries link-local IPv6 for tracing:
+The veth chain now carries link-local IPv6 for tracing:
 
-- host side: `fe80::1/64` (default `HUM_PROXY_HOST_LL6`)
-- netns side: `fe80::2/64` (default `HUM_PROXY_NS_LL6`)
+- root<->proxy segment:
+  - host side: `fe80::1/64` (default `HUM_PROXY_HOST_LL6`)
+  - proxy ns side: `fe80::2/64` (default `HUM_PROXY_NS_LL6`)
+- proxy<->peer segment:
+  - proxy ns side: `fe80::11/64` (default `HUM_PROXY_PEER_LL6`)
+  - peer ns side: `fe80::12/64` (default `HUM_PEER_NS_LL6`)
 
 `trace` reports:
 
-- peer recv-ready state
-- downstream nested RX packet counters (host + netns)
+- peer chain recv-ready state
+- downstream nested RX packet counters (host + proxy + peer)
 - SMAC64-style trace IDs derived from interface MAC addresses
-- IPv4/IPv6 route and neighbor snapshots for the proxy namespace
+- IPv4/IPv6 route and neighbor snapshots for both proxy + peer namespaces
+
+## FF0000 merger plot guidance
+
+`/ff0000.html` now includes an on-screen **Merger plot guidance** block so users can
+quickly tune and validate auto-refresh behavior:
+
+- set Lines/Columns first to define density
+- raise Velocity to merge faster
+- use Start auto refresh after changes
+- watch live refresh interval feedback in milliseconds
 
 ## DeepSeek backup -> SQLite database linking
 
