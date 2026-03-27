@@ -1,15 +1,12 @@
 {
   "name": "hum-lan-dev",
-  "build": {
-    "dockerfile": "Dockerfile",
-    "context": ".."
-  },
+  "dockerComposeFile": [
+    "docker-compose.lan.yml"
+  ],
+  "service": "dev",
+  "shutdownAction": "stopCompose",
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
   "remoteUser": "vscode",
-  "runArgs": [
-    "--network=host",
-    "--add-host=host.docker.internal:host-gateway"
-  ],
   "forwardPorts": [
     3000,
     5173,

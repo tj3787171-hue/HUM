@@ -1,29 +1,32 @@
 # HUM
 
-LAN-ready development container configuration for online/local development.
+LAN-focused development container for online/local development on Linux.
 
 ## What's included
 
 - `.devcontainer/Dockerfile` based on Ubuntu 24.04 devcontainer image
-- Useful LAN/network tools installed:
+- Network diagnostics tools:
   - `iproute2`, `net-tools`
   - `iputils-ping`, `traceroute`
   - `dnsutils`
-- `.devcontainer/devcontainer.json` with:
-  - host-network runtime flag (`--network=host`) for Linux LAN access
-  - `host.docker.internal` mapping via `host-gateway`
-  - common forwarded ports (`3000`, `5173`, `8000`, `8080`)
-- `.devcontainer/post-create.sh` to print network info when container is created
+- `.devcontainer/devcontainer.json` configured to use Docker Compose
+- `.devcontainer/docker-compose.lan.yml` with:
+  - `network_mode: host` for LAN-friendly behavior on Linux
+  - `host.docker.internal` mapping (`host-gateway`)
+  - long-running dev service (`sleep infinity`)
+- `.devcontainer/post-create.sh` to print interfaces, routes, and listening ports
 
-## Use it
+## Use it (LAN profile)
 
 1. Open this repository in VS Code.
-2. Install **Dev Containers** extension if needed.
+2. Ensure **Dev Containers** extension is installed.
 3. Run **Dev Containers: Reopen in Container**.
-4. After build, the terminal will show container network info.
+4. The container starts from `docker-compose.lan.yml` and shares host network stack.
+5. Check startup output in terminal for interfaces/routes/ports.
 
 ## LAN notes
 
-- This setup is optimized for Linux with Docker engine networking.
-- `--network=host` allows services in the container to be reachable on the host/LAN stack.
-- On non-Linux hosts, host-network support can be limited by Docker Desktop behavior.
+- Optimized for Linux Docker engine.
+- `network_mode: host` means published ports are usually not required for LAN access.
+- `forwardPorts` are still listed for editor convenience.
+- On Docker Desktop/non-Linux hosts, host networking may behave differently.
