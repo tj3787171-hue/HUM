@@ -50,6 +50,7 @@ Useful commands:
 
 ```bash
 sudo bash scripts/hum-dev-netns.sh status
+sudo bash scripts/hum-dev-netns.sh trace
 sudo bash scripts/hum-dev-netns.sh down
 ```
 
@@ -58,6 +59,18 @@ All names can be overridden through `HUM_*` environment variables shown by:
 ```bash
 bash scripts/hum-dev-netns.sh --help
 ```
+
+The proxy veth pair now also carries link-local IPv6 for tracing:
+
+- host side: `fe80::1/64` (default `HUM_PROXY_HOST_LL6`)
+- netns side: `fe80::2/64` (default `HUM_PROXY_NS_LL6`)
+
+`trace` reports:
+
+- peer recv-ready state
+- downstream nested RX packet counters (host + netns)
+- SMAC64-style trace IDs derived from interface MAC addresses
+- IPv4/IPv6 route and neighbor snapshots for the proxy namespace
 
 ## DeepSeek backup -> SQLite database linking
 
