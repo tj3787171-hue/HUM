@@ -72,7 +72,7 @@ sudo ip netns exec hum-proxy-ns ping -c 2 10.200.1.2
 Disable peer-chain mode if you only need the original single pair:
 
 ```bash
-HUM_ENABLE_PEER_CHAIN=0 sudo bash scripts/hum-dev-netns.sh up
+sudo env HUM_ENABLE_PEER_CHAIN=0 bash scripts/hum-dev-netns.sh up
 ```
 
 Useful commands:
