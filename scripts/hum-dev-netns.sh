@@ -328,6 +328,22 @@ plot() {
   local root_proxy_state proxy_peer_state
   root_proxy_state="down"
   proxy_peer_state="down"
+  if [[ "${EUID:-$(id -u)}" -ne 0 ]]; then
+    echo "=== HUM merger plot ==="
+    echo "[root] $PROXY_HOST_IF (${PROXY_HOST_CIDR}, ${PROXY_HOST_LL6})"
+    echo "  | veth [requires root for live state]"
+    echo "[netns:$PROXY_NS] $PROXY_NS_IF (${PROXY_NS_CIDR}, ${PROXY_NS_LL6})"
+    echo "[netns:$PROXY_NS] $PROXY_PEER_IF (${PROXY_PEER_CIDR}, ${PROXY_PEER_LL6})"
+    echo "  | veth [requires root for live state]"
+    echo "[netns:$PEER_NS] $PEER_NS_IF (${PEER_NS_CIDR}, ${PEER_NS_LL6})"
+    echo
+    echo "guidance: use sudo for accurate merger state and peer-chain checks."
+    echo "  sudo bash scripts/hum-dev-netns.sh plot"
+    echo "  sudo bash scripts/hum-dev-netns.sh up"
+    echo "  sudo bash scripts/hum-dev-netns.sh status"
+    echo "  sudo bash scripts/hum-dev-netns.sh trace"
+    return 0
+  fi
   if peer_recv_ready; then
     root_proxy_state="up"
   fi
