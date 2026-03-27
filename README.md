@@ -122,6 +122,23 @@ sqlite3 data/deepseek_backup.db "SELECT COUNT(*) FROM conversations;"
 sqlite3 data/deepseek_backup.db "SELECT COUNT(*) FROM messages;"
 ```
 
+## Reconnect checker utility
+
+Use `scripts/connect_again.py` when a URI may intermittently disconnect and you
+want automatic retry with exponential backoff.
+
+Example:
+
+```bash
+python3 scripts/connect_again.py https://example.com --retries 3 --delay 1 --timeout 10
+```
+
+Output format:
+
+```text
+status=<code> reason=<message> attempts=<count>
+```
+
 ## Dev container status indicator (`<>`)
 
 If you see the `<>` style status indicator in the bottom-right status area in
