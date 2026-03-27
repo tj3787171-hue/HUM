@@ -72,6 +72,26 @@
         border-top: 1px solid rgba(255, 255, 255, 0.3);
       }
 
+      .guidance {
+        margin-top: 1rem;
+        padding: 1rem;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      .guidance h3 {
+        margin: 0 0 0.5rem;
+      }
+
+      .guidance ol {
+        margin: 0.5rem 0 0;
+        padding-left: 1.25rem;
+      }
+
+      .guidance code {
+        font-size: 0.92rem;
+      }
+
       .control-row {
         display: grid;
         gap: 0.75rem;
@@ -142,6 +162,19 @@
         <div class="grid-panel">
           <h2>Auto Grid Refresh</h2>
           <p>Grid redraw speed increases as velocity approaches 1.00.</p>
+          <div class="guidance" aria-label="Merger plot guidance">
+            <h3>Merger plot guidance</h3>
+            <p>
+              Read the grid left-to-right as a peer veth chain:
+              <strong>root</strong> to <strong>proxy</strong> to <strong>peer</strong>.
+            </p>
+            <ol>
+              <li>Use <strong>Lines</strong> to represent stacked merge lanes or packet batches.</li>
+              <li>Use <strong>Columns</strong> to represent each hop in the chain and its redraw density.</li>
+              <li>Increase <strong>Velocity</strong> to simulate faster peer turnover and merger pressure.</li>
+              <li>Pair this view with <code>sudo bash scripts/hum-dev-netns.sh status</code> for live chain guidance.</li>
+            </ol>
+          </div>
           <div class="control-row">
             <label for="lines-input">
               Lines
