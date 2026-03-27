@@ -72,6 +72,88 @@ The proxy veth pair now also carries link-local IPv6 for tracing:
 - SMAC64-style trace IDs derived from interface MAC addresses
 - IPv4/IPv6 route and neighbor snapshots for the proxy namespace
 
+## Merger plot – peer veth chain
+
+A multi-hop peer veth chain extends the single proxy veth pair into a
+series of namespaces connected end-to-end.  Each namespace acts as a
+forwarding peer, and the final namespace is the **merger point** where
+traffic from every preceding hop converges.
+
+```
+[root] ──veth── [peer:1] ──veth── [peer:2] ──veth── [merge:3]
+```
+
+### Quick start
+
+```bash
+# Bring up a 3-hop chain (default)
+sudo bash scripts/hum-veth-chain.sh up
+
+# Print the ASCII merger-plot diagram
+bash scripts/hum-veth-chain.sh plot
+
+# Check per-hop peer readiness and rx counters
+sudo bash scripts/hum-veth-chain.sh status
+
+# Tear down
+sudo bash scripts/hum-veth-chain.sh down
+```
+
+Use `--length N` to change the number of hops (1–16):
+
+```bash
+sudo bash scripts/hum-veth-chain.sh up --length 5
+bash scripts/hum-veth-chain.sh plot --length 5
+```
+
+### Addressing scheme
+
+Each hop gets a `/30` IPv4 subnet plus link-local IPv6:
+
+| Hop | Left (upstream) | Right (downstream) |
+|-----|----------------|--------------------|
+| 1 | `10.201.1.1/30` (root) | `10.201.1.2/30` (ns-1) |
+| 2 | `10.201.2.1/30` (ns-1) | `10.201.2.2/30` (ns-2) |
+| 3 | `10.201.3.1/30` (ns-2) | `10.201.3.2/30` (ns-3) |
+
+IPv6 link-local follows the pattern `fe80::H:1/64` / `fe80::H:2/64`
+per hop H.
+
+Override the base network with `HUM_CHAIN_BASE_NET` (default `10.201`).
+
+### Merger plot guidance
+
+The merger plot is a traffic-convergence model:
+
+- **Peer namespaces** (intermediate hops) have `ip_forward=1` enabled
+  automatically.  They relay packets toward the next hop.
+- **The merger namespace** (final hop) is where all forwarded traffic
+  arrives.  Use it for captures, filters, or services that need to
+  observe the full chain's traffic.
+- **Verification** – from the tail of the chain, confirm end-to-end
+  reachability:
+  ```bash
+  sudo ip netns exec hum-chain-ns3 ping -c2 10.201.1.1
+  ```
+- **Traffic shaping** – add `iptables`/`nftables` rules in any peer
+  namespace to mark, redirect, or rate-limit packets as they traverse
+  the chain.
+- **Capture at the merger point**:
+  ```bash
+  sudo ip netns exec hum-chain-ns3 tcpdump -n -i hum-chain-h3R
+  ```
+- **Coexistence** – the chain uses the `10.201.x.y` range and
+  `hum-chain-*` names, so it runs alongside the existing
+  `hum-proxy-*` setup without conflicts.
+
+### Environment overrides
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `HUM_CHAIN_PREFIX` | `hum-chain` | Namespace/interface name prefix |
+| `HUM_CHAIN_LENGTH` | `3` | Number of hops |
+| `HUM_CHAIN_BASE_NET` | `10.201` | First two octets of hop subnets |
+
 ## DeepSeek backup -> SQLite database linking
 
 If your DeepSeek standalone backup lives on an attached SSD, you can index it
