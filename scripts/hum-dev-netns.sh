@@ -133,33 +133,63 @@ peer_recv_ready() {
     ns_link_is_up "$PROXY_NS" "$PROXY_NS_IF"
 }
 
-print_peer_veth_chain() {
-  local host_state="missing" ns_state="missing" recv_ready="no"
+# True when ip -n can read interfaces in PROXY_NS (fails for non-root with EPERM).
+netns_ip_n_readable() {
+  ip -n "$PROXY_NS" link show lo >/dev/null 2>&1
+}
+
+# Sets HUM_PEER_HOST_STATE, HUM_PEER_NS_STATE, HUM_PEER_RECV_READY for display.
+# Non-root users can list namespaces but usually cannot ip -n; avoid reporting "missing"
+# when the netns exists and only introspection is blocked.
+update_peer_chain_state() {
+  HUM_PEER_HOST_STATE="missing"
+  HUM_PEER_NS_STATE="missing"
+  HUM_PEER_RECV_READY="no"
 
   if root_link_exists "$PROXY_HOST_IF"; then
-    host_state="$(root_link_state "$PROXY_HOST_IF")"
+    HUM_PEER_HOST_STATE="$(root_link_state "$PROXY_HOST_IF")"
   fi
-  if netns_exists "$PROXY_NS" && ns_link_exists "$PROXY_NS" "$PROXY_NS_IF"; then
-    ns_state="$(ns_link_state "$PROXY_NS" "$PROXY_NS_IF")"
+
+  if ! netns_exists "$PROXY_NS"; then
+    return 0
   fi
+
+  if ! netns_ip_n_readable; then
+    HUM_PEER_NS_STATE="unknown (sudo required for ip -n)"
+    HUM_PEER_RECV_READY="unknown (sudo required for ip -n)"
+    return 0
+  fi
+
+  if ns_link_exists "$PROXY_NS" "$PROXY_NS_IF"; then
+    HUM_PEER_NS_STATE="$(ns_link_state "$PROXY_NS" "$PROXY_NS_IF")"
+  else
+    HUM_PEER_NS_STATE="missing"
+  fi
+
   if peer_recv_ready; then
-    recv_ready="yes"
+    HUM_PEER_RECV_READY="yes"
+  else
+    HUM_PEER_RECV_READY="no"
   fi
+}
+
+print_peer_veth_chain() {
+  update_peer_chain_state
 
   echo "=== HUM peer veth chain ==="
   echo "root namespace"
   echo "  $PROXY_HOST_IF"
   echo "    ipv4: $PROXY_HOST_CIDR"
   echo "    ipv6: $PROXY_HOST_LL6"
-  echo "    state: $host_state"
-  echo "    || veth peer (recv-ready: $recv_ready) ||"
+  echo "    state: $HUM_PEER_HOST_STATE"
+  echo "    || veth peer (recv-ready: $HUM_PEER_RECV_READY) ||"
   echo "netns $PROXY_NS"
   echo "  $PROXY_NS_IF"
   echo "    ipv4: $PROXY_NS_CIDR"
   echo "    ipv6: $PROXY_NS_LL6"
   echo "    default v4 -> $PROXY_DEFAULT_GW"
   echo "    default v6 -> ${PROXY_HOST_LL6%%/*}"
-  echo "    state: $ns_state"
+  echo "    state: $HUM_PEER_NS_STATE"
   echo "side links"
   echo "  dummy: $DUMMY_IF ($DUMMY_CIDR)"
   echo "  docker hint: $DOCKER_HINT_IF"
@@ -231,11 +261,7 @@ status() {
   print_peer_veth_chain
   echo
   echo "=== HUM dev naming status ==="
-  if peer_recv_ready; then
-    echo "peer recv-ready: yes"
-  else
-    echo "peer recv-ready: no"
-  fi
+  echo "peer recv-ready: $HUM_PEER_RECV_READY"
   echo "trace-smac64 host: $host_smac64"
   echo "trace-smac64 ns:   $ns_smac64"
   echo "downstream nested packets (rx): host=${host_rx:-0} ns=${ns_rx:-0}"
@@ -272,13 +298,19 @@ guide() {
   print_peer_veth_chain
   echo
   echo "=== HUM peer veth chain guide ==="
+  echo "Note: Without sudo, netns link state shows as unknown — use step 2 for authoritative output."
+  echo
   echo "1. Create or repair the chain:"
   echo "   sudo bash scripts/hum-dev-netns.sh up"
   echo "2. Inspect the current peer state and addressing:"
   echo "   sudo bash scripts/hum-dev-netns.sh status"
   echo "3. Verify the netns can reach the host-side peer:"
   echo "   sudo ip netns exec $PROXY_NS ping -c 1 $PROXY_DEFAULT_GW"
-  echo "   sudo ip netns exec $PROXY_NS ping -6 -c 1 ${PROXY_HOST_LL6%%/*}%$PROXY_NS_IF"
+  echo "   sudo ip netns exec $PROXY_NS ping -6 -I $PROXY_NS_IF -c 1 ${PROXY_HOST_LL6%%/*}"
+  echo "   # Optional: zone-style link-local (some older ping builds):"
+  echo "   # sudo ip netns exec $PROXY_NS ping -6 -c 1 ${PROXY_HOST_LL6%%/*}%$PROXY_NS_IF"
+  echo "   # If IPv6 still fails while IPv4 works, ping the host veth's other fe80::/64 (EUI-64)"
+  echo "   # from status output, and check ip6tables/nft and sysctl net.ipv6.icmp.echo_ignore_all."
   echo "4. Inspect counters, routes, neighbors, and optional capture output:"
   echo "   sudo bash scripts/hum-dev-netns.sh trace"
   echo "5. Remove the peer veth chain when done:"
