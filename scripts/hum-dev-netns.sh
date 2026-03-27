@@ -25,6 +25,7 @@ Usage:
   sudo bash scripts/hum-dev-netns.sh down
   sudo bash scripts/hum-dev-netns.sh status
   sudo bash scripts/hum-dev-netns.sh trace
+  bash scripts/hum-dev-netns.sh guide
 
 Optional environment overrides:
   HUM_PROXY_NS
@@ -65,6 +66,14 @@ root_link_exists() {
 
 ns_link_exists() {
   ip -n "$1" link show "$2" >/dev/null 2>&1
+}
+
+root_link_state() {
+  ip -br link show dev "$1" 2>/dev/null | awk '{print $2}'
+}
+
+ns_link_state() {
+  ip -n "$1" -br link show dev "$2" 2>/dev/null | awk '{print $2}'
 }
 
 iface_mac() {
@@ -124,6 +133,38 @@ peer_recv_ready() {
     ns_link_is_up "$PROXY_NS" "$PROXY_NS_IF"
 }
 
+print_peer_veth_chain() {
+  local host_state="missing" ns_state="missing" recv_ready="no"
+
+  if root_link_exists "$PROXY_HOST_IF"; then
+    host_state="$(root_link_state "$PROXY_HOST_IF")"
+  fi
+  if netns_exists "$PROXY_NS" && ns_link_exists "$PROXY_NS" "$PROXY_NS_IF"; then
+    ns_state="$(ns_link_state "$PROXY_NS" "$PROXY_NS_IF")"
+  fi
+  if peer_recv_ready; then
+    recv_ready="yes"
+  fi
+
+  echo "=== HUM peer veth chain ==="
+  echo "root namespace"
+  echo "  $PROXY_HOST_IF"
+  echo "    ipv4: $PROXY_HOST_CIDR"
+  echo "    ipv6: $PROXY_HOST_LL6"
+  echo "    state: $host_state"
+  echo "    || veth peer (recv-ready: $recv_ready) ||"
+  echo "netns $PROXY_NS"
+  echo "  $PROXY_NS_IF"
+  echo "    ipv4: $PROXY_NS_CIDR"
+  echo "    ipv6: $PROXY_NS_LL6"
+  echo "    default v4 -> $PROXY_DEFAULT_GW"
+  echo "    default v6 -> ${PROXY_HOST_LL6%%/*}"
+  echo "    state: $ns_state"
+  echo "side links"
+  echo "  dummy: $DUMMY_IF ($DUMMY_CIDR)"
+  echo "  docker hint: $DOCKER_HINT_IF"
+}
+
 require_root() {
   if [[ "${EUID:-$(id -u)}" -ne 0 ]]; then
     echo "This action requires root. Re-run with sudo." >&2
@@ -166,6 +207,8 @@ up() {
   fi
 
   status
+  echo
+  echo "Run 'bash scripts/hum-dev-netns.sh guide' for the peer veth chain walk-through."
 }
 
 down() {
@@ -185,10 +228,9 @@ status() {
   host_rx="$(root_rx_packets "$PROXY_HOST_IF" || true)"
   ns_rx="$(ns_rx_packets "$PROXY_NS" "$PROXY_NS_IF" || true)"
 
+  print_peer_veth_chain
+  echo
   echo "=== HUM dev naming status ==="
-  echo "proxy namespace: $PROXY_NS"
-  echo "proxy links: host=$PROXY_HOST_IF ns=$PROXY_NS_IF"
-  echo "dummy link: $DUMMY_IF"
   if peer_recv_ready; then
     echo "peer recv-ready: yes"
   else
@@ -224,6 +266,26 @@ status() {
   else
     echo "[root] docker hint interface not found: $DOCKER_HINT_IF"
   fi
+}
+
+guide() {
+  print_peer_veth_chain
+  echo
+  echo "=== HUM peer veth chain guide ==="
+  echo "1. Create or repair the chain:"
+  echo "   sudo bash scripts/hum-dev-netns.sh up"
+  echo "2. Inspect the current peer state and addressing:"
+  echo "   sudo bash scripts/hum-dev-netns.sh status"
+  echo "3. Verify the netns can reach the host-side peer:"
+  echo "   sudo ip netns exec $PROXY_NS ping -c 1 $PROXY_DEFAULT_GW"
+  echo "   sudo ip netns exec $PROXY_NS ping -6 -c 1 ${PROXY_HOST_LL6%%/*}%$PROXY_NS_IF"
+  echo "4. Inspect counters, routes, neighbors, and optional capture output:"
+  echo "   sudo bash scripts/hum-dev-netns.sh trace"
+  echo "5. Remove the peer veth chain when done:"
+  echo "   sudo bash scripts/hum-dev-netns.sh down"
+  echo
+  echo "Override names and addresses with the HUM_* variables listed in:"
+  echo "   bash scripts/hum-dev-netns.sh --help"
 }
 
 trace() {
@@ -276,6 +338,10 @@ main() {
     trace)
       need_cmd ip
       trace
+      ;;
+    guide)
+      need_cmd ip
+      guide
       ;;
     -h|--help|help)
       usage

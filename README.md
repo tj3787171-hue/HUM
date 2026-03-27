@@ -46,13 +46,33 @@ This creates/maintains:
 - dummy interface: `hum-dummy0`
 - a status view that also reports `docker0` if present
 
+Peer veth chain sketch:
+
+```text
+root namespace
+  hum-proxy-host0 10.200.0.1/30 fe80::1/64
+    || veth peer ||
+netns hum-proxy-ns
+  hum-proxy-ns0   10.200.0.2/30 fe80::2/64
+    -> default IPv4 via 10.200.0.1
+    -> default IPv6 via fe80::1
+
+side links:
+  hum-dummy0
+  docker0 (if present)
+```
+
 Useful commands:
 
 ```bash
+bash scripts/hum-dev-netns.sh guide
 sudo bash scripts/hum-dev-netns.sh status
 sudo bash scripts/hum-dev-netns.sh trace
 sudo bash scripts/hum-dev-netns.sh down
 ```
+
+`guide` prints the current peer veth chain plus the exact `up`, `status`,
+`ping`, `trace`, and `down` commands to verify it end-to-end.
 
 All names can be overridden through `HUM_*` environment variables shown by:
 
@@ -71,6 +91,13 @@ The proxy veth pair now also carries link-local IPv6 for tracing:
 - downstream nested RX packet counters (host + netns)
 - SMAC64-style trace IDs derived from interface MAC addresses
 - IPv4/IPv6 route and neighbor snapshots for the proxy namespace
+
+Quick peer verification:
+
+```bash
+sudo ip netns exec hum-proxy-ns ping -c 1 10.200.0.1
+sudo ip netns exec hum-proxy-ns ping -6 -c 1 fe80::1%hum-proxy-ns0
+```
 
 ## DeepSeek backup -> SQLite database linking
 
