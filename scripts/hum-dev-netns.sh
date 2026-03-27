@@ -16,6 +16,7 @@ PROXY_PEER_IF="${HUM_PROXY_PEER_IF:-hum-proxy-peer0}"
 PEER_NS_IF="${HUM_PEER_NS_IF:-hum-peer-ns0}"
 PROXY_PEER_CIDR="${HUM_PROXY_PEER_CIDR:-10.200.1.1/30}"
 PEER_NS_CIDR="${HUM_PEER_NS_CIDR:-10.200.1.2/30}"
+PEER_ROUTE_CIDR="${HUM_PEER_ROUTE_CIDR:-10.200.1.0/30}"
 PEER_DEFAULT_GW="${HUM_PEER_DEFAULT_GW:-10.200.1.1}"
 PROXY_PEER_LL6="${HUM_PROXY_PEER_LL6:-fe80::11/64}"
 PEER_NS_LL6="${HUM_PEER_NS_LL6:-fe80::12/64}"
@@ -49,6 +50,7 @@ Optional environment overrides:
   HUM_PEER_NS_IF
   HUM_PROXY_PEER_CIDR
   HUM_PEER_NS_CIDR
+  HUM_PEER_ROUTE_CIDR
   HUM_PEER_DEFAULT_GW
   HUM_PROXY_PEER_LL6
   HUM_PEER_NS_LL6
@@ -185,6 +187,9 @@ require_root() {
 }
 
 up() {
+  local proxy_ns_ip
+  proxy_ns_ip="${PROXY_NS_CIDR%%/*}"
+
   if ! netns_exists "$PROXY_NS"; then
     ip netns add "$PROXY_NS"
   fi
@@ -205,6 +210,8 @@ up() {
   ip -n "$PROXY_NS" -6 addr replace "$PROXY_NS_LL6" dev "$PROXY_NS_IF"
   ip -n "$PROXY_NS" route replace default via "$PROXY_DEFAULT_GW" dev "$PROXY_NS_IF"
   ip -n "$PROXY_NS" -6 route replace default via "${PROXY_HOST_LL6%%/*}" dev "$PROXY_NS_IF"
+  ip netns exec "$PROXY_NS" sh -c \
+    'echo 1 > /proc/sys/net/ipv4/ip_forward; echo 1 > /proc/sys/net/ipv6/conf/all/forwarding'
   ip -n "$PROXY_NS" link set "$PROXY_PEER_IF" up
   ip -n "$PROXY_NS" addr replace "$PROXY_PEER_CIDR" dev "$PROXY_PEER_IF"
   ip -n "$PROXY_NS" -6 addr replace "$PROXY_PEER_LL6" dev "$PROXY_PEER_IF"
@@ -215,6 +222,7 @@ up() {
   ip -n "$PEER_NS" -6 addr replace "$PEER_NS_LL6" dev "$PEER_NS_IF"
   ip -n "$PEER_NS" route replace default via "$PEER_DEFAULT_GW" dev "$PEER_NS_IF"
   ip -n "$PEER_NS" -6 route replace default via "${PROXY_PEER_LL6%%/*}" dev "$PEER_NS_IF"
+  ip route replace "$PEER_ROUTE_CIDR" via "$proxy_ns_ip" dev "$PROXY_HOST_IF"
 
   if ! root_link_exists "$DUMMY_IF"; then
     if ! ip link add "$DUMMY_IF" type dummy 2>/dev/null; then
@@ -230,6 +238,7 @@ up() {
 }
 
 down() {
+  ip route del "$PEER_ROUTE_CIDR" 2>/dev/null || true
   ip link del "$DUMMY_IF" 2>/dev/null || true
   ip link del "$PROXY_HOST_IF" 2>/dev/null || true
   ip -n "$PROXY_NS" link del "$PROXY_PEER_IF" 2>/dev/null || true
@@ -281,10 +290,16 @@ status() {
     ip -n "$PROXY_NS" route show default 2>/dev/null || true
     echo "[netns:$PROXY_NS] default route (IPv6)"
     ip -n "$PROXY_NS" -6 route show default 2>/dev/null || true
+    echo "[netns:$PROXY_NS] forwarding flags"
+    ip netns exec "$PROXY_NS" sh -c \
+      'printf "ipv4=%s ipv6=%s\n" "$(cat /proc/sys/net/ipv4/ip_forward)" "$(cat /proc/sys/net/ipv6/conf/all/forwarding)"' 2>/dev/null || true
   else
     echo "Namespace $PROXY_NS does not exist."
   fi
 
+  echo
+  echo "[root] peer chain route"
+  ip route show "$PEER_ROUTE_CIDR" 2>/dev/null || true
   echo
   if netns_exists "$PEER_NS"; then
     echo
