@@ -28,7 +28,7 @@ LAN-ready development container configuration for online/local development.
 - `--network=host` allows services in the container to be reachable on the host/LAN stack.
 - On non-Linux hosts, host-network support can be limited by Docker Desktop behavior.
 
-## Penguin terminal dev naming (Proxy + Docker + Dummy)
+## Penguin terminal dev naming (Proxy + Peer Chain + Docker + Dummy)
 
 If you want the laptop Penguin terminal to use stable developer names that parallel
 the original proxy/docker/dummy model, use:
@@ -43,8 +43,37 @@ This creates/maintains:
 
 - proxy namespace: `hum-proxy-ns`
 - proxy veth pair: `hum-proxy-host0` (root) <-> `hum-proxy-ns0` (inside netns)
+- peer namespace: `hum-peer-ns` (enabled by default)
+- peer veth pair: `hum-proxy-peer0` (inside `hum-proxy-ns`) <-> `hum-peer-ns0` (inside `hum-peer-ns`)
 - dummy interface: `hum-dummy0`
 - a status view that also reports `docker0` if present
+
+### Merger plot guidance
+
+For merger plot work, use the default peer veth chain so traces include both legs:
+
+```bash
+sudo bash scripts/hum-dev-netns.sh up
+sudo bash scripts/hum-dev-netns.sh trace
+```
+
+Topology:
+
+- `root` -> `hum-proxy-host0` <-> `hum-proxy-ns0` -> `hum-proxy-peer0` <-> `hum-peer-ns0`
+
+Quick peer-chain checks:
+
+```bash
+sudo bash scripts/hum-dev-netns.sh status
+sudo ip netns exec hum-peer-ns ping -c 2 10.200.1.1
+sudo ip netns exec hum-proxy-ns ping -c 2 10.200.1.2
+```
+
+Disable peer-chain mode if you only need the original single pair:
+
+```bash
+sudo env HUM_ENABLE_PEER_CHAIN=0 bash scripts/hum-dev-netns.sh up
+```
 
 Useful commands:
 
@@ -68,9 +97,11 @@ The proxy veth pair now also carries link-local IPv6 for tracing:
 `trace` reports:
 
 - peer recv-ready state
-- downstream nested RX packet counters (host + netns)
+- peer-chain recv-ready state (when enabled)
+- downstream nested RX packet counters (host + netns, or host + proxy-main + proxy-peer + peer when enabled)
 - SMAC64-style trace IDs derived from interface MAC addresses
 - IPv4/IPv6 route and neighbor snapshots for the proxy namespace
+- IPv4/IPv6 route and neighbor snapshots for the peer namespace (when enabled)
 
 ## DeepSeek backup -> SQLite database linking
 
