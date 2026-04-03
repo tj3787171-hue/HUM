@@ -103,6 +103,38 @@ The proxy veth pair now also carries link-local IPv6 for tracing:
 - IPv4/IPv6 route and neighbor snapshots for the proxy namespace
 - IPv4/IPv6 route and neighbor snapshots for the peer namespace (when enabled)
 
+### Merger plot workflow
+
+The FF0000 page at `/ff0000.html` now includes a merger-plot guide for the peer
+veth chain. Before using the plot, bring up the proxy path and confirm the chain
+is ready:
+
+```bash
+sudo bash scripts/hum-dev-netns.sh up
+sudo bash scripts/hum-dev-netns.sh status
+```
+
+The guide and plot assume the default chain:
+
+- root namespace interface: `hum-proxy-host0` (`10.200.0.1/30`, `fe80::1/64`)
+- proxy namespace interface: `hum-proxy-ns0` (`10.200.0.2/30`, `fe80::2/64`)
+- proxy namespace: `hum-proxy-ns`
+- dummy endpoint: `hum-dummy0` (`198.18.0.1/24`)
+
+Readiness checks before relying on the plot:
+
+- `peer recv-ready: yes`
+- populated `trace-smac64 host` and `trace-smac64 ns` values
+- root and netns addresses that match the chain shown in the page
+
+Use trace mode when the merger plot suggests changed redraw cadence or
+downstream activity:
+
+```bash
+sudo bash scripts/hum-dev-netns.sh trace
+sudo bash scripts/hum-dev-netns.sh down
+```
+
 ## DeepSeek backup -> SQLite database linking
 
 If your DeepSeek standalone backup lives on an attached SSD, you can index it
