@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local/websetup/virtual/network-matrix.schema.json",
+  "title": "Virtual topology edges",
+  "type": "object",
+  "required": ["version", "edges"],
+  "properties": {
+    "version": { "type": "integer", "minimum": 1 },
+    "description": { "type": "string" },
+    "schema_version": { "type": "string" },
+    "network_id": { "type": "string", "minLength": 1 },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "role": { "type": "string" },
+          "mac": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{2}(:[0-9a-f]{2}){5}$"
+          },
+          "labels": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["from", "to", "type"],
+        "properties": {
+          "from": { "type": "string", "minLength": 1 },
+          "to": { "type": "string", "minLength": 1 },
+          "type": { "type": "string", "minLength": 1 },
+          "bidirectional": { "type": "boolean" },
+          "state": { "type": "string" },
+          "gateway": { "type": "string" },
+          "note": { "type": "string" }
+        },
+        "additionalProperties": true
+      }
+    },
+    "foreign_assertions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["subject_ref", "asserts", "object_ref"],
+        "properties": {
+          "subject_ref": { "$ref": "#/$defs/ref" },
+          "asserts": { "type": "string", "minLength": 1 },
+          "object_ref": { "$ref": "#/$defs/ref" },
+          "evidence_ref": { "$ref": "#/$defs/ref" },
+          "note": { "type": "string" }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "$defs": {
+    "ref": {
+      "type": "object",
+      "required": ["type", "id"],
+      "properties": {
+        "type": { "type": "string", "minLength": 1 },
+        "id": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": true
+}

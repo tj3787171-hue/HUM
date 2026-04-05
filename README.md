@@ -9,11 +9,16 @@ LAN-ready development container configuration for online/local development.
   - `iproute2`, `net-tools`
   - `iputils-ping`, `traceroute`
   - `dnsutils`
+- Additional virtual-setup tools:
+  - `iptables`, `bridge-utils`, `ethtool`
+  - `python3`, `jq`, `yq`, `shellcheck`
 - `.devcontainer/devcontainer.json` with:
   - host-network runtime flag (`--network=host`) for Linux LAN access
+  - privileged runtime for netns/veth/macsec experiments (`NET_ADMIN`, `NET_RAW`)
   - `host.docker.internal` mapping via `host-gateway`
   - common forwarded ports (`3000`, `5173`, `8000`, `8080`)
-- `.devcontainer/post-create.sh` to print network info when container is created
+- `.devcontainer/post-create.sh` to print network/module/tooling status at container create
+- `websetup/` bundle for SDV + virtual phase configuration (`.yml`, `.csv`, `.json`)
 
 ## Use it
 
@@ -27,6 +32,22 @@ LAN-ready development container configuration for online/local development.
 - This setup is optimized for Linux with Docker engine networking.
 - `--network=host` allows services in the container to be reachable on the host/LAN stack.
 - On non-Linux hosts, host-network support can be limited by Docker Desktop behavior.
+
+## Virtual setup config bundle
+
+The repository now includes a `websetup/` tree for virtual phase planning:
+
+- `websetup/sdv/manifest.json` and `python3 -m websetup.sdv validate`
+- `websetup/virtual/virtual-setup.yml`
+- `websetup/virtual/inventory.csv`
+- `websetup/virtual/*.json` with schemas
+
+Start points:
+
+```bash
+PYTHONPATH=/workspaces/<repo> python3 -m websetup.sdv validate
+PYTHONPATH=/workspaces/<repo> python3 -m websetup.sdv apply
+```
 
 ## Penguin terminal dev naming (Proxy + Peer Chain + Docker + Dummy)
 
@@ -197,3 +218,81 @@ Or use the built-in helper:
   startTelemetryPolling("telemetry", 3000);
 </script>
 ```
+
+## Evidence + network matrix database (SQLite)
+
+When you need durable project records (papers, evidence blobs, MAC-linked devices,
+and network matrix assertions), use:
+
+```bash
+python3 scripts/project_evidence_db.py --database data/project_evidence.db init
+```
+
+Create or update a normalized network matrix JSON:
+
+```bash
+python3 scripts/project_evidence_db.py --database data/project_evidence.db ingest-network \
+  --network-json websetup/virtual/network-matrix.json
+```
+
+Insert a paper record:
+
+```bash
+python3 scripts/project_evidence_db.py --database data/project_evidence.db add-paper \
+  --slug hum-network-paper \
+  --title "HUM network phase notes" \
+  --author "team" \
+  --summary "Topology and evidence binding notes."
+```
+
+Insert a binary evidence blob linked to a paper and MAC:
+
+```bash
+python3 scripts/project_evidence_db.py --database data/project_evidence.db add-evidence \
+  --evidence-key ev-001 \
+  --paper-slug hum-network-paper \
+  --property-hex 0x0101 \
+  --payload-file ./some-capture.bin \
+  --device-mac 4C:EA:41:63:E6:C6 \
+  --source-kind manual-import
+```
+
+List data quickly:
+
+```bash
+python3 scripts/project_evidence_db.py --database data/project_evidence.db list-devices
+python3 scripts/project_evidence_db.py --database data/project_evidence.db list-evidence
+```
+
+Capture UPnP root description metadata (from file or URL):
+
+```bash
+python3 scripts/project_evidence_db.py --database data/project_evidence.db ingest-upnp-xml \
+  --xml-url http://192.168.68.1:1900/pttlb/rootDesc.xml \
+  --source-url http://192.168.68.1:1900/pttlb/rootDesc.xml \
+  --device-mac 4C:EA:41:63:E6:C6 \
+  --asserted-by team
+
+python3 scripts/project_evidence_db.py --database data/project_evidence.db list-gateway-metadata
+```
+
+## Backup helper
+
+Create a timestamped backup bundle of project artifacts:
+
+```bash
+bash scripts/backup_project_bundle.sh /path/to/mounted/storage
+```
+
+It copies:
+
+- `README.md`
+- `.devcontainer/`
+- `scripts/`
+- `websetup/`
+- `data/` (if present)
+
+Use a mounted path you control (for example an exposed external drive path under your
+Linux environment). The script creates:
+
+`<target>/hum-backups/hum-backup-YYYYmmdd-HHMMSS/`

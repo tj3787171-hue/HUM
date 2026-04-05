@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "phase": "virtual",
+  "description": "Catalog of configuration artifacts for the virtual setup phase.",
+  "artifacts": [
+    {
+      "path": "virtual-setup.yml",
+      "format": "yaml",
+      "role": "primary_orchestration"
+    },
+    {
+      "path": "inventory.csv",
+      "format": "csv",
+      "role": "node_inventory"
+    },
+    {
+      "path": "features.json",
+      "format": "json",
+      "role": "feature_toggles"
+    },
+    {
+      "path": "network-matrix.json",
+      "format": "json",
+      "role": "topology_edges"
+    },
+    {
+      "path": "bindings.json",
+      "format": "json",
+      "role": "sdv_virtual_bindings"
+    },
+    {
+      "path": "schemas/features.schema.json",
+      "format": "json-schema",
+      "role": "validation_schema"
+    },
+    {
+      "path": "schemas/network-matrix.schema.json",
+      "format": "json-schema",
+      "role": "validation_schema"
+    },
+    {
+      "path": "schemas/bindings.schema.json",
+      "format": "json-schema",
+      "role": "validation_schema"
+    }
+  ]
+}
