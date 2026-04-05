@@ -72,4 +72,11 @@ python3 scripts/project_evidence_db.py add-evidence \
 python3 scripts/project_evidence_db.py export-network-json \
   --database data/project_evidence.db \
   --output data/network-matrix.export.json
+python3 scripts/project_evidence_db.py ingest-upnp-xml \
+  --database data/project_evidence.db \
+  --xml-url http://192.168.68.1:1900/pttlb/rootDesc.xml \
+  --device-mac 4C:EA:41:63:E6:C6 \
+  --asserted-by team
+python3 scripts/project_evidence_db.py list-gateway \
+  --database data/project_evidence.db
 ```

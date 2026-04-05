@@ -16,6 +16,8 @@ import hashlib
 import json
 import sqlite3
 import sys
+import urllib.request
+import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Any
 
@@ -92,6 +94,52 @@ def ensure_column(conn: sqlite3.Connection, table: str, column: str, column_sql:
         conn.execute(f"ALTER TABLE {table} ADD COLUMN {column} {column_sql}")
 
 
+def _tag_name(tag: str) -> str:
+    if "}" in tag:
+        return tag.split("}", 1)[1]
+    return tag
+
+
+def _first_text(root: ET.Element, tag_name: str) -> str | None:
+    for elem in root.iter():
+        if _tag_name(elem.tag) == tag_name and elem.text:
+            value = elem.text.strip()
+            if value:
+                return value
+    return None
+
+
+def parse_upnp_rootdesc(xml_text: str) -> dict[str, Any]:
+    root = ET.fromstring(xml_text)
+    services: list[dict[str, str]] = []
+    for elem in root.iter():
+        if _tag_name(elem.tag) != "service":
+            continue
+        service: dict[str, str] = {}
+        for child in list(elem):
+            name = _tag_name(child.tag)
+            text = (child.text or "").strip()
+            if text:
+                service[name] = text
+        if service:
+            services.append(service)
+    return {
+        "friendly_name": _first_text(root, "friendlyName"),
+        "manufacturer": _first_text(root, "manufacturer"),
+        "model_name": _first_text(root, "modelName"),
+        "model_number": _first_text(root, "modelNumber"),
+        "udn": _first_text(root, "UDN"),
+        "presentation_url": _first_text(root, "presentationURL"),
+        "services": services,
+    }
+
+
+def fetch_text_from_url(url: str, timeout: int = 8) -> str:
+    with urllib.request.urlopen(url, timeout=timeout) as response:  # nosec: B310
+        data = response.read()
+    return data.decode("utf-8", errors="replace")
+
+
 def create_schema(conn: sqlite3.Connection) -> None:
     conn.executescript(
         """
@@ -163,7 +211,9 @@ def create_schema(conn: sqlite3.Connection) -> None:
             manufacturer TEXT,
             model_name TEXT,
             udn TEXT,
-            raw_xml_excerpt TEXT
+            raw_xml_excerpt TEXT,
+            asserted_by TEXT,
+            details_json TEXT
         );
 
         CREATE INDEX IF NOT EXISTS idx_evidence_device_id ON evidence_blobs(device_id);
@@ -174,6 +224,8 @@ def create_schema(conn: sqlite3.Connection) -> None:
     )
     ensure_column(conn, "devices", "ipv6_link_local", "TEXT")
     ensure_column(conn, "paper_records", "summary", "TEXT")
+    ensure_column(conn, "gateway_metadata", "asserted_by", "TEXT")
+    ensure_column(conn, "gateway_metadata", "details_json", "TEXT")
 
 
 def upsert_default_properties(conn: sqlite3.Connection) -> None:
@@ -369,6 +421,47 @@ def upsert_network_matrix(
     return key, sha
 
 
+def ingest_gateway_metadata(
+    conn: sqlite3.Connection,
+    source_url: str,
+    xml_text: str,
+    device_mac: str | None,
+    asserted_by: str | None,
+) -> tuple[int, dict[str, Any]]:
+    details = parse_upnp_rootdesc(xml_text)
+    device_id: int | None = None
+    if device_mac:
+        device_id = upsert_device(
+            conn,
+            mac=device_mac,
+            label=None,
+            gateway_udn=details.get("udn"),
+            presentation_url=details.get("presentation_url"),
+        )
+    excerpt = xml_text[:4000]
+    conn.execute(
+        """
+        INSERT INTO gateway_metadata (
+            device_id, source_url, captured_at, manufacturer, model_name, udn,
+            raw_xml_excerpt, asserted_by, details_json
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """,
+        (
+            device_id,
+            source_url,
+            utc_now(),
+            details.get("manufacturer"),
+            details.get("model_name"),
+            details.get("udn"),
+            excerpt,
+            asserted_by,
+            json.dumps(details, ensure_ascii=False),
+        ),
+    )
+    row_id = conn.execute("SELECT last_insert_rowid()").fetchone()[0]
+    return int(row_id), details
+
+
 def parse_args(argv: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Manage project evidence database.")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -434,6 +527,17 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     add_matrix.add_argument("--matrix-key", default=None, help="Optional stable matrix key")
     add_matrix.add_argument("--source", default=None, help="Optional source reference/path override")
 
+    ingest_upnp = sub.add_parser(
+        "ingest-upnp-xml",
+        aliases=["ingest-upnp"],
+        help="Parse a UPnP rootDesc.xml and store gateway metadata.",
+    )
+    ingest_upnp.add_argument("--source-url", default=None, help="Source URL label for this capture")
+    ingest_upnp.add_argument("--xml-file", default=None, help="Path to rootDesc.xml file")
+    ingest_upnp.add_argument("--xml-url", default=None, help="URL to fetch rootDesc.xml")
+    ingest_upnp.add_argument("--device-mac", default=None, help="Optional linked gateway device MAC")
+    ingest_upnp.add_argument("--asserted-by", default=None, help="Actor recording this capture")
+
     export_matrix = sub.add_parser("export-network-json", help="Export latest matrix JSON.")
     export_matrix.add_argument("--output", required=True, help="Output JSON file path")
     export_matrix.add_argument("--network-id", default=None, help="Optional network id filter")
@@ -443,6 +547,13 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
 
     list_evidence = sub.add_parser("list-evidence", help="Print evidence rows as JSON.")
     list_evidence.add_argument("--limit", type=int, default=100, help="Max rows (default: 100)")
+
+    list_gateway = sub.add_parser(
+        "list-gateway-metadata",
+        aliases=["list-gateway"],
+        help="Print captured gateway metadata rows as JSON.",
+    )
+    list_gateway.add_argument("--limit", type=int, default=50, help="Max rows (default: 50)")
 
     return parser.parse_args(argv)
 
@@ -555,6 +666,31 @@ def cmd_export_network_json(conn: sqlite3.Connection, output: Path, network_id: 
     print(f"Exported network JSON: {output}")
 
 
+def cmd_list_gateway_metadata(conn: sqlite3.Connection, limit: int) -> None:
+    rows = conn.execute(
+        """
+        SELECT id, source_url, captured_at, manufacturer, model_name, udn, asserted_by
+        FROM gateway_metadata
+        ORDER BY id DESC
+        LIMIT ?
+        """,
+        (limit,),
+    ).fetchall()
+    payload = [
+        {
+            "id": row[0],
+            "source_url": row[1],
+            "captured_at": row[2],
+            "manufacturer": row[3],
+            "model_name": row[4],
+            "udn": row[5],
+            "asserted_by": row[6],
+        }
+        for row in rows
+    ]
+    print(json.dumps(payload, indent=2, ensure_ascii=False))
+
+
 def main() -> int:
     db_arg, argv = extract_database_arg(sys.argv[1:])
     args = parse_args(argv)
@@ -634,6 +770,34 @@ def main() -> int:
             print(f"Network snapshot upserted key={matrix_key} sha256={sha}")
             return 0
 
+        if args.command in {"ingest-upnp-xml", "ingest-upnp"}:
+            if not args.xml_file and not args.xml_url:
+                raise ValueError("provide --xml-file or --xml-url")
+            if args.xml_file and args.xml_url:
+                raise ValueError("provide only one of --xml-file or --xml-url")
+            if args.xml_file:
+                xml_path = Path(args.xml_file).expanduser().resolve()
+                if not xml_path.exists() or not xml_path.is_file():
+                    raise FileNotFoundError(f"XML file not found: {xml_path}")
+                xml_text = xml_path.read_text(encoding="utf-8", errors="replace")
+                source_url = args.source_url or str(xml_path)
+            else:
+                xml_text = fetch_text_from_url(args.xml_url)
+                source_url = args.source_url or args.xml_url
+            row_id, details = ingest_gateway_metadata(
+                conn=conn,
+                source_url=source_url,
+                xml_text=xml_text,
+                device_mac=args.device_mac,
+                asserted_by=args.asserted_by,
+            )
+            conn.commit()
+            print(
+                f"Gateway metadata captured id={row_id} "
+                f"manufacturer={details.get('manufacturer')!r} model={details.get('model_name')!r}"
+            )
+            return 0
+
         if args.command == "export-network-json":
             output = Path(args.output).expanduser().resolve()
             cmd_export_network_json(conn, output, args.network_id)
@@ -649,6 +813,10 @@ def main() -> int:
 
         if args.command == "list-evidence":
             cmd_list_evidence(conn, args.limit)
+            return 0
+
+        if args.command in {"list-gateway-metadata", "list-gateway"}:
+            cmd_list_gateway_metadata(conn, args.limit)
             return 0
 
         raise ValueError(f"unknown command: {args.command}")

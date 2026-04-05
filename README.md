@@ -225,44 +225,55 @@ When you need durable project records (papers, evidence blobs, MAC-linked device
 and network matrix assertions), use:
 
 ```bash
-python3 scripts/project_evidence_db.py init --database data/project_evidence.db
+python3 scripts/project_evidence_db.py --database data/project_evidence.db init
 ```
 
 Create or update a normalized network matrix JSON:
 
 ```bash
-python3 scripts/project_evidence_db.py ingest-network \
-  --database data/project_evidence.db \
+python3 scripts/project_evidence_db.py --database data/project_evidence.db ingest-network \
   --network-json websetup/virtual/network-matrix.json
 ```
 
 Insert a paper record:
 
 ```bash
-python3 scripts/project_evidence_db.py add-paper \
-  --database data/project_evidence.db \
+python3 scripts/project_evidence_db.py --database data/project_evidence.db add-paper \
+  --slug hum-network-paper \
   --title "HUM network phase notes" \
-  --authors "team" \
+  --author "team" \
   --summary "Topology and evidence binding notes."
 ```
 
 Insert a binary evidence blob linked to a paper and MAC:
 
 ```bash
-python3 scripts/project_evidence_db.py add-evidence \
-  --database data/project_evidence.db \
-  --paper-id 1 \
-  --property-hex 0x1001 \
-  --blob-file ./some-capture.bin \
-  --mac-address 4C:EA:41:63:E6:C6 \
-  --source "manual-import"
+python3 scripts/project_evidence_db.py --database data/project_evidence.db add-evidence \
+  --evidence-key ev-001 \
+  --paper-slug hum-network-paper \
+  --property-hex 0x0101 \
+  --payload-file ./some-capture.bin \
+  --device-mac 4C:EA:41:63:E6:C6 \
+  --source-kind manual-import
 ```
 
 List data quickly:
 
 ```bash
-python3 scripts/project_evidence_db.py list-devices --database data/project_evidence.db
-python3 scripts/project_evidence_db.py list-evidence --database data/project_evidence.db
+python3 scripts/project_evidence_db.py --database data/project_evidence.db list-devices
+python3 scripts/project_evidence_db.py --database data/project_evidence.db list-evidence
+```
+
+Capture UPnP root description metadata (from file or URL):
+
+```bash
+python3 scripts/project_evidence_db.py --database data/project_evidence.db ingest-upnp-xml \
+  --xml-url http://192.168.68.1:1900/pttlb/rootDesc.xml \
+  --source-url http://192.168.68.1:1900/pttlb/rootDesc.xml \
+  --device-mac 4C:EA:41:63:E6:C6 \
+  --asserted-by team
+
+python3 scripts/project_evidence_db.py --database data/project_evidence.db list-gateway-metadata
 ```
 
 ## Backup helper
