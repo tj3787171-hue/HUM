@@ -36,6 +36,8 @@ sudo bash scripts/hum-dev-netns.sh status
 - `virtual/bindings.json` — wiring between scripts and virtual config.
 - `virtual/catalog.json` — artifact catalog.
 - `virtual/schemas/*.json` — JSON schema files for editor/validation support.
+- `../scripts/project_evidence_db.py` — SQLite-backed records for papers,
+  evidence blobs, device MAC identity hints, and network matrix assertions.
 
 ## Notes
 
@@ -43,3 +45,31 @@ sudo bash scripts/hum-dev-netns.sh status
   actual DHCP lease when known.
 - Keep secrets/keys out of git. This bundle stores only non-secret planning
   metadata.
+
+## Evidence / identity database
+
+Initialize and use the project evidence database:
+
+```bash
+python3 scripts/project_evidence_db.py init --database data/project_evidence.db
+python3 scripts/project_evidence_db.py upsert-device \
+  --database data/project_evidence.db \
+  --mac 4C:EA:41:63:E6:C6 \
+  --label HUM
+python3 scripts/project_evidence_db.py add-paper \
+  --database data/project_evidence.db \
+  --slug hum-network-paper \
+  --title "HUM network matrix notes" \
+  --author "team"
+python3 scripts/project_evidence_db.py add-evidence \
+  --database data/project_evidence.db \
+  --paper-slug hum-network-paper \
+  --property-hex 0x0101 \
+  --payload-file websetup/virtual/network-matrix.json \
+  --device-mac 4C:EA:41:63:E6:C6 \
+  --source-kind config \
+  --source-ref websetup/virtual/network-matrix.json
+python3 scripts/project_evidence_db.py export-network-json \
+  --database data/project_evidence.db \
+  --output data/network-matrix.export.json
+```

@@ -1,7 +1,39 @@
 {
   "$schema": "./schemas/network-matrix.schema.json",
   "version": 1,
-  "description": "L2/L3 edges for virtual setup: host bridges, veth pairs, and planned nodes.",
+  "description": "L2/L3 edges for virtual setup: host bridges, veth pairs, planned nodes, and assertion links.",
+  "network_id": "hum-net-01",
+  "generated_at": "2026-04-05T00:00:00Z",
+  "nodes": [
+    {
+      "id": "HUM",
+      "kind": "host",
+      "role": "kali-host",
+      "mac": "4c:ea:41:63:e6:c6",
+      "labels": [
+        "physical",
+        "headless"
+      ]
+    },
+    {
+      "id": "local-laptop-dev",
+      "kind": "host",
+      "role": "developer-laptop",
+      "mac": "00:00:00:00:00:00",
+      "labels": [
+        "lan",
+        "workstation"
+      ]
+    },
+    {
+      "id": "virt-edge-01",
+      "kind": "virtual",
+      "role": "edge-router",
+      "labels": [
+        "planned"
+      ]
+    }
+  ],
   "edges": [
     {
       "from": "docker0",
@@ -41,6 +73,23 @@
       "type": "logical_path",
       "state": "planned",
       "note": "Developer path into SDV 10.11.8.0/24 segment via edge node."
+    }
+  ],
+  "foreign_assertions": [
+    {
+      "subject_ref": {
+        "type": "node",
+        "id": "HUM"
+      },
+      "asserts": "gateway_for",
+      "object_ref": {
+        "type": "network",
+        "id": "hum-net-01"
+      },
+      "evidence_ref": {
+        "type": "evidence",
+        "id": "ev-bootstrap-001"
+      }
     }
   ]
 }

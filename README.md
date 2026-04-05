@@ -218,3 +218,70 @@ Or use the built-in helper:
   startTelemetryPolling("telemetry", 3000);
 </script>
 ```
+
+## Evidence + network matrix database (SQLite)
+
+When you need durable project records (papers, evidence blobs, MAC-linked devices,
+and network matrix assertions), use:
+
+```bash
+python3 scripts/project_evidence_db.py init --database data/project_evidence.db
+```
+
+Create or update a normalized network matrix JSON:
+
+```bash
+python3 scripts/project_evidence_db.py ingest-network \
+  --database data/project_evidence.db \
+  --network-json websetup/virtual/network-matrix.json
+```
+
+Insert a paper record:
+
+```bash
+python3 scripts/project_evidence_db.py add-paper \
+  --database data/project_evidence.db \
+  --title "HUM network phase notes" \
+  --authors "team" \
+  --summary "Topology and evidence binding notes."
+```
+
+Insert a binary evidence blob linked to a paper and MAC:
+
+```bash
+python3 scripts/project_evidence_db.py add-evidence \
+  --database data/project_evidence.db \
+  --paper-id 1 \
+  --property-hex 0x1001 \
+  --blob-file ./some-capture.bin \
+  --mac-address 4C:EA:41:63:E6:C6 \
+  --source "manual-import"
+```
+
+List data quickly:
+
+```bash
+python3 scripts/project_evidence_db.py list-devices --database data/project_evidence.db
+python3 scripts/project_evidence_db.py list-evidence --database data/project_evidence.db
+```
+
+## Backup helper
+
+Create a timestamped backup bundle of project artifacts:
+
+```bash
+bash scripts/backup_project_bundle.sh /path/to/mounted/storage
+```
+
+It copies:
+
+- `README.md`
+- `.devcontainer/`
+- `scripts/`
+- `websetup/`
+- `data/` (if present)
+
+Use a mounted path you control (for example an exposed external drive path under your
+Linux environment). The script creates:
+
+`<target>/hum-backups/hum-backup-YYYYmmdd-HHMMSS/`
