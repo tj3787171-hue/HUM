@@ -9,11 +9,16 @@ LAN-ready development container configuration for online/local development.
   - `iproute2`, `net-tools`
   - `iputils-ping`, `traceroute`
   - `dnsutils`
+- Additional virtual-setup tools:
+  - `iptables`, `bridge-utils`, `ethtool`
+  - `python3`, `jq`, `yq`, `shellcheck`
 - `.devcontainer/devcontainer.json` with:
   - host-network runtime flag (`--network=host`) for Linux LAN access
+  - privileged runtime for netns/veth/macsec experiments (`NET_ADMIN`, `NET_RAW`)
   - `host.docker.internal` mapping via `host-gateway`
   - common forwarded ports (`3000`, `5173`, `8000`, `8080`)
-- `.devcontainer/post-create.sh` to print network info when container is created
+- `.devcontainer/post-create.sh` to print network/module/tooling status at container create
+- `websetup/` bundle for SDV + virtual phase configuration (`.yml`, `.csv`, `.json`)
 
 ## Use it
 
@@ -27,6 +32,22 @@ LAN-ready development container configuration for online/local development.
 - This setup is optimized for Linux with Docker engine networking.
 - `--network=host` allows services in the container to be reachable on the host/LAN stack.
 - On non-Linux hosts, host-network support can be limited by Docker Desktop behavior.
+
+## Virtual setup config bundle
+
+The repository now includes a `websetup/` tree for virtual phase planning:
+
+- `websetup/sdv/manifest.json` and `python3 -m websetup.sdv validate`
+- `websetup/virtual/virtual-setup.yml`
+- `websetup/virtual/inventory.csv`
+- `websetup/virtual/*.json` with schemas
+
+Start points:
+
+```bash
+PYTHONPATH=/workspaces/<repo> python3 -m websetup.sdv validate
+PYTHONPATH=/workspaces/<repo> python3 -m websetup.sdv apply
+```
 
 ## Penguin terminal dev naming (Proxy + Peer Chain + Docker + Dummy)
 

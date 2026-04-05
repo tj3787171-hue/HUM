@@ -1,0 +1,46 @@
+{
+  "$schema": "./schemas/network-matrix.schema.json",
+  "version": 1,
+  "description": "L2/L3 edges for virtual setup: host bridges, veth pairs, and planned nodes.",
+  "edges": [
+    {
+      "from": "docker0",
+      "to": "hum-proxy-host0",
+      "type": "bridge_path",
+      "bidirectional": true
+    },
+    {
+      "from": "hum-proxy-host0",
+      "to": "hum-proxy-ns0",
+      "type": "veth_pair",
+      "bidirectional": true
+    },
+    {
+      "from": "hum-proxy-peer0",
+      "to": "hum-peer-ns0",
+      "type": "veth_pair",
+      "bidirectional": true
+    },
+    {
+      "from": "virt-edge-01",
+      "to": "10.11.8.0/24",
+      "type": "routed_segment",
+      "gateway": "10.11.8.1",
+      "state": "planned"
+    },
+    {
+      "from": "local-laptop-dev",
+      "to": "192.168.68.0/24",
+      "type": "routed_segment",
+      "gateway": "192.168.68.1",
+      "state": "planned"
+    },
+    {
+      "from": "local-laptop-dev",
+      "to": "virt-edge-01",
+      "type": "logical_path",
+      "state": "planned",
+      "note": "Developer path into SDV 10.11.8.0/24 segment via edge node."
+    }
+  ]
+}

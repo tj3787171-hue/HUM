@@ -1,0 +1,54 @@
+---
+virtual_setup_version: 1
+phase: virtual
+description: >
+  Declarative virtual setup configuration layered on top of the hum-dev-netns
+  network namespace workflow and SDV checks.
+
+references:
+  sdv_manifest: "../sdv/manifest.json"
+  netns_script: "../../scripts/hum-dev-netns.sh"
+
+defaults:
+  gateway_v4: "10.200.0.1"
+  dns_v4:
+    - "1.1.1.1"
+    - "8.8.8.8"
+  timezone: "America/Chicago"
+
+segments:
+  core:
+    cidr: "10.200.0.0/30"
+    description: "Primary proxy namespace path"
+  peer:
+    cidr: "10.200.1.0/30"
+    description: "Peer-chain namespace path"
+  lan:
+    cidr: "192.168.68.0/24"
+    description: "Local physical laptop/home LAN segment"
+
+nodes:
+  - id: hum-proxy
+    profile: minimal
+    segment: core
+    ip_hint: "10.200.0.2"
+    role: "proxy-namespace"
+  - id: hum-peer
+    profile: dev
+    segment: peer
+    ip_hint: "10.200.1.2"
+    role: "peer-namespace"
+  - id: local-laptop-dev
+    profile: dev
+    segment: lan
+    ip_hint: "192.168.68.x"
+    role: "developer-laptop"
+
+stacks: []
+hooks:
+  before_apply:
+    - "bash scripts/hum-dev-netns.sh status"
+  apply:
+    - "sudo bash scripts/hum-dev-netns.sh up"
+  after_apply:
+    - "sudo bash scripts/hum-dev-netns.sh trace"

@@ -1,0 +1,51 @@
+{
+  "$schema": "./schemas/bindings.schema.json",
+  "version": 1,
+  "description": "Maps SDV artifacts to virtual-phase entities for automation handoff.",
+  "bindings": [
+    {
+      "sdv": {
+        "artifact": "manifest.json",
+        "path": "../sdv/manifest.json"
+      },
+      "virtual": {
+        "artifact": "virtual-setup.yml",
+        "path": "./virtual-setup.yml"
+      },
+      "purpose": "Uses SDV network rules as authoritative source for virtual setup defaults."
+    },
+    {
+      "sdv": {
+        "artifact": "manifest.json.network.allocatable_pool",
+        "path": "../sdv/manifest.json#/network/allocatable_pool"
+      },
+      "virtual": {
+        "artifact": "inventory.csv",
+        "path": "./inventory.csv"
+      },
+      "purpose": "Inventory IP rows for workload and ephemeral nodes must stay inside allocatable pool."
+    },
+    {
+      "sdv": {
+        "artifact": "scripts/hum-dev-netns.sh",
+        "path": "../../scripts/hum-dev-netns.sh"
+      },
+      "virtual": {
+        "artifact": "network-matrix.json",
+        "path": "./network-matrix.json"
+      },
+      "purpose": "Runtime bridge/veth topology in matrix is realized by hum-dev-netns script commands."
+    },
+    {
+      "sdv": {
+        "artifact": "macsec_handoff_state",
+        "path": "/tmp/macsec_handoff_state"
+      },
+      "virtual": {
+        "artifact": "features.json",
+        "path": "./features.json"
+      },
+      "purpose": "Optional MACsec lab feature should be enabled only when state and key material are present."
+    }
+  ]
+}

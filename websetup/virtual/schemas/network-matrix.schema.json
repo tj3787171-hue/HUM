@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local/websetup/virtual/network-matrix.schema.json",
+  "title": "Virtual topology edges",
+  "type": "object",
+  "required": ["version", "edges"],
+  "properties": {
+    "version": { "type": "integer", "minimum": 1 },
+    "description": { "type": "string" },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["from", "to", "type"],
+        "properties": {
+          "from": { "type": "string", "minLength": 1 },
+          "to": { "type": "string", "minLength": 1 },
+          "type": { "type": "string", "minLength": 1 },
+          "bidirectional": { "type": "boolean" },
+          "state": { "type": "string" },
+          "gateway": { "type": "string" },
+          "note": { "type": "string" }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}
