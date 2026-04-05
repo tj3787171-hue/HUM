@@ -140,6 +140,35 @@ def fetch_text_from_url(url: str, timeout: int = 8) -> str:
     return data.decode("utf-8", errors="replace")
 
 
+def resolve_upnp_input(
+    xml_file: str | None,
+    xml_url: str | None,
+    source_url: str | None,
+) -> tuple[str, str]:
+    if not xml_file and not xml_url:
+        raise ValueError("provide --xml-file or --xml-url")
+    if xml_file and xml_url:
+        raise ValueError("provide only one of --xml-file or --xml-url")
+    if xml_file:
+        xml_path = Path(xml_file).expanduser().resolve()
+        if not xml_path.exists() or not xml_path.is_file():
+            raise FileNotFoundError(f"XML file not found: {xml_path}")
+        xml_text = xml_path.read_text(encoding="utf-8", errors="replace")
+        resolved_source = source_url or str(xml_path)
+        return xml_text, resolved_source
+    xml_text = fetch_text_from_url(str(xml_url))
+    resolved_source = source_url or str(xml_url)
+    return xml_text, resolved_source
+
+
+def resolve_authors(authors: str | None, author_list: list[str]) -> str | None:
+    if authors:
+        return authors
+    if author_list:
+        return ", ".join(author_list)
+    return None
+
+
 def create_schema(conn: sqlite3.Connection) -> None:
     conn.executescript(
         """
@@ -538,6 +567,54 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     ingest_upnp.add_argument("--device-mac", default=None, help="Optional linked gateway device MAC")
     ingest_upnp.add_argument("--asserted-by", default=None, help="Actor recording this capture")
 
+    handoff = sub.add_parser(
+        "handoff",
+        help="Run network + UPnP + paper + evidence ingestion in one command.",
+    )
+    handoff.add_argument("--network-json", required=True, help="Path to network matrix JSON file")
+    handoff.add_argument("--network-source", default=None, help="Optional source reference for network")
+    handoff.add_argument("--matrix-key", default=None, help="Optional stable matrix key")
+
+    handoff.add_argument("--device-mac", default=None, help="Optional device MAC used for UPnP/evidence link")
+    handoff.add_argument("--skip-upnp", action="store_true", help="Skip UPnP ingest stage")
+    handoff.add_argument("--upnp-xml-file", default=None, help="Path to UPnP rootDesc.xml")
+    handoff.add_argument("--upnp-xml-url", default=None, help="URL to fetch UPnP rootDesc.xml")
+    handoff.add_argument("--upnp-source-url", default=None, help="Source URL label for UPnP capture")
+    handoff.add_argument("--upnp-asserted-by", default=None, help="Actor recording the UPnP capture")
+
+    handoff.add_argument("--paper-slug", required=True, help="Stable paper key/slug")
+    handoff.add_argument("--paper-title", required=True, help="Paper title")
+    handoff.add_argument("--paper-author", action="append", default=[], help="Repeatable paper author")
+    handoff.add_argument("--paper-authors", default=None, help="Comma-separated or free-form authors")
+    handoff.add_argument("--paper-summary", default=None, help="Optional paper summary")
+    handoff.add_argument("--paper-source-path", default=None, help="Optional paper source path")
+
+    handoff.add_argument("--evidence-key", required=True, help="Stable evidence key/id")
+    handoff.add_argument(
+        "--evidence-property-hex",
+        default="0x0102",
+        help="Property code for evidence record (default: 0x0102 network_matrix)",
+    )
+    handoff.add_argument(
+        "--evidence-payload-file",
+        default=None,
+        help="Evidence payload path (defaults to --network-json)",
+    )
+    handoff.add_argument(
+        "--evidence-relation",
+        default="supports",
+        help="Relation to paper (default: supports)",
+    )
+    handoff.add_argument("--evidence-asserted-by", default=None, help="Actor asserting evidence")
+    handoff.add_argument(
+        "--evidence-source-kind",
+        default="handoff",
+        help="Metadata source_kind for evidence (default: handoff)",
+    )
+    handoff.add_argument("--evidence-source-ref", default=None, help="Metadata source_ref for evidence")
+    handoff.add_argument("--evidence-metadata-json", default="{}", help="Additional evidence metadata JSON object")
+    handoff.add_argument("--dry-run", action="store_true", help="Validate inputs and print planned actions only")
+
     export_matrix = sub.add_parser("export-network-json", help="Export latest matrix JSON.")
     export_matrix.add_argument("--output", required=True, help="Output JSON file path")
     export_matrix.add_argument("--network-id", default=None, help="Optional network id filter")
@@ -770,20 +847,132 @@ def main() -> int:
             print(f"Network snapshot upserted key={matrix_key} sha256={sha}")
             return 0
 
-        if args.command in {"ingest-upnp-xml", "ingest-upnp"}:
-            if not args.xml_file and not args.xml_url:
-                raise ValueError("provide --xml-file or --xml-url")
-            if args.xml_file and args.xml_url:
-                raise ValueError("provide only one of --xml-file or --xml-url")
-            if args.xml_file:
-                xml_path = Path(args.xml_file).expanduser().resolve()
-                if not xml_path.exists() or not xml_path.is_file():
-                    raise FileNotFoundError(f"XML file not found: {xml_path}")
-                xml_text = xml_path.read_text(encoding="utf-8", errors="replace")
-                source_url = args.source_url or str(xml_path)
+        if args.command == "handoff":
+            network_json = Path(args.network_json).expanduser().resolve()
+            if not network_json.exists() or not network_json.is_file():
+                raise FileNotFoundError(f"network JSON file not found: {network_json}")
+
+            evidence_payload = (
+                Path(args.evidence_payload_file).expanduser().resolve()
+                if args.evidence_payload_file
+                else network_json
+            )
+            if not evidence_payload.exists() or not evidence_payload.is_file():
+                raise FileNotFoundError(f"evidence payload file not found: {evidence_payload}")
+
+            evidence_metadata = json.loads(args.evidence_metadata_json)
+            if not isinstance(evidence_metadata, dict):
+                raise ValueError("--evidence-metadata-json must decode to a JSON object")
+            if args.evidence_source_kind:
+                evidence_metadata["source_kind"] = args.evidence_source_kind
+            if args.evidence_source_ref:
+                evidence_metadata["source_ref"] = args.evidence_source_ref
             else:
-                xml_text = fetch_text_from_url(args.xml_url)
-                source_url = args.source_url or args.xml_url
+                evidence_metadata.setdefault("source_ref", str(network_json.resolve()))
+
+            upnp_plan: dict[str, Any] | None = None
+            upnp_xml_text: str | None = None
+            upnp_source_url: str | None = None
+            if args.skip_upnp:
+                upnp_plan = {"enabled": False}
+            else:
+                upnp_xml_text, upnp_source_url = resolve_upnp_input(
+                    args.upnp_xml_file,
+                    args.upnp_xml_url,
+                    args.upnp_source_url,
+                )
+                upnp_details = parse_upnp_rootdesc(upnp_xml_text)
+                upnp_plan = {
+                    "enabled": True,
+                    "source_url": upnp_source_url,
+                    "manufacturer": upnp_details.get("manufacturer"),
+                    "model_name": upnp_details.get("model_name"),
+                    "udn": upnp_details.get("udn"),
+                }
+
+            paper_authors = resolve_authors(args.paper_authors, args.paper_author)
+
+            if args.dry_run:
+                plan = {
+                    "command": "handoff",
+                    "database": str(db_path),
+                    "network": {
+                        "json": str(network_json),
+                        "source": args.network_source or str(network_json),
+                        "matrix_key": args.matrix_key,
+                    },
+                    "upnp": upnp_plan,
+                    "paper": {
+                        "slug": args.paper_slug,
+                        "title": args.paper_title,
+                        "authors": paper_authors,
+                        "summary": args.paper_summary,
+                        "source_path": args.paper_source_path,
+                    },
+                    "evidence": {
+                        "key": args.evidence_key,
+                        "property_hex": args.evidence_property_hex,
+                        "payload_file": str(evidence_payload),
+                        "relation": args.evidence_relation,
+                        "asserted_by": args.evidence_asserted_by,
+                        "device_mac": args.device_mac,
+                        "metadata": evidence_metadata,
+                    },
+                }
+                print(json.dumps(plan, indent=2, ensure_ascii=False))
+                return 0
+
+            matrix_key, matrix_sha = upsert_network_matrix(
+                conn,
+                network_json,
+                args.matrix_key,
+                args.network_source,
+            )
+
+            upnp_row_id: int | None = None
+            if not args.skip_upnp and upnp_xml_text is not None and upnp_source_url is not None:
+                upnp_row_id, _ = ingest_gateway_metadata(
+                    conn=conn,
+                    source_url=upnp_source_url,
+                    xml_text=upnp_xml_text,
+                    device_mac=args.device_mac,
+                    asserted_by=args.upnp_asserted_by,
+                )
+
+            paper_id = upsert_paper(
+                conn=conn,
+                slug=args.paper_slug,
+                title=args.paper_title,
+                authors=paper_authors,
+                summary=args.paper_summary,
+                source_path=args.paper_source_path,
+            )
+            device_id = upsert_device(conn, mac=args.device_mac, label=None) if args.device_mac else None
+            evidence_sha = upsert_evidence(
+                conn=conn,
+                evidence_key=args.evidence_key,
+                property_hex=args.evidence_property_hex,
+                payload_path=evidence_payload,
+                paper_id=paper_id,
+                device_id=device_id,
+                relation=args.evidence_relation,
+                asserted_by=args.evidence_asserted_by,
+                metadata=evidence_metadata,
+            )
+            conn.commit()
+            summary = {
+                "matrix_key": matrix_key,
+                "matrix_sha256": matrix_sha,
+                "gateway_metadata_id": upnp_row_id,
+                "paper_id": paper_id,
+                "evidence_key": args.evidence_key,
+                "evidence_sha256": evidence_sha,
+            }
+            print(json.dumps(summary, indent=2, ensure_ascii=False))
+            return 0
+
+        if args.command in {"ingest-upnp-xml", "ingest-upnp"}:
+            xml_text, source_url = resolve_upnp_input(args.xml_file, args.xml_url, args.source_url)
             row_id, details = ingest_gateway_metadata(
                 conn=conn,
                 source_url=source_url,

@@ -276,6 +276,29 @@ python3 scripts/project_evidence_db.py --database data/project_evidence.db inges
 python3 scripts/project_evidence_db.py --database data/project_evidence.db list-gateway-metadata
 ```
 
+One-shot handoff importer (network + UPnP + paper + evidence):
+
+```bash
+python3 scripts/project_evidence_db.py --database data/project_evidence.db handoff \
+  --network-json websetup/virtual/network-matrix.json \
+  --source websetup/virtual/network-matrix.json \
+  --xml-file ./rootDesc.xml \
+  --source-url http://192.168.68.1:1900/pttlb/rootDesc.xml \
+  --device-mac 4C:EA:41:63:E6:C6 \
+  --asserted-by team \
+  --paper-slug hum-network-paper \
+  --paper-title "HUM network phase notes" \
+  --paper-author team \
+  --paper-summary "Combined network + gateway handoff snapshot." \
+  --evidence-key ev-handoff-001 \
+  --property-hex 0x0102 \
+  --payload-file websetup/virtual/network-matrix.json \
+  --source-kind handoff \
+  --source-ref websetup/virtual/network-matrix.json
+```
+
+Add `--dry-run` to preview the plan without writing.
+
 ## Backup helper
 
 Create a timestamped backup bundle of project artifacts:
