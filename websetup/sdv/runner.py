@@ -17,8 +17,10 @@ def load_manifest(path: Path | None = None) -> dict[str, Any]:
 
 
 def apply(manifest: dict[str, Any], root: Path) -> int:
-    pool.validate_network(manifest["network"])
-    print("[sdv] manifest network block OK")
+    ok, message = pool.validate_network(manifest)
+    if not ok:
+        raise ValueError(message)
+    print(f"[sdv] {message}")
 
     docker_wait.ensure_docker(manifest["docker"])
     print("[sdv] docker bridge ready")
@@ -35,6 +37,6 @@ def apply(manifest: dict[str, Any], root: Path) -> int:
     else:
         print("[sdv] netns setup skipped by manifest")
 
-    applied = macsec_apply.apply(manifest["macsec"])
+    applied = macsec_apply.apply_rx(manifest.get("macsec", {}))
     print(f"[sdv] MACsec RX rules applied: {applied}")
     return 0

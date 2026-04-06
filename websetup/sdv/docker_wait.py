@@ -13,7 +13,11 @@ def _bridge_exists(name: str) -> bool:
 
 
 def ensure_docker(settings: Mapping[str, Any]) -> None:
-    bridge_name = str(settings.get("bridge_name", "docker0")).strip()
+    bridge_name = str(
+        settings.get("bridge_name")
+        or settings.get("required_interface")
+        or "docker0"
+    ).strip()
     timeout_sec = int(settings.get("wait_timeout_sec", 30))
     poll_interval_sec = float(settings.get("poll_interval_sec", 1.0))
     start_command = str(settings.get("start_command", "")).strip()
