@@ -33,7 +33,7 @@ done
 
 echo
 echo "Mountpoint check:"
-for mp in /iso-staging /iso-output /mnt/default /mnt/virtual-drive; do
+for mp in /iso-staging /iso-output /mnt/default /mnt/default-vol /mnt/virtual-drive; do
   if mountpoint -q "$mp" 2>/dev/null; then
     echo "  - $mp: mounted"
   elif [[ -d "$mp" ]]; then

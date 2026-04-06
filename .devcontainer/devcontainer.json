@@ -23,8 +23,8 @@
   "mounts": [
     "source=hum-iso-staging,target=/iso-staging,type=volume",
     "source=hum-iso-output,target=/iso-output,type=volume",
-    "source=hum-vdrive-cache,target=/vdrive-cache,type=volume",
-    "source=hum-vdrive-data,target=/vdrive-data,type=volume"
+    "source=hum-vdrive-cache,target=/mnt/virtual-drive,type=volume",
+    "source=hum-vdrive-data,target=/mnt/default-vol,type=volume"
   ],
   "forwardPorts": [
     3000,
