@@ -38,6 +38,28 @@ sudo bash scripts/hum-dev-netns.sh status
 - `virtual/schemas/*.json` — JSON schema files for editor/validation support.
 - `../scripts/project_evidence_db.py` — SQLite-backed records for papers,
   evidence blobs, device MAC identity hints, and network matrix assertions.
+- `../scripts/validate_virtual_setup.py` — cross-checks virtual inventory and
+  network matrix against SDV manifest constraints.
+
+## Virtual setup consistency check
+
+Run this any time you update:
+- `websetup/virtual/inventory.csv`
+- `websetup/virtual/network-matrix.json`
+- `websetup/sdv/manifest.json`
+
+```bash
+python3 scripts/validate_virtual_setup.py
+```
+
+Expected success:
+
+```text
+[virtual-setup] OK: inventory, network-matrix, and SDV manifest are consistent
+```
+
+If a workload or ephemeral node drifts outside the SDV allocatable range, the
+checker exits non-zero and reports the exact row-level issue.
 
 ## Notes
 

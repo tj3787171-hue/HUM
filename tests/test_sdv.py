@@ -6,6 +6,7 @@ import unittest
 from pathlib import Path
 
 from websetup.sdv import macsec_apply, pool
+from scripts.validate_virtual_setup import validate_virtual_setup
 from websetup.sdv.runner import load_manifest
 
 
@@ -74,6 +75,36 @@ class TestVirtualBindingsConsistency(unittest.TestCase):
 
         joined = json.dumps(payload, sort_keys=True)
         self.assertIn("allocatable_range", joined)
+
+
+class TestVirtualSetupValidator(unittest.TestCase):
+    def test_virtual_setup_validator_ok_for_repo_defaults(self) -> None:
+        repo = Path(__file__).resolve().parent.parent
+        ok, errors = validate_virtual_setup(
+            inventory_path=repo / "websetup" / "virtual" / "inventory.csv",
+            network_matrix_path=repo / "websetup" / "virtual" / "network-matrix.json",
+            manifest_path=repo / "websetup" / "sdv" / "manifest.json",
+        )
+        self.assertTrue(ok, msg="\n".join(errors))
+        self.assertEqual(errors, [])
+
+    def test_virtual_setup_validator_detects_out_of_range_workload_ip(self) -> None:
+        repo = Path(__file__).resolve().parent.parent
+        inventory_src = (repo / "websetup" / "virtual" / "inventory.csv").read_text(encoding="utf-8")
+        with tempfile.TemporaryDirectory() as td:
+            temp_inventory = Path(td) / "inventory.csv"
+            temp_inventory.write_text(
+                inventory_src.replace("10.11.8.200", "10.11.9.200"),
+                encoding="utf-8",
+            )
+            ok, errors = validate_virtual_setup(
+                inventory_path=temp_inventory,
+                network_matrix_path=repo / "websetup" / "virtual" / "network-matrix.json",
+                manifest_path=repo / "websetup" / "sdv" / "manifest.json",
+            )
+            self.assertFalse(ok)
+            joined = "\n".join(errors)
+            self.assertIn("outside SDV subnet", joined)
 
 
 if __name__ == "__main__":
