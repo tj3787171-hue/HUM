@@ -379,3 +379,26 @@ sudo systemctl set-default graphical.target
 For service-oriented app bootstrap, prefer explicit units under
 `/etc/systemd/system/*.service` with optional `.socket` activation. Keep this
 outside devcontainer unless you intentionally run a nested init system.
+
+## Reproducible ISO build recipe (repo-owned)
+
+To avoid losing custom ISO work between sessions, use the committed
+`iso-build/` recipe in this repo. It writes artifacts to `data/iso-output/`.
+
+Build dependencies (host/container with apt):
+
+```bash
+sudo apt-get update
+sudo apt-get install -y live-build xorriso isolinux syslinux grub-efi-amd64-bin
+```
+
+Build:
+
+```bash
+bash iso-build/build.sh
+```
+
+Expected outputs:
+
+- `data/iso-output/hum-custom-live.iso`
+- `data/iso-output/hum-custom-live.iso.sha256`
