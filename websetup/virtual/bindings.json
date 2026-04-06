@@ -4,6 +4,7 @@
   "description": "Maps SDV artifacts to virtual-phase entities for automation handoff.",
   "bindings": [
     {
+      "id": "sdv-manifest-to-virtual-setup",
       "sdv": {
         "artifact": "manifest.json",
         "path": "../sdv/manifest.json"
@@ -15,17 +16,19 @@
       "purpose": "Uses SDV network rules as authoritative source for virtual setup defaults."
     },
     {
+      "id": "sdv-allocatable-range-to-inventory",
       "sdv": {
-        "artifact": "manifest.json.network.allocatable_pool",
-        "path": "../sdv/manifest.json#/network/allocatable_pool"
+        "artifact": "manifest.json.network.allocatable_range",
+        "path": "../sdv/manifest.json#/network/allocatable_range"
       },
       "virtual": {
         "artifact": "inventory.csv",
         "path": "./inventory.csv"
       },
-      "purpose": "Inventory IP rows for workload and ephemeral nodes must stay inside allocatable pool."
+      "purpose": "Inventory IP rows for workload and ephemeral nodes must stay inside allocatable range."
     },
     {
+      "id": "hum-dev-netns-to-network-matrix",
       "sdv": {
         "artifact": "scripts/hum-dev-netns.sh",
         "path": "../../scripts/hum-dev-netns.sh"
@@ -37,6 +40,7 @@
       "purpose": "Runtime bridge/veth topology in matrix is realized by hum-dev-netns script commands."
     },
     {
+      "id": "macsec-state-to-feature-flags",
       "sdv": {
         "artifact": "macsec_handoff_state",
         "path": "/tmp/macsec_handoff_state"

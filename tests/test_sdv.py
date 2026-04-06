@@ -56,5 +56,25 @@ class TestManifestShape(unittest.TestCase):
         self.assertIn("allocatable_range", payload["network"])
 
 
+class TestVirtualBindingsConsistency(unittest.TestCase):
+    def test_bindings_schema_requires_binding_id(self) -> None:
+        base = Path(__file__).resolve().parent.parent / "websetup" / "virtual" / "schemas"
+        schema = json.loads((base / "bindings.schema.json").read_text(encoding="utf-8"))
+        required = schema["properties"]["bindings"]["items"]["required"]
+        self.assertIn("id", required)
+
+    def test_bindings_entries_include_id_and_allocatable_range_ref(self) -> None:
+        bindings_path = Path(__file__).resolve().parent.parent / "websetup" / "virtual" / "bindings.json"
+        payload = json.loads(bindings_path.read_text(encoding="utf-8"))
+        entries = payload.get("bindings", [])
+        self.assertTrue(entries, msg="bindings list should not be empty")
+        for entry in entries:
+            self.assertIn("id", entry)
+            self.assertTrue(str(entry["id"]).strip())
+
+        joined = json.dumps(payload, sort_keys=True)
+        self.assertIn("allocatable_range", joined)
+
+
 if __name__ == "__main__":
     unittest.main()
