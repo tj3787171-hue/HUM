@@ -6,6 +6,11 @@ ISO_DIR="$ROOT_DIR/iso-build"
 OUT_DIR="$ROOT_DIR/data/iso-output"
 STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
 
+if [[ "${EUID:-$(id -u)}" -ne 0 ]]; then
+  echo "This build must run as root (use: sudo bash iso-build/build.sh)." >&2
+  exit 1
+fi
+
 if ! command -v lb >/dev/null 2>&1; then
   echo "Missing live-build tooling (lb)." >&2
   echo "Install with: sudo apt-get update && sudo apt-get install -y live-build xorriso" >&2
@@ -17,8 +22,14 @@ mkdir -p "$OUT_DIR"
 pushd "$ISO_DIR" >/dev/null
 lb clean --purge || true
 lb config \
+  --mode debian \
   --distribution bookworm \
   --archive-areas "main contrib non-free non-free-firmware" \
+  --mirror-bootstrap "http://deb.debian.org/debian/" \
+  --mirror-chroot "http://deb.debian.org/debian/" \
+  --mirror-chroot-security "http://security.debian.org/debian-security/" \
+  --mirror-binary "http://deb.debian.org/debian/" \
+  --mirror-binary-security "http://security.debian.org/debian-security/" \
   --binary-images iso-hybrid \
   --debian-installer false
 lb build
