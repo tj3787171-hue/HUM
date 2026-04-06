@@ -876,19 +876,33 @@ def main() -> int:
             if args.skip_upnp:
                 upnp_plan = {"enabled": False}
             else:
-                upnp_xml_text, upnp_source_url = resolve_upnp_input(
-                    args.upnp_xml_file,
-                    args.upnp_xml_url,
-                    args.upnp_source_url,
-                )
-                upnp_details = parse_upnp_rootdesc(upnp_xml_text)
-                upnp_plan = {
-                    "enabled": True,
-                    "source_url": upnp_source_url,
-                    "manufacturer": upnp_details.get("manufacturer"),
-                    "model_name": upnp_details.get("model_name"),
-                    "udn": upnp_details.get("udn"),
-                }
+                if not args.upnp_xml_file and not args.upnp_xml_url:
+                    raise ValueError("provide --upnp-xml-file or --upnp-xml-url unless --skip-upnp is set")
+                if args.upnp_xml_file and args.upnp_xml_url:
+                    raise ValueError("provide only one of --upnp-xml-file or --upnp-xml-url")
+
+                # Keep dry-run side-effect free by skipping remote URL fetches.
+                if args.dry_run and args.upnp_xml_url:
+                    upnp_source_url = args.upnp_source_url or str(args.upnp_xml_url)
+                    upnp_plan = {
+                        "enabled": True,
+                        "source_url": upnp_source_url,
+                        "note": "UPnP URL fetch skipped in dry-run mode",
+                    }
+                else:
+                    upnp_xml_text, upnp_source_url = resolve_upnp_input(
+                        args.upnp_xml_file,
+                        args.upnp_xml_url,
+                        args.upnp_source_url,
+                    )
+                    upnp_details = parse_upnp_rootdesc(upnp_xml_text)
+                    upnp_plan = {
+                        "enabled": True,
+                        "source_url": upnp_source_url,
+                        "manufacturer": upnp_details.get("manufacturer"),
+                        "model_name": upnp_details.get("model_name"),
+                        "udn": upnp_details.get("udn"),
+                    }
 
             paper_authors = resolve_authors(args.paper_authors, args.paper_author)
 

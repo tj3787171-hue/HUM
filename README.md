@@ -298,20 +298,20 @@ One-shot handoff importer (network + UPnP + paper + evidence):
 ```bash
 python3 scripts/project_evidence_db.py --database data/project_evidence.db handoff \
   --network-json websetup/virtual/network-matrix.json \
-  --source websetup/virtual/network-matrix.json \
-  --xml-file ./rootDesc.xml \
-  --source-url http://192.168.68.1:1900/pttlb/rootDesc.xml \
+  --network-source websetup/virtual/network-matrix.json \
+  --upnp-xml-file ./rootDesc.xml \
+  --upnp-source-url http://192.168.68.1:1900/pttlb/rootDesc.xml \
   --device-mac 4C:EA:41:63:E6:C6 \
-  --asserted-by team \
+  --upnp-asserted-by team \
   --paper-slug hum-network-paper \
   --paper-title "HUM network phase notes" \
   --paper-author team \
   --paper-summary "Combined network + gateway handoff snapshot." \
   --evidence-key ev-handoff-001 \
-  --property-hex 0x0102 \
-  --payload-file websetup/virtual/network-matrix.json \
-  --source-kind handoff \
-  --source-ref websetup/virtual/network-matrix.json
+  --evidence-property-hex 0x0102 \
+  --evidence-payload-file websetup/virtual/network-matrix.json \
+  --evidence-source-kind handoff \
+  --evidence-source-ref websetup/virtual/network-matrix.json
 ```
 
 Add `--dry-run` to preview the plan without writing.
@@ -343,7 +343,7 @@ For convenient mount/unmount inside the devcontainer:
 
 ```bash
 # mount image at /mnt/virtual-drive/m0
-bash scripts/virtual-drive-access.sh cdd 1 /host-downloads/kali-linux-2026.1-installer-amd64.iso
+bash scripts/virtual-drive-access.sh cdd 1 --source /host-downloads/kali-linux-2026.1-installer-amd64.iso
 
 # unmount and detach loop
 bash scripts/virtual-drive-access.sh cdd 0
@@ -353,7 +353,7 @@ Other commands:
 
 ```bash
 bash scripts/virtual-drive-access.sh status
-bash scripts/virtual-drive-access.sh mount /path/to/image.iso /mnt/virtual-drive/custom
+bash scripts/virtual-drive-access.sh mount --source /path/to/image.iso --mountpoint /mnt/virtual-drive/custom
 bash scripts/virtual-drive-access.sh umount
 ```
 
