@@ -30,3 +30,15 @@ for cmd in ip jq yq python3 shellcheck; do
     echo "  - $cmd: missing"
   fi
 done
+
+echo
+echo "Mountpoint check:"
+for mp in /iso-staging /iso-output /mnt/default /mnt/virtual-drive; do
+  if mountpoint -q "$mp" 2>/dev/null; then
+    echo "  - $mp: mounted"
+  elif [[ -d "$mp" ]]; then
+    echo "  - $mp: present (not mounted)"
+  else
+    echo "  - $mp: missing"
+  fi
+done

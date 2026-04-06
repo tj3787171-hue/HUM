@@ -27,6 +27,23 @@ LAN-ready development container configuration for online/local development.
 3. Run **Dev Containers: Reopen in Container**.
 4. After build, the terminal will show container network info.
 
+### Devcontainer storage / mountpoints
+
+The devcontainer now provisions a broader scratch + volume layout for large
+artifact workflows:
+
+- `/mnt/default` (tmpfs, 128G, in-memory scratch target for fast staging)
+- named volumes:
+  - `/mnt/default-vol`
+  - `/mnt/virtual-drive`
+  - `/iso-staging`
+  - `/iso-output`
+- host downloads bind mount (if available on host):
+  - `${HOME}/Downloads` -> `/host-downloads`
+
+Use `scripts/virtual-drive-access.sh` for simple "cdd 0|1" style loop mount
+management of local ISO/IMG files.
+
 ## LAN notes
 
 - This setup is optimized for Linux with Docker engine networking.
@@ -319,3 +336,46 @@ Use a mounted path you control (for example an exposed external drive path under
 Linux environment). The script creates:
 
 `<target>/hum-backups/hum-backup-YYYYmmdd-HHMMSS/`
+
+## Virtual drive helper (`cdd 0|1`)
+
+For convenient mount/unmount inside the devcontainer:
+
+```bash
+# mount image at /mnt/virtual-drive/m0
+bash scripts/virtual-drive-access.sh cdd 1 /host-downloads/kali-linux-2026.1-installer-amd64.iso
+
+# unmount and detach loop
+bash scripts/virtual-drive-access.sh cdd 0
+```
+
+Other commands:
+
+```bash
+bash scripts/virtual-drive-access.sh status
+bash scripts/virtual-drive-access.sh mount /path/to/image.iso /mnt/virtual-drive/custom
+bash scripts/virtual-drive-access.sh umount
+```
+
+## Host-only multi-user / graphical service guidance (AMD64)
+
+If you are configuring a real host (not inside devcontainer) for
+`multi-user.target` + optional GUI + service/socket units:
+
+```bash
+# host only
+sudo systemctl set-default multi-user.target
+sudo systemctl enable --now ssh
+sudo systemctl status ssh
+```
+
+Optional GUI switch on host:
+
+```bash
+sudo apt install -y lightdm
+sudo systemctl set-default graphical.target
+```
+
+For service-oriented app bootstrap, prefer explicit units under
+`/etc/systemd/system/*.service` with optional `.socket` activation. Keep this
+outside devcontainer unless you intentionally run a nested init system.
