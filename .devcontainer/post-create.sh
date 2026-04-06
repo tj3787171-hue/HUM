@@ -16,10 +16,14 @@ echo "Default route(s) IPv6:"
 ip -6 route show default || true
 echo
 echo "Kernel module check (macsec):"
-if lsmod | grep -q "^macsec"; then
-  echo "macsec module is loaded."
+if command -v lsmod >/dev/null 2>&1; then
+  if lsmod | grep -q "^macsec"; then
+    echo "macsec module is loaded."
+  else
+    echo "macsec module is not currently loaded (load on demand if needed)."
+  fi
 else
-  echo "macsec module is not currently loaded (load on demand if needed)."
+  echo "lsmod command is unavailable; cannot inspect kernel modules."
 fi
 echo
 echo "Tooling check:"
