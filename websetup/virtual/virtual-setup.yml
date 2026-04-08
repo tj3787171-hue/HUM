@@ -28,6 +28,15 @@ namespaces:
       ns_side: "penguin-peer0"
     gateway: "192.168.68.51"
     ip_address: "192.168.68.52"
+  lab-www:
+    description: "Isolated HTTP lab with reverse proxy"
+    segment: lab-www
+    veth_pair:
+      host_side: "lab-www-host0"
+      ns_side: "lab-www-ns0"
+    ip_address: "10.223.77.2"
+    gateway: "10.223.77.1"
+    proxy_script: "scripts/lab-www-reverse-proxy.py"
 
 segments:
   core:
@@ -42,6 +51,9 @@ segments:
   dev-ns:
     cidr: "192.168.68.0/22"
     description: "IP tools and utilities dev namespace subnet via router 192.168.68.51"
+  lab-www:
+    cidr: "10.223.77.0/30"
+    description: "Isolated HTTP lab namespace point-to-point link"
 
 nodes:
   - id: hum-proxy
@@ -79,6 +91,16 @@ nodes:
     dns_v4:
       - "209.18.47.61"
       - "209.18.47.62"
+
+  - id: lab-www
+    profile: dev
+    segment: lab-www
+    ip_hint: "10.223.77.2"
+    role: "lab-web-server"
+    veth_pair:
+      host: "lab-www-host0"
+      peer: "lab-www-ns0"
+    gateway: "10.223.77.1"
 
 stacks: []
 hooks:

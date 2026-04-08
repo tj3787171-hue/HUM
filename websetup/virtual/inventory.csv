@@ -11,3 +11,6 @@ veth0,veth0,veth,core,10.11.8.50,,active,-,-,Reserved by scripts/hum-dev-netns.s
 peer0,peer0,veth,core,10.11.8.51,,active,-,-,Reserved by scripts/hum-dev-netns.sh when adapted
 penguin-veth0,penguin-veth0,veth,dev-ns,192.168.68.52,,active,-,-,veth host side for penguin namespace
 penguin-peer0,penguin-peer0,veth,dev-ns,192.168.68.53,,active,-,-,veth namespace peer side for penguin
+lab-www,lab-www,lab-web-server,lab-www,10.223.77.2,dev,active,10.223.77.1,-,Isolated HTTP lab namespace with reverse proxy via scripts/lab-www-reverse-proxy.py
+lab-www-host0,lab-www-host0,veth,lab-www,10.223.77.1,,active,-,-,veth host side for lab-www namespace (proxy listener)
+lab-www-ns0,lab-www-ns0,veth,lab-www,10.223.77.2,,active,-,-,veth namespace side for lab-www (upstream web server)

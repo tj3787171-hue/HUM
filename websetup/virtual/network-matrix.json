@@ -85,6 +85,26 @@
         ],
         "proxy_via": "penguin"
       }
+    },
+    {
+      "id": "lab-www",
+      "kind": "virtual",
+      "role": "lab-web-server",
+      "labels": [
+        "lab-www",
+        "netns",
+        "veth-pair",
+        "reverse-proxy"
+      ],
+      "metadata": {
+        "ip_address": "10.223.77.2",
+        "veth_host": "lab-www-host0",
+        "veth_peer": "lab-www-ns0",
+        "cidr": "10.223.77.0/30",
+        "proxy_script": "scripts/lab-www-reverse-proxy.py",
+        "proxy_listen": "10.223.77.1:8080",
+        "upstream": "10.223.77.2:80"
+      }
     }
   ],
   "edges": [
@@ -171,6 +191,21 @@
       "type": "ssh_management",
       "state": "active",
       "note": "SSH installer agent manages Kali host installation remotely"
+    },
+    {
+      "from": "lab-www-host0",
+      "to": "lab-www-ns0",
+      "type": "veth_pair",
+      "bidirectional": true,
+      "state": "active",
+      "note": "Point-to-point veth for lab-www namespace (10.223.77.0/30)"
+    },
+    {
+      "from": "lab-www",
+      "to": "lab-www-ns0",
+      "type": "ns_attachment",
+      "state": "active",
+      "note": "lab-www namespace attached via ns0 interface at 10.223.77.2/30"
     }
   ],
   "foreign_assertions": [
