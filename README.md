@@ -402,3 +402,31 @@ Expected outputs:
 
 - `data/iso-output/hum-custom-live.iso`
 - `data/iso-output/hum-custom-live.iso.sha256`
+
+## HTTPS file serving (optional, with HSTS support)
+
+Use this when you want to serve generated ISO artifacts over TLS:
+
+```bash
+python3 scripts/https-file-server.py 8443 \
+  --bind 0.0.0.0 \
+  --directory data/iso-output \
+  --cert /path/to/server.crt \
+  --key /path/to/server.key
+```
+
+The server uses `ssl.SSLContext(...).load_cert_chain(cert, key)`.
+
+Optional Strict-Transport-Security:
+
+```bash
+python3 scripts/https-file-server.py 8443 \
+  --bind 0.0.0.0 \
+  --directory data/iso-output \
+  --cert /path/to/server.crt \
+  --key /path/to/server.key \
+  --hsts-max-age 31536000 \
+  --hsts-include-subdomains
+```
+
+To disable HSTS explicitly, set `--hsts-max-age 0` (default is disabled).
