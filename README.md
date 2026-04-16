@@ -146,6 +146,47 @@ These are already included in the dev container Dockerfile.
 All paths can be overridden via `HUM_SNAP_EXTRACT_ROOT` and
 `HUM_SNAP_MOUNT_ROOT` environment variables.  Run `--help` for full usage.
 
+## Snap server (loop-mount + cgroup scope)
+
+When your environment has loop devices (loop0–9), kernel squashfs support,
+and cgroup v2 but **no systemd as PID 1**, the snap server script can:
+
+1. Move root-cgroup processes into a child cgroup (`hum-init`) so the root
+   `subtree_control` becomes writable.
+2. Create a `snap.hum` cgroup scope for snap workloads.
+3. Loop-mount `.snap` files at `/snap/<name>` using the kernel squashfs
+   driver — exactly like snapd would, but without snapd.
+
+```bash
+sudo bash scripts/hum-snap-server.sh up                           # bootstrap
+sudo bash scripts/hum-snap-server.sh loop-mount foo.snap mysnap   # mount at /snap/mysnap
+/snap/mysnap/bin/some-binary                                      # run directly
+sudo bash scripts/hum-snap-server.sh loop-unmount mysnap          # clean up
+sudo bash scripts/hum-snap-server.sh status                       # full report
+sudo bash scripts/hum-snap-server.sh down                         # teardown
+```
+
+### Why not just use snapd directly?
+
+`snapd` v2.73 has a 5-second idle timeout and exits expecting systemd
+socket-activation to restart it.  Without systemd as PID 1 (PID 1 is
+`pod-daemon` in Cursor Cloud, `init` in Penguin, etc.) snapd becomes a
+zombie within seconds.  The server script replaces the mount/cgroup layer
+that snapd would normally manage, while `hum-snap-bypass.sh` handles
+the userspace FUSE/extract path for environments without root.
+
+### Choosing between bypass and server
+
+| Feature | `hum-snap-bypass.sh` | `hum-snap-server.sh` |
+|---|---|---|
+| Root required | No (FUSE/extract) | Yes (loop + mount) |
+| Mount type | FUSE userspace | Kernel squashfs |
+| Performance | Good | Native (best) |
+| cgroup scope | No | Yes |
+| Loop devices needed | No | Yes |
+
+Run `--help` on either script for full usage.
+
 ## Dev container status indicator (`<>`)
 
 If you see the `<>` style status indicator in the bottom-right status area in
