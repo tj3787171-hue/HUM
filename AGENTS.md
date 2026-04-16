@@ -9,6 +9,20 @@ This repository is a **devcontainer configuration** project (HUM). It contains n
 - `.devcontainer/Dockerfile` — image definition (installs `iproute2`, `net-tools`, `iputils-ping`, `traceroute`, `dnsutils`)
 - `.devcontainer/devcontainer.json` — container config (host-network mode, port forwarding, VS Code extensions)
 - `.devcontainer/post-create.sh` — prints network summary on container creation
+- `site/` — PHP-served web presence with SVG network map and NETNS data collection
+
+### Running the HUM site
+
+1. **Collect network data:** `python3 site/data/collect_netns.py` (writes `topology.json` + `topology.xml`)
+2. **Start the dev server:** `php -S 0.0.0.0:8080 -t site` (serves on port 8080)
+3. **Browse:** `http://localhost:8080/welcome.html` → portals to `index.php` (SVG map) → `navigate.php` (NETNS feedback loop)
+
+Site pages:
+- `welcome.html` — portal/splash page, auto-redirects to `index.php`
+- `index.php` — main navigation page with SVG environment map, interface/route/veth tables
+- `navigate.php` — NETNS-veth@peer collector with re-collect button and XML source view
+- `data/topology.xml` — raw XML topology data
+- `assets/info.css` + `assets/app.js` — styling and client-side SVG map renderer
 
 ### How to verify the setup
 
