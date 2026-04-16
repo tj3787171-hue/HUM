@@ -1,0 +1,50 @@
+{
+  "sdv_version": 1,
+  "description": "Software-Defined Validation for HUM netns/veth topology.",
+  "network": {
+    "subnet_cidr": "10.11.8.0/24",
+    "reserved_br_int": "10.11.8.1",
+    "script_assigned": {
+      "veth0": "10.11.8.50",
+      "peer0": "10.11.8.51",
+      "veth1": "10.11.8.52",
+      "peer1": "10.11.8.53"
+    },
+    "allocatable_range": {
+      "start": "10.11.8.54",
+      "end": "10.11.8.254"
+    }
+  },
+  "docker": {
+    "required_interface": "docker0",
+    "wait_timeout_sec": 45,
+    "start_command": "sudo systemctl start docker"
+  },
+  "macsec": {
+    "state_file": "/tmp/macsec_handoff_state",
+    "links": [
+      {
+        "macsec_dev": "macsec0",
+        "parent_if": "hum-proxy-ns0",
+        "rx": {
+          "enabled": false,
+          "sci_hex": "0x1",
+          "sa_index": 0,
+          "key_id": 0,
+          "key_hex_file": ""
+        }
+      },
+      {
+        "macsec_dev": "macsec1",
+        "parent_if": "hum-peer-ns0",
+        "rx": {
+          "enabled": false,
+          "sci_hex": "0x2",
+          "sa_index": 0,
+          "key_id": 0,
+          "key_hex_file": ""
+        }
+      }
+    ]
+  }
+}

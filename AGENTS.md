@@ -4,24 +4,51 @@
 
 ### Repository overview
 
-HUM is a lightweight repo with two main components:
+HUM is a LAN-ready development and network lab project. The consolidated codebase includes:
 
-- **DevContainer config** (`main` branch): `.devcontainer/` provides an Ubuntu 24.04 dev container with LAN networking tools. See `README.md` for usage.
-- **URI status checker** (`copilot/check-status` branch): A Python 3.12+ CLI tool (`check.py`) that checks HTTP status of URIs using only the standard library. Tests in `test_check.py` use `unittest` with an embedded local HTTP server.
+| Component | Path | Description |
+|---|---|---|
+| DevContainer | `.devcontainer/` | Ubuntu 24.04 dev container with LAN networking tools |
+| URI checker | `check.py`, `test_check.py` | Python CLI to check HTTP status of URIs (stdlib only) |
+| Site / Web presence | `site/` | PHP pages + JS SVG map + CSS + data pipeline |
+| Data pipeline | `site/data/name_factory.py` | Builds FINAL-PRODUCT JSON from topology + recup data |
+| FINAL-PRODUCT | `site/data/FINAL-PRODUCT/` | Output: `gram.json`, `comb.json`, `palace.json`, `corps_full.json` |
+| Convo API | `site/convo.php` | JSON API serving all data sources |
+| SDV (Software-Defined Validation) | `websetup/sdv/` | Network validation pipeline (pool, macsec, docker wait) |
+| Virtual setup | `websetup/virtual/` | Network matrix, bindings, inventory, schemas |
+| Scripts | `scripts/` | Networking, recovery, telemetry, DB linking, snap handling |
+| Tests | `tests/test_sdv.py`, `scripts/tests/` | SDV and connect_again test suites |
+| ISO build | `iso-build/` | Reproducible Kali ISO build recipe |
+| Kali defenses | `kali-iso-server/hostile-env-defense/` | Hardening scripts for Kali installation |
 
 ### Running tests
 
-The Python app (when present on the working branch) uses only the standard library — no `pip install` needed.
+All Python code uses stdlib only — no `pip install` needed.
 
-```
+```bash
+# URI checker tests (8/9 pass in cloud; test_unreachable_host is env-limited)
 python3 -m unittest test_check -v
+
+# Connect-again retry utility tests
+python3 -m unittest scripts.tests.test_connect_again -v
+
+# SDV validation tests (9/9 pass)
+python3 -m unittest tests.test_sdv -v
+
+# Name Factory data pipeline
+cd site/data && python3 name_factory.py
 ```
 
-### Known environment caveat
+### Serving the site locally
 
-- `test_unreachable_host` will error in cloud/sandboxed environments because egress restrictions cause `RemoteDisconnected` instead of a `URLError` timeout. This is an environment limitation, not a code bug — 8/9 tests should pass.
-- External HTTP requests may be blocked or return unexpected results due to egress restrictions. Use a local HTTP server (`python3 -m http.server`) for reliable testing.
+The `site/` directory contains PHP pages. To serve locally with PHP's built-in server:
+```bash
+cd site && php -S 0.0.0.0:8000
+```
+Or use Python for static file serving: `python3 -m http.server 8000 --directory site`
 
-### Network tools
+### Known environment caveats
 
-The devcontainer Dockerfile installs `iproute2`, `net-tools`, `iputils-ping`, `traceroute`, and `dnsutils`. In the cloud VM, `iproute2` and `traceroute` are not pre-installed and need to be added via `apt-get` for `.devcontainer/post-create.sh` to work correctly.
+- `test_unreachable_host` errors in cloud/sandboxed environments (egress proxy returns `RemoteDisconnected` instead of timeout). Not a code bug.
+- External HTTP requests may be blocked. Use a local HTTP server for reliable URI checker testing.
+- `iproute2` and `traceroute` must be installed for `post-create.sh` to display network info.

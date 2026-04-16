@@ -1,0 +1,66 @@
+{
+  "timestamp": "2026-04-16T19:19:53.260475+00:00",
+  "hostname": "cursor",
+  "interfaces": [
+    {
+      "name": "lo",
+      "state": "UNKNOWN",
+      "mac": "00:00:00:00:00:00",
+      "addresses": [
+        "127.0.0.1/8",
+        "::1/128"
+      ]
+    },
+    {
+      "name": "eth0",
+      "state": "UP",
+      "mac": "82:2b:38:3d:bc:d0",
+      "addresses": [
+        "172.30.0.2/24",
+        "fe80::802b:38ff:fe3d:bcd0/64"
+      ]
+    },
+    {
+      "name": "docker0",
+      "state": "DOWN",
+      "mac": "06:b5:f4:e4:50:4b",
+      "addresses": [
+        "172.18.0.1/16",
+        "fe80::4b5:f4ff:fee4:504b/64"
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "dst": "default",
+      "gateway": "172.30.0.1",
+      "dev": "eth0"
+    },
+    {
+      "dst": "172.18.0.0/16",
+      "gateway": "",
+      "dev": "docker0"
+    },
+    {
+      "dst": "172.30.0.0/24",
+      "gateway": "",
+      "dev": "eth0"
+    }
+  ],
+  "namespaces": [],
+  "veth_peers": [
+    {
+      "ifname": "eth0",
+      "ifindex": 2,
+      "operstate": "UP",
+      "link_type": "ether"
+    },
+    {
+      "ifname": "docker0",
+      "ifindex": 3,
+      "operstate": "DOWN",
+      "link_type": "ether"
+    }
+  ],
+  "docker_networks": []
+}

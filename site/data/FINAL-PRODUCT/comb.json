@@ -1,0 +1,62 @@
+{
+  "origin": "hum.org",
+  "timestamp": "2026-04-16T20:26:09.228149+00:00",
+  "comb_hierarchy": [
+    {
+      "tag": "HUM-ALPHA-cff32e91",
+      "type": "test",
+      "band": "alpha",
+      "score": 81.25,
+      "message": "Container origin verified: hum.org"
+    },
+    {
+      "tag": "HUM-ALPHA-a58445d3",
+      "type": "mock",
+      "band": "alpha",
+      "score": 79.75,
+      "message": "NETNS veth peer scan completed"
+    },
+    {
+      "tag": "HUM-BETA-17b1e8da",
+      "type": "test",
+      "band": "beta",
+      "score": 72.5,
+      "message": "Topology JSON/XML sync validated"
+    },
+    {
+      "tag": "HUM-BETA-de28d124",
+      "type": "comment",
+      "band": "beta",
+      "score": 63.0,
+      "message": "Recup import pipeline initialized"
+    },
+    {
+      "tag": "HUM-DELTA-a3fea16a",
+      "type": "test",
+      "band": "delta",
+      "score": 55.0,
+      "message": "Name factory hierarchy pass complete"
+    },
+    {
+      "tag": "HUM-GAMMA-b10e5793",
+      "type": "camp",
+      "band": "gamma",
+      "score": 52.75,
+      "message": "Camp baseline: eth0 UP 172.30.0.2/24"
+    },
+    {
+      "tag": "HUM-GAMMA-546381b5",
+      "type": "drop",
+      "band": "gamma",
+      "score": 51.25,
+      "message": "Dropped packet analysis: 0% loss on lo"
+    },
+    {
+      "tag": "HUM-DELTA-784eb073",
+      "type": "comment",
+      "band": "delta",
+      "score": 45.5,
+      "message": "Palace of Web assembly started"
+    }
+  ]
+}
