@@ -45,6 +45,7 @@ function badge(string $state): string {
     <a href="welcome.html">Welcome</a>
     <a href="index.php" class="active">Map</a>
     <a href="navigate.php">Navigate</a>
+    <a href="recup.php">Recup</a>
     <a href="data/topology.xml" target="_blank">XML</a>
   </nav>
   <span style="margin-left:auto; font-size:.75rem; color:var(--text-dim);">

@@ -2,27 +2,30 @@
 
 ## Cursor Cloud specific instructions
 
-This repository is a **devcontainer configuration** project (HUM). It contains no application source code — only `.devcontainer/` files that define a LAN-ready Docker development container based on Ubuntu 24.04.
+This is **HUM** — a LAN-ready devcontainer project with a PHP web presence. The devcontainer origin server hostname is `hum.org`. It includes TestDisk/PhotoRec recup data import and organization into `/home/troy/TEMPLATES` and `/home/troy/PHOTOS`.
 
 ### Repository structure
 
-- `.devcontainer/Dockerfile` — image definition (installs `iproute2`, `net-tools`, `iputils-ping`, `traceroute`, `dnsutils`)
-- `.devcontainer/devcontainer.json` — container config (host-network mode, port forwarding, VS Code extensions)
-- `.devcontainer/post-create.sh` — prints network summary on container creation
-- `site/` — PHP-served web presence with SVG network map and NETNS data collection
+- `.devcontainer/Dockerfile` — image definition (networking tools + testdisk, hostname set to hum.org)
+- `.devcontainer/devcontainer.json` — container config (host-network, hostname=hum.org, HUM_ORIGIN/RECUP_HOME env vars)
+- `.devcontainer/post-create.sh` — prints network summary, runs recup-setup, displays workspace layout
+- `.devcontainer/recup-setup.sh` — scans recup_dir.* from PhotoRec and classifies files into TEMPLATES/PHOTOS
+- `site/` — PHP-served web presence with SVG network map, NETNS data, and recup browser
 
 ### Running the HUM site
 
-1. **Collect network data:** `python3 site/data/collect_netns.py` (writes `topology.json` + `topology.xml`)
-2. **Start the dev server:** `php -S 0.0.0.0:8080 -t site` (serves on port 8080)
-3. **Browse:** `http://localhost:8080/welcome.html` → portals to `index.php` (SVG map) → `navigate.php` (NETNS feedback loop)
+1. **Collect network data:** `python3 site/data/collect_netns.py`
+2. **Run recup import:** `HUM_ORIGIN=hum.org RECUP_HOME=/home/troy bash .devcontainer/recup-setup.sh`
+3. **Start the dev server:** `php -S 0.0.0.0:8080 -t site` (port 8080)
+4. **Browse:** `http://localhost:8080/welcome.html`
 
 Site pages:
-- `welcome.html` — portal/splash page, auto-redirects to `index.php`
-- `index.php` — main navigation page with SVG environment map, interface/route/veth tables
-- `navigate.php` — NETNS-veth@peer collector with re-collect button and XML source view
+- `welcome.html` — portal/splash, auto-redirects to `index.php`
+- `index.php` — SVG environment map, interface/route/veth tables
+- `navigate.php` — NETNS-veth@peer collector with re-collect and XML source view
+- `recup.php` — recup data browser for TEMPLATES and PHOTOS at `/home/troy`
 - `data/topology.xml` — raw XML topology data
-- `assets/info.css` + `assets/app.js` — styling and client-side SVG map renderer
+- `assets/info.css` + `assets/app.js` — styling and client-side SVG renderer
 
 ### How to verify the setup
 

@@ -6,8 +6,14 @@
   },
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
   "remoteUser": "vscode",
+  "containerEnv": {
+    "HUM_ORIGIN": "hum.org",
+    "RECUP_HOME": "/home/troy"
+  },
   "runArgs": [
     "--network=host",
+    "--hostname=hum.org",
+    "--add-host=hum.org:127.0.0.1",
     "--add-host=host.docker.internal:host-gateway"
   ],
   "forwardPorts": [
