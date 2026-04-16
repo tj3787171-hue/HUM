@@ -24,6 +24,10 @@ if command -v lsmod >/dev/null 2>&1; then
   fi
 else
   echo "lsmod command is unavailable; cannot inspect kernel modules."
+if lsmod | grep -q "^macsec"; then
+  echo "macsec module is loaded."
+else
+  echo "macsec module is not currently loaded (load on demand if needed)."
 fi
 echo
 echo "Tooling check:"

@@ -987,6 +987,20 @@ def main() -> int:
 
         if args.command in {"ingest-upnp-xml", "ingest-upnp"}:
             xml_text, source_url = resolve_upnp_input(args.xml_file, args.xml_url, args.source_url)
+        if args.command in {"ingest-upnp-xml", "ingest-upnp"}:
+            if not args.xml_file and not args.xml_url:
+                raise ValueError("provide --xml-file or --xml-url")
+            if args.xml_file and args.xml_url:
+                raise ValueError("provide only one of --xml-file or --xml-url")
+            if args.xml_file:
+                xml_path = Path(args.xml_file).expanduser().resolve()
+                if not xml_path.exists() or not xml_path.is_file():
+                    raise FileNotFoundError(f"XML file not found: {xml_path}")
+                xml_text = xml_path.read_text(encoding="utf-8", errors="replace")
+                source_url = args.source_url or str(xml_path)
+            else:
+                xml_text = fetch_text_from_url(args.xml_url)
+                source_url = args.source_url or args.xml_url
             row_id, details = ingest_gateway_metadata(
                 conn=conn,
                 source_url=source_url,
