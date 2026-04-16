@@ -61,7 +61,8 @@ function nav_badge(string $state): string {
     <a href="index.php">Map</a>
     <a href="navigate.php" class="active">Navigate</a>
     <a href="recup.php">Recup</a>
-    <a href="data/topology.xml" target="_blank">XML</a>
+    <a href="palace.php">Palace</a>
+    <a href="convo.php?source=list" target="_blank">API</a>
   </nav>
   <span style="margin-left:auto; font-size:.75rem; color:var(--text-dim);">
     <?= htmlspecialchars($hostname) ?> &middot; <?= htmlspecialchars($timestamp) ?>

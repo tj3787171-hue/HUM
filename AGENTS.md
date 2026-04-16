@@ -16,16 +16,20 @@ This is **HUM** — a LAN-ready devcontainer project with a PHP web presence. Th
 
 1. **Collect network data:** `python3 site/data/collect_netns.py`
 2. **Run recup import:** `HUM_ORIGIN=hum.org RECUP_HOME=/home/troy bash .devcontainer/recup-setup.sh`
-3. **Start the dev server:** `php -S 0.0.0.0:8080 -t site` (port 8080)
-4. **Browse:** `http://localhost:8080/welcome.html`
+3. **Build House of Corps:** `HUM_ORIGIN=hum.org RECUP_HOME=/home/troy python3 site/data/name_factory.py`
+4. **Start the dev server:** `php -S 0.0.0.0:8080 -t site` (port 8080)
+5. **Browse:** `http://localhost:8080/welcome.html`
 
 Site pages:
 - `welcome.html` — portal/splash, auto-redirects to `index.php`
 - `index.php` — SVG environment map, interface/route/veth tables
 - `navigate.php` — NETNS-veth@peer collector with re-collect and XML source view
 - `recup.php` — recup data browser for TEMPLATES and PHOTOS at `/home/troy`
-- `data/topology.xml` — raw XML topology data
+- `palace.php` — Palace of Web final product (House of Corps, wanted comb hierarchy, gram & comb)
+- `convo.php` — JSON conversation API for all data sources (corps, gram, comb, palace, topology, etc.)
 - `assets/info.css` + `assets/app.js` — styling and client-side SVG renderer
+
+Data pipeline: `collect_netns.py` + `recup-setup.sh` → `name_factory.py` → `corps.json` + `sources.list` + `FINAL-PRODUCT/{gram,comb,palace}.json` → `palace.php`
 
 ### How to verify the setup
 

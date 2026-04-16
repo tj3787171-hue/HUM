@@ -1,0 +1,363 @@
+{
+  "house_of_corps": {
+    "origin": "hum.org",
+    "timestamp": "2026-04-16T19:51:02.681130+00:00",
+    "version": "1.0.0",
+    "name_factory": "HUM Name Factory v1",
+    "description": "Collective data after the Name Factory \u2014 reachability, velocity, and mission scored"
+  },
+  "topology": {
+    "hostname": "cursor",
+    "interfaces": [
+      {
+        "name": "lo",
+        "state": "UNKNOWN",
+        "addresses": [
+          "127.0.0.1/8",
+          "::1/128"
+        ],
+        "factory_tag": "HUM-NET-9294ab38"
+      },
+      {
+        "name": "eth0",
+        "state": "UP",
+        "addresses": [
+          "172.30.0.2/24",
+          "fe80::802b:38ff:fe3d:bcd0/64"
+        ],
+        "factory_tag": "HUM-NET-9c32a8c7"
+      },
+      {
+        "name": "docker0",
+        "state": "DOWN",
+        "addresses": [
+          "172.18.0.1/16",
+          "fe80::4b5:f4ff:fee4:504b/64"
+        ],
+        "factory_tag": "HUM-NET-297a8b73"
+      }
+    ],
+    "routes": [
+      {
+        "dst": "default",
+        "gateway": "172.30.0.1",
+        "dev": "eth0"
+      },
+      {
+        "dst": "172.18.0.0/16",
+        "gateway": "",
+        "dev": "docker0"
+      },
+      {
+        "dst": "172.30.0.0/24",
+        "gateway": "",
+        "dev": "eth0"
+      }
+    ],
+    "veth_peers": [
+      {
+        "ifname": "eth0",
+        "ifindex": 2,
+        "operstate": "UP",
+        "link_type": "ether"
+      },
+      {
+        "ifname": "docker0",
+        "ifindex": 3,
+        "operstate": "DOWN",
+        "link_type": "ether"
+      }
+    ],
+    "namespaces": []
+  },
+  "recup": {
+    "summary": {
+      "origin": "hum.org",
+      "timestamp": "2026-04-16T19:36:52Z",
+      "recup_home": "/home/troy",
+      "total_scanned": 13,
+      "photos_imported": 3,
+      "templates_imported": 10,
+      "skipped": 0,
+      "directories": {
+        "templates": "/home/troy/TEMPLATES",
+        "photos": "/home/troy/PHOTOS",
+        "recup_input": "/home/troy/recup_output"
+      }
+    },
+    "templates": [
+      {
+        "category": "code",
+        "files": [
+          "recovered_001.py",
+          "recovered_002.js",
+          "recovered_003.php",
+          "setup.sh"
+        ],
+        "count": 4
+      },
+      {
+        "category": "configs",
+        "files": [
+          "config.yaml",
+          "settings.json"
+        ],
+        "count": 2
+      },
+      {
+        "category": "data",
+        "files": [],
+        "count": 0
+      },
+      {
+        "category": "documents",
+        "files": [
+          "dump.sql",
+          "page.html",
+          "readme.md",
+          "style.css"
+        ],
+        "count": 4
+      },
+      {
+        "category": "scripts",
+        "files": [],
+        "count": 0
+      }
+    ],
+    "photos": [
+      {
+        "category": "gif",
+        "files": [
+          "anim.gif"
+        ],
+        "count": 1
+      },
+      {
+        "category": "jpg",
+        "files": [],
+        "count": 0
+      },
+      {
+        "category": "other",
+        "files": [],
+        "count": 0
+      },
+      {
+        "category": "png",
+        "files": [
+          "photo_001.png"
+        ],
+        "count": 1
+      },
+      {
+        "category": "svg",
+        "files": [
+          "diagram.svg"
+        ],
+        "count": 1
+      },
+      {
+        "category": "webp",
+        "files": [],
+        "count": 0
+      }
+    ],
+    "manifest": [
+      {
+        "file": "config.yaml",
+        "source": "recup_dir.1",
+        "class": "CONFIG",
+        "factory_tag": "HUM-RECUP-d8d04223"
+      },
+      {
+        "file": "page.html",
+        "source": "recup_dir.1",
+        "class": "DOC",
+        "factory_tag": "HUM-RECUP-f2df9ef3"
+      },
+      {
+        "file": "readme.md",
+        "source": "recup_dir.1",
+        "class": "DOC",
+        "factory_tag": "HUM-RECUP-5a831ea6"
+      },
+      {
+        "file": "recovered_001.py",
+        "source": "recup_dir.1",
+        "class": "CODE",
+        "factory_tag": "HUM-RECUP-e441b800"
+      },
+      {
+        "file": "recovered_002.js",
+        "source": "recup_dir.1",
+        "class": "CODE",
+        "factory_tag": "HUM-RECUP-a7ec1a4f"
+      },
+      {
+        "file": "recovered_003.php",
+        "source": "recup_dir.1",
+        "class": "CODE",
+        "factory_tag": "HUM-RECUP-226cc68a"
+      },
+      {
+        "file": "settings.json",
+        "source": "recup_dir.1",
+        "class": "CONFIG",
+        "factory_tag": "HUM-RECUP-e9e1aabe"
+      },
+      {
+        "file": "anim.gif",
+        "source": "recup_dir.2",
+        "class": "PHOTO",
+        "factory_tag": "HUM-RECUP-789b23dc"
+      },
+      {
+        "file": "diagram.svg",
+        "source": "recup_dir.2",
+        "class": "PHOTO",
+        "factory_tag": "HUM-RECUP-8bfd000e"
+      },
+      {
+        "file": "dump.sql",
+        "source": "recup_dir.2",
+        "class": "DOC",
+        "factory_tag": "HUM-RECUP-7d54fde5"
+      },
+      {
+        "file": "photo_001.png",
+        "source": "recup_dir.2",
+        "class": "PHOTO",
+        "factory_tag": "HUM-RECUP-1ca527fa"
+      },
+      {
+        "file": "setup.sh",
+        "source": "recup_dir.2",
+        "class": "CODE",
+        "factory_tag": "HUM-RECUP-4209d788"
+      },
+      {
+        "file": "style.css",
+        "source": "recup_dir.2",
+        "class": "DOC",
+        "factory_tag": "HUM-RECUP-b78be019"
+      }
+    ]
+  },
+  "wanted_comb": {
+    "description": "Test/mock/log/comment/drop-camp banded data scored by reachability, velocity, mission",
+    "bands": [
+      "alpha",
+      "beta",
+      "gamma",
+      "delta"
+    ],
+    "entries": [
+      {
+        "id": "log-001",
+        "type": "test",
+        "message": "Container origin verified: hum.org",
+        "timestamp": "2026-04-16T19:51:02.681000+00:00",
+        "band": "alpha",
+        "reachability": 60,
+        "velocity": 90,
+        "mission": 95,
+        "comb_score": 81.25,
+        "factory_tag": "HUM-ALPHA-cff32e91"
+      },
+      {
+        "id": "log-002",
+        "type": "mock",
+        "message": "NETNS veth peer scan completed",
+        "timestamp": "2026-04-16T19:51:02.681000+00:00",
+        "band": "alpha",
+        "reachability": 60,
+        "velocity": 85,
+        "mission": 95,
+        "comb_score": 79.75,
+        "factory_tag": "HUM-ALPHA-a58445d3"
+      },
+      {
+        "id": "log-004",
+        "type": "test",
+        "message": "Topology JSON/XML sync validated",
+        "timestamp": "2026-04-16T19:51:02.681000+00:00",
+        "band": "beta",
+        "reachability": 50,
+        "velocity": 90,
+        "mission": 80,
+        "comb_score": 72.5,
+        "factory_tag": "HUM-BETA-17b1e8da"
+      },
+      {
+        "id": "log-003",
+        "type": "comment",
+        "message": "Recup import pipeline initialized",
+        "timestamp": "2026-04-16T19:51:02.681000+00:00",
+        "band": "beta",
+        "reachability": 40,
+        "velocity": 70,
+        "mission": 80,
+        "comb_score": 63.0,
+        "factory_tag": "HUM-BETA-de28d124"
+      },
+      {
+        "id": "log-008",
+        "type": "test",
+        "message": "Name factory hierarchy pass complete",
+        "timestamp": "2026-04-16T19:51:02.681000+00:00",
+        "band": "delta",
+        "reachability": 30,
+        "velocity": 90,
+        "mission": 50,
+        "comb_score": 55.0,
+        "factory_tag": "HUM-DELTA-a3fea16a"
+      },
+      {
+        "id": "log-006",
+        "type": "camp",
+        "message": "Camp baseline: eth0 UP 172.30.0.2/24",
+        "timestamp": "2026-04-16T19:51:02.681000+00:00",
+        "band": "gamma",
+        "reachability": 30,
+        "velocity": 65,
+        "mission": 65,
+        "comb_score": 52.75,
+        "factory_tag": "HUM-GAMMA-b10e5793"
+      },
+      {
+        "id": "log-005",
+        "type": "drop",
+        "message": "Dropped packet analysis: 0% loss on lo",
+        "timestamp": "2026-04-16T19:51:02.681000+00:00",
+        "band": "gamma",
+        "reachability": 30,
+        "velocity": 60,
+        "mission": 65,
+        "comb_score": 51.25,
+        "factory_tag": "HUM-GAMMA-546381b5"
+      },
+      {
+        "id": "log-007",
+        "type": "comment",
+        "message": "Palace of Web assembly started",
+        "timestamp": "2026-04-16T19:51:02.681000+00:00",
+        "band": "delta",
+        "reachability": 20,
+        "velocity": 70,
+        "mission": 50,
+        "comb_score": 45.5,
+        "factory_tag": "HUM-DELTA-784eb073"
+      }
+    ]
+  },
+  "gram_comb_totals": {
+    "topology_interfaces": 3,
+    "topology_routes": 3,
+    "recup_files": 13,
+    "wanted_comb_entries": 8,
+    "templates_categories": 5,
+    "photos_categories": 6,
+    "total_data_points": 40
+  }
+}
