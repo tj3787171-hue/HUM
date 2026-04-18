@@ -16,6 +16,14 @@ echo "Default route(s) IPv6:"
 ip -6 route show default || true
 echo
 echo "Kernel module check (macsec):"
+if command -v lsmod >/dev/null 2>&1; then
+  if lsmod | grep -q "^macsec"; then
+    echo "macsec module is loaded."
+  else
+    echo "macsec module is not currently loaded (load on demand if needed)."
+  fi
+else
+  echo "lsmod command is unavailable; cannot inspect kernel modules."
 if lsmod | grep -q "^macsec"; then
   echo "macsec module is loaded."
 else
@@ -28,5 +36,17 @@ for cmd in ip jq yq python3 shellcheck; do
     echo "  - $cmd: ok"
   else
     echo "  - $cmd: missing"
+  fi
+done
+
+echo
+echo "Mountpoint check:"
+for mp in /iso-staging /iso-output /mnt/default /mnt/default-vol /mnt/virtual-drive; do
+  if mountpoint -q "$mp" 2>/dev/null; then
+    echo "  - $mp: mounted"
+  elif [[ -d "$mp" ]]; then
+    echo "  - $mp: present (not mounted)"
+  else
+    echo "  - $mp: missing"
   fi
 done

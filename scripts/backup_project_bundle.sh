@@ -41,6 +41,7 @@ timestamp_utc=$STAMP
 project_root=$PROJECT_ROOT
 archive=repo.tar.gz
 optional_data_copy=$( [[ -d "$PROJECT_ROOT/data" ]] && echo yes || echo no )
+sqlite_backup=$( [[ -f "$PROJECT_ROOT/data/project_evidence.db" || -f "$PROJECT_ROOT/data/deepseek_backup.db" ]] && echo yes || echo no )
 sqlite_backup=$( [[ -f "$PROJECT_ROOT/data/project_records.db" ]] && echo yes || echo no )
 EOF
 

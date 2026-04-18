@@ -10,6 +10,13 @@ from typing import Any, Mapping
 def _read_key_hex(path: str) -> str:
     raw = Path(path).expanduser().read_text(encoding="utf-8").strip()
     key = raw.replace(" ", "").replace(":", "")
+    if len(key) not in {32, 64} or any(c not in "0123456789abcdefABCDEF" for c in key):
+        raise ValueError(f"MACsec key in {path} must be 32 or 64 hex chars")
+    return key.lower()
+
+
+def apply_rx(material: Mapping[str, Any]) -> int:
+    applied = 0
     if len(key) != 32 or any(c not in "0123456789abcdefABCDEF" for c in key):
         raise ValueError(f"MACsec key in {path} must be 32 hex chars")
     return key.lower()
@@ -55,3 +62,5 @@ def apply_rx(material: Mapping[str, Any]) -> None:
             key_hex,
         ]
         subprocess.run(cmd, check=True)
+        applied += 1
+    return applied

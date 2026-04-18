@@ -27,6 +27,23 @@ LAN-ready development container configuration for online/local development.
 3. Run **Dev Containers: Reopen in Container**.
 4. After build, the terminal will show container network info.
 
+### Devcontainer storage / mountpoints
+
+The devcontainer now provisions a broader scratch + volume layout for large
+artifact workflows:
+
+- `/mnt/default` (tmpfs, 128G, in-memory scratch target for fast staging)
+- named volumes:
+  - `/mnt/default-vol`
+  - `/mnt/virtual-drive`
+  - `/iso-staging`
+  - `/iso-output`
+- host downloads bind mount (if available on host):
+  - `${HOME}/Downloads` -> `/host-downloads`
+
+Use `scripts/virtual-drive-access.sh` for simple "cdd 0|1" style loop mount
+management of local ISO/IMG files.
+
 ## LAN notes
 
 - This setup is optimized for Linux with Docker engine networking.
@@ -276,6 +293,29 @@ python3 scripts/project_evidence_db.py --database data/project_evidence.db inges
 python3 scripts/project_evidence_db.py --database data/project_evidence.db list-gateway-metadata
 ```
 
+One-shot handoff importer (network + UPnP + paper + evidence):
+
+```bash
+python3 scripts/project_evidence_db.py --database data/project_evidence.db handoff \
+  --network-json websetup/virtual/network-matrix.json \
+  --network-source websetup/virtual/network-matrix.json \
+  --upnp-xml-file ./rootDesc.xml \
+  --upnp-source-url http://192.168.68.1:1900/pttlb/rootDesc.xml \
+  --device-mac 4C:EA:41:63:E6:C6 \
+  --upnp-asserted-by team \
+  --paper-slug hum-network-paper \
+  --paper-title "HUM network phase notes" \
+  --paper-author team \
+  --paper-summary "Combined network + gateway handoff snapshot." \
+  --evidence-key ev-handoff-001 \
+  --evidence-property-hex 0x0102 \
+  --evidence-payload-file websetup/virtual/network-matrix.json \
+  --evidence-source-kind handoff \
+  --evidence-source-ref websetup/virtual/network-matrix.json
+```
+
+Add `--dry-run` to preview the plan without writing.
+
 ## Backup helper
 
 Create a timestamped backup bundle of project artifacts:
@@ -296,3 +336,97 @@ Use a mounted path you control (for example an exposed external drive path under
 Linux environment). The script creates:
 
 `<target>/hum-backups/hum-backup-YYYYmmdd-HHMMSS/`
+
+## Virtual drive helper (`cdd 0|1`)
+
+For convenient mount/unmount inside the devcontainer:
+
+```bash
+# mount image at /mnt/virtual-drive/m0
+bash scripts/virtual-drive-access.sh cdd 1 --source /host-downloads/kali-linux-2026.1-installer-amd64.iso
+
+# unmount and detach loop
+bash scripts/virtual-drive-access.sh cdd 0
+```
+
+Other commands:
+
+```bash
+bash scripts/virtual-drive-access.sh status
+bash scripts/virtual-drive-access.sh mount --source /path/to/image.iso --mountpoint /mnt/virtual-drive/custom
+bash scripts/virtual-drive-access.sh umount
+```
+
+## Host-only multi-user / graphical service guidance (AMD64)
+
+If you are configuring a real host (not inside devcontainer) for
+`multi-user.target` + optional GUI + service/socket units:
+
+```bash
+# host only
+sudo systemctl set-default multi-user.target
+sudo systemctl enable --now ssh
+sudo systemctl status ssh
+```
+
+Optional GUI switch on host:
+
+```bash
+sudo apt install -y lightdm
+sudo systemctl set-default graphical.target
+```
+
+For service-oriented app bootstrap, prefer explicit units under
+`/etc/systemd/system/*.service` with optional `.socket` activation. Keep this
+outside devcontainer unless you intentionally run a nested init system.
+
+## Reproducible ISO build recipe (repo-owned)
+
+To avoid losing custom ISO work between sessions, use the committed
+`iso-build/` recipe in this repo. It writes artifacts to `data/iso-output/`.
+
+Build dependencies (host/container with apt):
+
+```bash
+sudo apt-get update
+sudo apt-get install -y live-build xorriso isolinux syslinux grub-efi-amd64-bin
+```
+
+Build:
+
+```bash
+bash iso-build/build.sh
+```
+
+Expected outputs:
+
+- `data/iso-output/hum-custom-live.iso`
+- `data/iso-output/hum-custom-live.iso.sha256`
+
+## HTTPS file serving (optional, with HSTS support)
+
+Use this when you want to serve generated ISO artifacts over TLS:
+
+```bash
+python3 scripts/https-file-server.py 8443 \
+  --bind 0.0.0.0 \
+  --directory data/iso-output \
+  --cert /path/to/server.crt \
+  --key /path/to/server.key
+```
+
+The server uses `ssl.SSLContext(...).load_cert_chain(cert, key)`.
+
+Optional Strict-Transport-Security:
+
+```bash
+python3 scripts/https-file-server.py 8443 \
+  --bind 0.0.0.0 \
+  --directory data/iso-output \
+  --cert /path/to/server.crt \
+  --key /path/to/server.key \
+  --hsts-max-age 31536000 \
+  --hsts-include-subdomains
+```
+
+To disable HSTS explicitly, set `--hsts-max-age 0` (default is disabled).

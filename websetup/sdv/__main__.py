@@ -10,6 +10,11 @@ from websetup.sdv.runner import apply, load_manifest
 
 
 def cmd_validate(args: argparse.Namespace) -> int:
+    manifest = load_manifest(Path(args.manifest).resolve() if args.manifest else None)
+    ok, message = pool.validate_network(manifest)
+    if not ok:
+        raise ValueError(message)
+    print(f"[sdv] {message}")
     manifest = load_manifest(Path(args.manifest) if args.manifest else None)
     pool.validate_network(manifest["network"])
     print("[sdv] manifest network block OK")
@@ -17,6 +22,9 @@ def cmd_validate(args: argparse.Namespace) -> int:
 
 
 def cmd_apply(args: argparse.Namespace) -> int:
+    manifest_path = Path(args.manifest).resolve() if args.manifest else None
+    manifest = load_manifest(manifest_path)
+    apply(manifest, root=Path.cwd())
     apply(Path(args.manifest) if args.manifest else None)
     print("[sdv] apply complete")
     return 0

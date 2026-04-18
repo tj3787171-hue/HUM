@@ -38,6 +38,28 @@ sudo bash scripts/hum-dev-netns.sh status
 - `virtual/schemas/*.json` — JSON schema files for editor/validation support.
 - `../scripts/project_evidence_db.py` — SQLite-backed records for papers,
   evidence blobs, device MAC identity hints, and network matrix assertions.
+- `../scripts/validate_virtual_setup.py` — cross-checks virtual inventory and
+  network matrix against SDV manifest constraints.
+
+## Virtual setup consistency check
+
+Run this any time you update:
+- `websetup/virtual/inventory.csv`
+- `websetup/virtual/network-matrix.json`
+- `websetup/sdv/manifest.json`
+
+```bash
+python3 scripts/validate_virtual_setup.py
+```
+
+Expected success:
+
+```text
+[virtual-setup] OK: inventory, network-matrix, and SDV manifest are consistent
+```
+
+If a workload or ephemeral node drifts outside the SDV allocatable range, the
+checker exits non-zero and reports the exact row-level issue.
 
 ## Notes
 
@@ -79,4 +101,25 @@ python3 scripts/project_evidence_db.py ingest-upnp-xml \
   --asserted-by team
 python3 scripts/project_evidence_db.py list-gateway \
   --database data/project_evidence.db
+```
+
+One-shot handoff import (network + UPnP + paper + evidence link):
+
+```bash
+python3 scripts/project_evidence_db.py handoff --database data/project_evidence.db \
+  --network-json websetup/virtual/network-matrix.json \
+  --network-source websetup/virtual/network-matrix.json \
+  --upnp-xml-file /path/to/rootDesc.xml \
+  --upnp-source-url http://192.168.68.1:1900/pttlb/rootDesc.xml \
+  --device-mac 4C:EA:41:63:E6:C6 \
+  --upnp-asserted-by team \
+  --paper-slug hum-network-paper \
+  --paper-title "HUM network matrix notes" \
+  --paper-author team \
+  --paper-summary "Topology and evidence binding notes." \
+  --evidence-key ev-handoff-001 \
+  --evidence-property-hex 0x0102 \
+  --evidence-payload-file websetup/virtual/network-matrix.json \
+  --evidence-source-kind config \
+  --evidence-source-ref websetup/virtual/network-matrix.json
 ```

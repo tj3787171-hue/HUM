@@ -34,6 +34,20 @@
       ]
     },
     {
+      "id": "virt-lab-01",
+      "kind": "virtual",
+      "role": "forced-browser",
+      "labels": [
+        "planned"
+      ]
+    },
+    {
+      "id": "virt-ci-01",
+      "kind": "virtual",
+      "role": "ephemeral-runner",
+      "labels": [
+        "planned"
+      ]
       "id": "penguin",
       "kind": "host",
       "role": "chromebook-linux",
