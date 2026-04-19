@@ -43,6 +43,7 @@ $source_map = [
     'sources'   => ["$data_dir/sources.list",          'text/plain'],
     'manifest'  => ["$recup_home/recup_manifest.json", 'application/json'],
     'summary'   => ["$recup_home/recup_summary.json",  'application/json'],
+    'systemd'   => ["$data_dir/systemd_tree.json",    'application/json'],
 ];
 
 if ($source === 'list') {

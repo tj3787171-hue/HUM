@@ -27,3 +27,8 @@ RUN mkdir -p /home/troy/TEMPLATES /home/troy/PHOTOS /home/troy/recup_output \
 # Copy recup import/organize script into the image.
 COPY recup-setup.sh /usr/local/bin/recup-setup
 RUN chmod +x /usr/local/bin/recup-setup
+
+# Copy net-driver-recover-auto.sh into the image.
+COPY net-driver-recover-auto.sh /usr/local/bin/net-driver-recover-auto.sh
+RUN chmod +x /usr/local/bin/net-driver-recover-auto.sh \
+    && mkdir -p /var/local/net-driver-recover-backups

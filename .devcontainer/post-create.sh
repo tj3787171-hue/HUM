@@ -28,6 +28,16 @@ else
 fi
 
 echo ""
+echo "--- Net Driver Recovery (check mode) ---"
+if command -v net-driver-recover-auto.sh &>/dev/null; then
+    net-driver-recover-auto.sh check 2>&1 | head -40 || true
+elif [ -f .devcontainer/net-driver-recover-auto.sh ]; then
+    bash .devcontainer/net-driver-recover-auto.sh check 2>&1 | head -40 || true
+else
+    echo "  net-driver-recover-auto.sh not found; skipping."
+fi
+
+echo ""
 echo "--- Workspace Layout ---"
 echo "  TEMPLATES: $RECUP_HOME/TEMPLATES/"
 ls -1d "$RECUP_HOME/TEMPLATES"/*/ 2>/dev/null | sed 's/^/    /' || echo "    (empty)"

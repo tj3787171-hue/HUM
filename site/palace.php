@@ -67,6 +67,7 @@ function palace_badge(string $cls): string {
     <a href="index.php">Map</a>
     <a href="navigate.php">Navigate</a>
     <a href="recup.php">Recup</a>
+    <a href="recover.php">Recover</a>
     <a href="palace.php" class="active">Palace</a>
     <a href="convo.php?source=list" target="_blank">API</a>
   </nav>

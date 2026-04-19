@@ -1,9 +1,9 @@
 {
   "palace_of_web": true,
   "origin": "hum.org",
-  "timestamp": "2026-04-16T19:51:02.681130+00:00",
+  "timestamp": "2026-04-19T06:23:03.839887+00:00",
   "name_factory": "HUM Name Factory v1",
-  "total_data_points": 40,
+  "total_data_points": 115,
   "sections": [
     {
       "id": "topology",
@@ -18,7 +18,7 @@
     {
       "id": "wanted_comb",
       "label": "Wanted Comb",
-      "count": 8
+      "count": 12
     },
     {
       "id": "templates",

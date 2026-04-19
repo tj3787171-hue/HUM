@@ -61,6 +61,7 @@ function nav_badge(string $state): string {
     <a href="index.php">Map</a>
     <a href="navigate.php" class="active">Navigate</a>
     <a href="recup.php">Recup</a>
+    <a href="recover.php">Recover</a>
     <a href="palace.php">Palace</a>
     <a href="convo.php?source=list" target="_blank">API</a>
   </nav>

@@ -1,0 +1,455 @@
+{
+  "timestamp": "2026-04-19T06:23:03.809431+00:00",
+  "default_target": "graphical.target",
+  "units": [
+    {
+      "unit": "ModemManager.service",
+      "active": "unknown",
+      "enabled": "unknown"
+    },
+    {
+      "unit": "NetworkManager.service",
+      "active": "unknown",
+      "enabled": "unknown"
+    },
+    {
+      "unit": "apt-daily-upgrade.timer",
+      "active": "unknown",
+      "enabled": "enabled"
+    },
+    {
+      "unit": "apt-daily.timer",
+      "active": "unknown",
+      "enabled": "enabled"
+    },
+    {
+      "unit": "avahi-daemon.service",
+      "active": "unknown",
+      "enabled": "unknown"
+    },
+    {
+      "unit": "avahi-daemon.socket",
+      "active": "unknown",
+      "enabled": "unknown"
+    },
+    {
+      "unit": "console-getty.service",
+      "active": "unknown",
+      "enabled": "unknown"
+    },
+    {
+      "unit": "dbus.service",
+      "active": "unknown",
+      "enabled": "static"
+    },
+    {
+      "unit": "dbus.socket",
+      "active": "unknown",
+      "enabled": "static"
+    },
+    {
+      "unit": "dev-hugepages.mount",
+      "active": "unknown",
+      "enabled": "static"
+    },
+    {
+      "unit": "dev-mqueue.mount",
+      "active": "unknown",
+      "enabled": "static"
+    },
+    {
+      "unit": "display-manager.service",
+      "active": "unknown",
+      "enabled": "unknown"
+    },
+    {
+      "unit": "docker.service",
+      "active": "unknown",
+      "enabled": "enabled"
+    },
+    {
+      "unit": "dpkg-db-backup.timer",
+      "active": "unknown",
+      "enabled": "enabled"
+    },
+    {
+      "unit": "e2scrub_all.timer",
+      "active": "unknown",
+      "enabled": "enabled"
+    },
+    {
+      "unit": "e2scrub_reap.service",
+      "active": "unknown",
+      "enabled": "enabled"
+    },
+    {
+      "unit": "fstrim.timer",
+      "active": "unknown",
+      "enabled": "enabled"
+    },
+    {
+      "unit": "getty-static.service",
+      "active": "unknown",
+      "enabled": "static"
+    },
+    {
+      "unit": "getty@tty1.service",
+      "active": "unknown",
+      "enabled": "enabled"
+    },
+    {
+      "unit": "kmod-static-nodes.service",
+      "active": "unknown",
+      "enabled": "static"
+    },
+    {
+      "unit": "lynis.timer",
+      "active": "unknown",
+      "enabled": "unknown"
+    },
+    {
+      "unit": "man-db.timer",
+      "active": "unknown",
+      "enabled": "enabled"
+    },
+    {
+      "unit": "networking.service",
+      "active": "unknown",
+      "enabled": "unknown"
+    },
+    {
+      "unit": "nftables.service",
+      "active": "unknown",
+      "enabled": "unknown"
+    },
+    {
+      "unit": "proc-sys-fs-binfmt_misc.automount",
+      "active": "unknown",
+      "enabled": "static"
+    },
+    {
+      "unit": "rtkit-daemon.service",
+      "active": "unknown",
+      "enabled": "unknown"
+    },
+    {
+      "unit": "ssh.service",
+      "active": "unknown",
+      "enabled": "unknown"
+    },
+    {
+      "unit": "ssh.socket",
+      "active": "unknown",
+      "enabled": "unknown"
+    },
+    {
+      "unit": "sys-fs-fuse-connections.mount",
+      "active": "unknown",
+      "enabled": "static"
+    },
+    {
+      "unit": "sys-kernel-config.mount",
+      "active": "unknown",
+      "enabled": "static"
+    },
+    {
+      "unit": "sys-kernel-debug.mount",
+      "active": "unknown",
+      "enabled": "static"
+    },
+    {
+      "unit": "sys-kernel-tracing.mount",
+      "active": "unknown",
+      "enabled": "static"
+    },
+    {
+      "unit": "systemd-ask-password-console.path",
+      "active": "unknown",
+      "enabled": "static"
+    },
+    {
+      "unit": "systemd-ask-password-wall.path",
+      "active": "unknown",
+      "enabled": "static"
+    },
+    {
+      "unit": "systemd-binfmt.service",
+      "active": "unknown",
+      "enabled": "static"
+    },
+    {
+      "unit": "systemd-firstboot.service",
+      "active": "unknown",
+      "enabled": "static"
+    },
+    {
+      "unit": "systemd-initctl.socket",
+      "active": "unknown",
+      "enabled": "static"
+    },
+    {
+      "unit": "systemd-journal-flush.service",
+      "active": "unknown",
+      "enabled": "static"
+    },
+    {
+      "unit": "systemd-journald-audit.socket",
+      "active": "unknown",
+      "enabled": "unknown"
+    },
+    {
+      "unit": "systemd-journald-dev-log.socket",
+      "active": "unknown",
+      "enabled": "static"
+    },
+    {
+      "unit": "systemd-journald.service",
+      "active": "unknown",
+      "enabled": "static"
+    },
+    {
+      "unit": "systemd-journald.socket",
+      "active": "unknown",
+      "enabled": "static"
+    },
+    {
+      "unit": "systemd-logind.service",
+      "active": "unknown",
+      "enabled": "static"
+    },
+    {
+      "unit": "systemd-machine-id-commit.service",
+      "active": "unknown",
+      "enabled": "static"
+    },
+    {
+      "unit": "systemd-modules-load.service",
+      "active": "unknown",
+      "enabled": "static"
+    },
+    {
+      "unit": "systemd-network-generator.service",
+      "active": "unknown",
+      "enabled": "unknown"
+    },
+    {
+      "unit": "systemd-networkd.service",
+      "active": "unknown",
+      "enabled": "unknown"
+    },
+    {
+      "unit": "systemd-pcrphase-sysinit.service",
+      "active": "unknown",
+      "enabled": "static"
+    },
+    {
+      "unit": "systemd-pcrphase.service",
+      "active": "unknown",
+      "enabled": "static"
+    },
+    {
+      "unit": "systemd-pstore.service",
+      "active": "unknown",
+      "enabled": "enabled"
+    },
+    {
+      "unit": "systemd-random-seed.service",
+      "active": "unknown",
+      "enabled": "static"
+    },
+    {
+      "unit": "systemd-remount-fs.service",
+      "active": "unknown",
+      "enabled": "static"
+    },
+    {
+      "unit": "systemd-repart.service",
+      "active": "unknown",
+      "enabled": "static"
+    },
+    {
+      "unit": "systemd-resolved.service",
+      "active": "unknown",
+      "enabled": "unknown"
+    },
+    {
+      "unit": "systemd-sysctl.service",
+      "active": "unknown",
+      "enabled": "static"
+    },
+    {
+      "unit": "systemd-sysext.service",
+      "active": "unknown",
+      "enabled": "unknown"
+    },
+    {
+      "unit": "systemd-sysusers.service",
+      "active": "unknown",
+      "enabled": "static"
+    },
+    {
+      "unit": "systemd-timesyncd.service",
+      "active": "unknown",
+      "enabled": "unknown"
+    },
+    {
+      "unit": "systemd-tmpfiles-clean.timer",
+      "active": "unknown",
+      "enabled": "static"
+    },
+    {
+      "unit": "systemd-tmpfiles-setup-dev.service",
+      "active": "unknown",
+      "enabled": "static"
+    },
+    {
+      "unit": "systemd-tmpfiles-setup.service",
+      "active": "unknown",
+      "enabled": "static"
+    },
+    {
+      "unit": "systemd-udev-trigger.service",
+      "active": "unknown",
+      "enabled": "unknown"
+    },
+    {
+      "unit": "systemd-udevd-control.socket",
+      "active": "unknown",
+      "enabled": "unknown"
+    },
+    {
+      "unit": "systemd-udevd-kernel.socket",
+      "active": "unknown",
+      "enabled": "unknown"
+    },
+    {
+      "unit": "systemd-udevd.service",
+      "active": "unknown",
+      "enabled": "unknown"
+    },
+    {
+      "unit": "systemd-update-utmp-runlevel.service",
+      "active": "unknown",
+      "enabled": "static"
+    },
+    {
+      "unit": "systemd-update-utmp.service",
+      "active": "unknown",
+      "enabled": "static"
+    },
+    {
+      "unit": "systemd-user-sessions.service",
+      "active": "unknown",
+      "enabled": "static"
+    },
+    {
+      "unit": "tmp.mount",
+      "active": "unknown",
+      "enabled": "unknown"
+    },
+    {
+      "unit": "usr-share-fonts-chromeos.mount",
+      "active": "unknown",
+      "enabled": "unknown"
+    },
+    {
+      "unit": "wpa_supplicant.service",
+      "active": "unknown",
+      "enabled": "unknown"
+    }
+  ],
+  "targets": [
+    {
+      "unit": "default.target",
+      "active": "unknown",
+      "enabled": "alias"
+    },
+    {
+      "unit": "multi-user.target",
+      "active": "unknown",
+      "enabled": "static"
+    },
+    {
+      "unit": "basic.target",
+      "active": "unknown",
+      "enabled": "static"
+    },
+    {
+      "unit": "paths.target",
+      "active": "unknown",
+      "enabled": "static"
+    },
+    {
+      "unit": "slices.target",
+      "active": "unknown",
+      "enabled": "static"
+    },
+    {
+      "unit": "sockets.target",
+      "active": "unknown",
+      "enabled": "static"
+    },
+    {
+      "unit": "sysinit.target",
+      "active": "unknown",
+      "enabled": "static"
+    },
+    {
+      "unit": "timers.target",
+      "active": "unknown",
+      "enabled": "static"
+    },
+    {
+      "unit": "getty.target",
+      "active": "unknown",
+      "enabled": "static"
+    },
+    {
+      "unit": "local-fs.target",
+      "active": "unknown",
+      "enabled": "static"
+    },
+    {
+      "unit": "swap.target",
+      "active": "unknown",
+      "enabled": "static"
+    },
+    {
+      "unit": "cryptsetup.target",
+      "active": "unknown",
+      "enabled": "static"
+    },
+    {
+      "unit": "integritysetup.target",
+      "active": "unknown",
+      "enabled": "static"
+    },
+    {
+      "unit": "veritysetup.target",
+      "active": "unknown",
+      "enabled": "static"
+    },
+    {
+      "unit": "remote-cryptsetup.target",
+      "active": "unknown",
+      "enabled": "unknown"
+    },
+    {
+      "unit": "remote-fs.target",
+      "active": "unknown",
+      "enabled": "enabled"
+    },
+    {
+      "unit": "remote-veritysetup.target",
+      "active": "unknown",
+      "enabled": "unknown"
+    }
+  ],
+  "tree_raw": "",
+  "summary": {
+    "total_tracked": 71,
+    "active": 0,
+    "inactive": 0,
+    "failed": 0
+  }
+}
