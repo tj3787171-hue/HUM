@@ -34,6 +34,7 @@ Usage:
   sudo bash scripts/hum-dev-netns.sh down
   sudo bash scripts/hum-dev-netns.sh status
   sudo bash scripts/hum-dev-netns.sh trace
+  sudo bash scripts/hum-dev-netns.sh collect   # JSON snapshot for telemetry DB
 
 Optional environment overrides:
   HUM_PROXY_NS
@@ -398,6 +399,115 @@ trace() {
   fi
 }
 
+# ---------------------------------------------------------------------------
+# collect – emit structured JSON snapshot for telemetry DB ingestion
+# ---------------------------------------------------------------------------
+
+json_escape() { printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g'; }
+
+stat_field() {
+  ip -n "$1" -s link show dev "$2" 2>/dev/null | awk "/$3/"'{getline; print $2; exit}'
+}
+
+root_stat_field() {
+  ip -s link show dev "$1" 2>/dev/null | awk "/$2/"'{getline; print $2; exit}'
+}
+
+root_tx_packets() { root_stat_field "$1" "TX:"; }
+ns_tx_packets()   { stat_field "$1" "$2" "TX:"; }
+
+collect() {
+  local ts
+  ts="$(date -u +%Y-%m-%dT%H:%M:%S.%3NZ)"
+
+  local chain_on=false pr=false cr=false
+  peer_chain_enabled && chain_on=true
+  peer_recv_ready && pr=true
+  [[ "$chain_on" == "true" ]] && peer_chain_recv_ready && cr=true
+
+  # --- hops ---
+  local hops=""
+  local m s
+  m="$(iface_mac "$PROXY_HOST_IF" 2>/dev/null || true)"
+  s="$(smac64_from_mac "$m")"
+  hops="$hops{\"role\":\"host\",\"namespace\":\"root\",\"interface\":\"$(json_escape "$PROXY_HOST_IF")\",\"mac\":\"$m\",\"smac64\":\"$s\",\"ipv4_cidr\":\"$PROXY_HOST_CIDR\",\"ipv6_cidr\":\"${PROXY_HOST_LL6}\",\"link_up\":$(link_is_up "$PROXY_HOST_IF" && echo true || echo false)}"
+
+  m="$(ns_iface_mac "$PROXY_NS" "$PROXY_NS_IF" 2>/dev/null || true)"
+  s="$(smac64_from_mac "$m")"
+  hops="$hops,{\"role\":\"proxy-main\",\"namespace\":\"$(json_escape "$PROXY_NS")\",\"interface\":\"$(json_escape "$PROXY_NS_IF")\",\"mac\":\"$m\",\"smac64\":\"$s\",\"ipv4_cidr\":\"$PROXY_NS_CIDR\",\"ipv6_cidr\":\"${PROXY_NS_LL6}\",\"link_up\":$(ns_link_is_up "$PROXY_NS" "$PROXY_NS_IF" && echo true || echo false)}"
+
+  if [[ "$chain_on" == "true" ]]; then
+    m="$(ns_iface_mac "$PROXY_NS" "$PROXY_PEER_IF" 2>/dev/null || true)"
+    s="$(smac64_from_mac "$m")"
+    hops="$hops,{\"role\":\"proxy-peer\",\"namespace\":\"$(json_escape "$PROXY_NS")\",\"interface\":\"$(json_escape "$PROXY_PEER_IF")\",\"mac\":\"$m\",\"smac64\":\"$s\",\"ipv4_cidr\":\"$PROXY_PEER_CIDR\",\"ipv6_cidr\":\"${PROXY_PEER_LL6}\",\"link_up\":$(ns_link_is_up "$PROXY_NS" "$PROXY_PEER_IF" && echo true || echo false)}"
+
+    m="$(ns_iface_mac "$PEER_NS" "$PEER_NS_IF" 2>/dev/null || true)"
+    s="$(smac64_from_mac "$m")"
+    hops="$hops,{\"role\":\"peer\",\"namespace\":\"$(json_escape "$PEER_NS")\",\"interface\":\"$(json_escape "$PEER_NS_IF")\",\"mac\":\"$m\",\"smac64\":\"$s\",\"ipv4_cidr\":\"$PEER_NS_CIDR\",\"ipv6_cidr\":\"${PEER_NS_LL6}\",\"link_up\":$(ns_link_is_up "$PEER_NS" "$PEER_NS_IF" && echo true || echo false)}"
+  fi
+
+  # --- counters ---
+  local ctrs=""
+  local rx tx
+  rx="$(root_rx_packets "$PROXY_HOST_IF" 2>/dev/null || true)"
+  tx="$(root_tx_packets "$PROXY_HOST_IF" 2>/dev/null || true)"
+  ctrs="{\"role\":\"host\",\"rx_packets\":${rx:-0},\"tx_packets\":${tx:-0}}"
+
+  rx="$(ns_rx_packets "$PROXY_NS" "$PROXY_NS_IF" 2>/dev/null || true)"
+  tx="$(ns_tx_packets "$PROXY_NS" "$PROXY_NS_IF" 2>/dev/null || true)"
+  ctrs="$ctrs,{\"role\":\"proxy-main\",\"rx_packets\":${rx:-0},\"tx_packets\":${tx:-0}}"
+
+  if [[ "$chain_on" == "true" ]]; then
+    rx="$(ns_rx_packets "$PROXY_NS" "$PROXY_PEER_IF" 2>/dev/null || true)"
+    tx="$(ns_tx_packets "$PROXY_NS" "$PROXY_PEER_IF" 2>/dev/null || true)"
+    ctrs="$ctrs,{\"role\":\"proxy-peer\",\"rx_packets\":${rx:-0},\"tx_packets\":${tx:-0}}"
+
+    rx="$(ns_rx_packets "$PEER_NS" "$PEER_NS_IF" 2>/dev/null || true)"
+    tx="$(ns_tx_packets "$PEER_NS" "$PEER_NS_IF" 2>/dev/null || true)"
+    ctrs="$ctrs,{\"role\":\"peer\",\"rx_packets\":${rx:-0},\"tx_packets\":${tx:-0}}"
+  fi
+
+  # --- routes ---
+  local rts=""
+  local first_rt=1
+  while IFS= read -r line; do
+    [[ -z "$line" ]] && continue
+    local dst gw dev
+    dst="$(echo "$line" | awk '{print $1}')"
+    gw="$(echo "$line" | awk '/via/{for(i=1;i<=NF;i++) if($i=="via") print $(i+1)}')"
+    dev="$(echo "$line" | awk '/dev/{for(i=1;i<=NF;i++) if($i=="dev") print $(i+1)}')"
+    [[ "$first_rt" -eq 0 ]] && rts="$rts,"
+    rts="$rts{\"namespace\":\"$(json_escape "$PROXY_NS")\",\"family\":\"inet\",\"destination\":\"$(json_escape "$dst")\",\"gateway\":\"$(json_escape "${gw:-}")\",\"device\":\"$(json_escape "${dev:-}")\"}"
+    first_rt=0
+  done < <(ip -n "$PROXY_NS" route show 2>/dev/null || true)
+
+  if [[ "$chain_on" == "true" ]]; then
+    while IFS= read -r line; do
+      [[ -z "$line" ]] && continue
+      local dst gw dev
+      dst="$(echo "$line" | awk '{print $1}')"
+      gw="$(echo "$line" | awk '/via/{for(i=1;i<=NF;i++) if($i=="via") print $(i+1)}')"
+      dev="$(echo "$line" | awk '/dev/{for(i=1;i<=NF;i++) if($i=="dev") print $(i+1)}')"
+      [[ "$first_rt" -eq 0 ]] && rts="$rts,"
+      rts="$rts{\"namespace\":\"$(json_escape "$PEER_NS")\",\"family\":\"inet\",\"destination\":\"$(json_escape "$dst")\",\"gateway\":\"$(json_escape "${gw:-}")\",\"device\":\"$(json_escape "${dev:-}")\"}"
+      first_rt=0
+    done < <(ip -n "$PEER_NS" route show 2>/dev/null || true)
+  fi
+
+  # --- topology summary ---
+  local topo
+  if [[ "$chain_on" == "true" ]]; then
+    topo="{\"chain\":\"root > $PROXY_HOST_IF <-> $PROXY_NS_IF > $PROXY_PEER_IF <-> $PEER_NS_IF\",\"dummy\":\"$DUMMY_IF ($DUMMY_CIDR)\"}"
+  else
+    topo="{\"chain\":\"root > $PROXY_HOST_IF <-> $PROXY_NS_IF\",\"dummy\":\"$DUMMY_IF ($DUMMY_CIDR)\"}"
+  fi
+
+  # --- assemble ---
+  cat <<ENDJSON
+{"captured_at":"$ts","peer_chain_enabled":$chain_on,"peer_recv_ready":$pr,"peer_chain_recv_ready":$cr,"topology":$topo,"hops":[$hops],"counters":[$ctrs],"routes":[$rts]}
+ENDJSON
+}
+
 main() {
   local action="${1:-status}"
   case "$action" in
@@ -418,6 +528,10 @@ main() {
     trace)
       need_cmd ip
       trace
+      ;;
+    collect)
+      need_cmd ip
+      collect
       ;;
     -h|--help|help)
       usage
