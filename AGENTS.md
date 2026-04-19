@@ -2,26 +2,46 @@
 
 ## Cursor Cloud specific instructions
 
-This repository is a **devcontainer configuration** project (HUM). It contains no application source code — only `.devcontainer/` files that define a LAN-ready Docker development container based on Ubuntu 24.04.
+### Overview
 
-### Repository structure
+HUM is a lightweight utility repository (no package manager, no build step, no lockfiles). It contains:
 
-- `.devcontainer/Dockerfile` — image definition (installs `iproute2`, `net-tools`, `iputils-ping`, `traceroute`, `dnsutils`)
-- `.devcontainer/devcontainer.json` — container config (host-network mode, port forwarding, VS Code extensions)
-- `.devcontainer/post-create.sh` — prints network summary on container creation
+- **Dev Container config** (`.devcontainer/`) — Ubuntu 24.04-based container with LAN/network tools.
+- **`scripts/hum-dev-netns.sh`** — Bash script for Linux network namespace setup (requires `iproute2` and root).
+- **`scripts/deepseek_db_link.py`** — Python 3 CLI that indexes DeepSeek backup exports into SQLite. Uses only stdlib modules (zero pip dependencies).
 
-### How to verify the setup
+### Running scripts
 
-There is no traditional build/lint/test cycle. To validate the configuration:
+| Script | Command | Notes |
+|---|---|---|
+| Post-create | `bash .devcontainer/post-create.sh` | Prints network summary |
+| Network namespace status | `bash scripts/hum-dev-netns.sh status` | Requires `iproute2` |
+| Network namespace up/down | `sudo bash scripts/hum-dev-netns.sh up` | Requires root + `iproute2` |
+| DeepSeek importer | `python3 scripts/deepseek_db_link.py --source <dir> --database <db>` | Stdlib-only Python 3 |
+| Snap bypass | `bash scripts/hum-snap-bypass.sh <subcommand>` | Requires `squashfs-tools`, `squashfuse`, `xz-utils`, `file`, `fuse3` |
 
-1. **Build the Docker image:** `docker build -f .devcontainer/Dockerfile -t hum-lan-dev .`
-2. **Validate devcontainer.json:** `python3 -c "import json; json.load(open('.devcontainer/devcontainer.json'))"`
-3. **Run the post-create script:** `bash .devcontainer/post-create.sh`
-4. **Verify networking tools:** `which ip ping traceroute dig netstat`
+### Linting
 
-### Cloud VM caveats
+No project-level lint config exists. Use these tools for quality checks:
 
-- Docker must be started manually: `sudo dockerd &` (wait ~3 seconds before running Docker commands).
-- Microsoft Container Registry (`mcr.microsoft.com`) is blocked by cloud VM egress restrictions. The Dockerfile cannot be fully built via `docker build` in this environment. Validation must rely on syntax checks and running equivalent tools on the host (which is also Ubuntu 24.04).
-- Docker Hub is also blocked for image pulls.
-- The host Ubuntu 24.04 environment matches the Dockerfile's base image, so the networking tools can be installed and tested directly on the host as a substitute for container-based validation.
+- **Bash**: `shellcheck scripts/hum-dev-netns.sh .devcontainer/post-create.sh`
+- **Python**: `pyright scripts/deepseek_db_link.py` (install via `pip install pyright`)
+
+### Docker / Dev Container build
+
+Building the `.devcontainer/Dockerfile` requires pulling `mcr.microsoft.com/devcontainers/base:ubuntu-24.04` from Microsoft Container Registry. This will fail in environments with restricted egress (e.g., Cursor Cloud VMs). The Dockerfile itself is valid and builds successfully on unrestricted networks.
+
+- Docker must be started manually in the cloud VM: `sudo dockerd &` (wait ~3 seconds before running Docker commands).
+- Docker Hub is also blocked for image pulls in cloud VMs.
+- The host Ubuntu 24.04 environment matches the Dockerfile's base image, so networking tools can be installed and tested directly on the host as a substitute.
+
+### Snap bypass script
+
+`scripts/hum-snap-bypass.sh` lets you extract, mount, inspect, and run snap packages (squashfs + xz) without snapd/systemd/cgroups. Run `bash scripts/hum-snap-bypass.sh deps` to check required host tooling. See `README.md` for full usage.
+
+### Key caveats
+
+- There are no automated tests in this repository.
+- There is no build step — scripts are run directly.
+- The `hum-dev-netns.sh up/down` subcommands require root privileges and will modify host network namespaces.
+- System dependency `iproute2` must be installed for the network namespace script to work (`sudo apt-get install -y iproute2`).
