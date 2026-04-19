@@ -31,6 +31,10 @@ No project-level lint config exists. Use these tools for quality checks:
 
 Building the `.devcontainer/Dockerfile` requires pulling `mcr.microsoft.com/devcontainers/base:ubuntu-24.04` from Microsoft Container Registry. This will fail in environments with restricted egress (e.g., Cursor Cloud VMs). The Dockerfile itself is valid and builds successfully on unrestricted networks.
 
+- Docker must be started manually in the cloud VM: `sudo dockerd &` (wait ~3 seconds before running Docker commands).
+- Docker Hub is also blocked for image pulls in cloud VMs.
+- The host Ubuntu 24.04 environment matches the Dockerfile's base image, so networking tools can be installed and tested directly on the host as a substitute.
+
 ### Snap bypass script
 
 `scripts/hum-snap-bypass.sh` lets you extract, mount, inspect, and run snap packages (squashfs + xz) without snapd/systemd/cgroups. Run `bash scripts/hum-snap-bypass.sh deps` to check required host tooling. See `README.md` for full usage.
