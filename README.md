@@ -187,6 +187,26 @@ the userspace FUSE/extract path for environments without root.
 
 Run `--help` on either script for full usage.
 
+## Build a bootable ISO
+
+Generate a bootable ISO containing all HUM toolkit scripts:
+
+```bash
+sudo apt-get install -y genisoimage syslinux-utils isolinux
+bash scripts/hum-build-iso.sh dist/hum-toolkit.iso
+```
+
+The ISO uses ISOLINUX, includes all scripts and documentation, and can be
+burned to USB/CD or loop-mounted:
+
+```bash
+sudo mount -o loop dist/hum-toolkit.iso /mnt
+ls /mnt/hum/scripts/
+```
+
+A download page is available at `docs/download.html`—host it on any static
+server and point the download link to wherever you publish the ISO.
+
 ## Dev container status indicator (`<>`)
 
 If you see the `<>` style status indicator in the bottom-right status area in
