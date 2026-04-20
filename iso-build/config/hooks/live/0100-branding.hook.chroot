@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+install -d -m 0755 /usr/local/share/hum
+cat > /usr/local/share/hum/build-info.txt <<'EOF'
+HUM custom live image
+This image was built from repo-owned iso-build config.
+EOF
+
