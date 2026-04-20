@@ -32,12 +32,15 @@ def validate_network(manifest: Mapping[str, object]) -> tuple[bool, str]:
     reserved = network.get("reserved_br_int")
     assigned = network.get("script_assigned")
     alloc = network.get("allocatable_range")
+    alloc = network.get("allocatable_range") or network.get("allocatable_pool")
+    alloc = network.get("allocatable_pool")
     if not isinstance(subnet, str) or not isinstance(reserved, str):
         return False, "subnet_cidr/reserved_br_int invalid"
     if not isinstance(assigned, Mapping):
         return False, "script_assigned missing/invalid"
     if not isinstance(alloc, Mapping):
         return False, "allocatable_range missing/invalid"
+        return False, "allocatable_pool missing/invalid"
 
     cidr = ipaddress.ip_network(subnet, strict=True)
     reserved_ip = _parse_ip(reserved)
@@ -67,5 +70,11 @@ def validate_network(manifest: Mapping[str, object]) -> tuple[bool, str]:
         return False, f"allocatable_range.start/end invalid: {exc}"
     if (start, end) != (54, 254):
         return False, f"allocatable_range expected 54..254, got {start}..{end}"
+    start = alloc.get("start")
+    end = alloc.get("end")
+    if not isinstance(start, int) or not isinstance(end, int):
+        return False, "allocatable_pool.start/end must be integers"
+    if (start, end) != (54, 254):
+        return False, f"allocatable_pool expected 54..254, got {start}..{end}"
 
     return True, "manifest network block OK"

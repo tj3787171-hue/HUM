@@ -1,6 +1,6 @@
 # HUM
 
-LAN-ready development container configuration for online/local development.
+Private-by-default development container configuration for online/local development.
 
 ## What's included
 
@@ -13,6 +13,12 @@ LAN-ready development container configuration for online/local development.
   - `iptables`, `bridge-utils`, `ethtool`
   - `python3`, `jq`, `yq`, `shellcheck`
 - `.devcontainer/devcontainer.json` with:
+  - secure runtime defaults (`--init`, `no-new-privileges`)
+  - `host.docker.internal` mapping via `host-gateway`
+  - common forwarded ports (`3000`, `5173`, `8000`, `8080`) plus virtual desktop ports (`5901`, `6080`)
+- `.devcontainer/post-create.sh` to print network info when container is created
+- `.devcontainer/post-start.sh` to re-import private env and refresh runtime metadata
+- `.devcontainer/import-environment.sh` to load `.devcontainer/dev.env` and generate runtime JSON metadata
   - host-network runtime flag (`--network=host`) for Linux LAN access
   - privileged runtime for netns/veth/macsec experiments (`NET_ADMIN`, `NET_RAW`)
   - `host.docker.internal` mapping via `host-gateway`
@@ -47,26 +53,35 @@ management of local ISO/IMG files.
 ## LAN notes
 
 - This setup is optimized for Linux with Docker engine networking.
-- `--network=host` allows services in the container to be reachable on the host/LAN stack.
-- On non-Linux hosts, host-network support can be limited by Docker Desktop behavior.
+- It defaults to bridge networking and forwarded ports to reduce accidental exposure.
+- For local-only access, bind services to `127.0.0.1` and use forwarded ports.
+- If you intentionally need host-network mode for LAN testing, use a temporary local override.
 
-## Virtual setup config bundle
+## Re-container + import environment workflow
 
-The repository now includes a `websetup/` tree for virtual phase planning:
+1. Rebuild/reopen the dev container.
+2. On first create, `.devcontainer/dev.env` is generated from `.devcontainer/dev.env.example`.
+3. Edit `.devcontainer/dev.env` with your private values (`chmod 600 .devcontainer/dev.env`).
+4. Restart/reopen the container again to re-import values cleanly.
 
-- `websetup/sdv/manifest.json` and `python3 -m websetup.sdv validate`
-- `websetup/virtual/virtual-setup.yml`
-- `websetup/virtual/inventory.csv`
-- `websetup/virtual/*.json` with schemas
+Environment import outputs:
 
-Start points:
+- shell export file: `~/.config/hum-dev/imported.env`
+- runtime JSON metadata: `~/.config/hum-dev/runtime.json`
 
-```bash
-PYTHONPATH=/workspaces/<repo> python3 -m websetup.sdv validate
-PYTHONPATH=/workspaces/<repo> python3 -m websetup.sdv apply
-```
+This keeps settings in a JSON-readable form for tools/extensions while keeping secrets out of git.
 
-## Penguin terminal dev naming (Proxy + Peer Chain + Docker + Dummy)
+## Virtual desktop privacy defaults
+
+- Recommended virtual desktop bind host: `127.0.0.1`
+- Recommended Chrome debug bind host: `127.0.0.1`
+- Suggested forwarded virtual desktop ports:
+  - `5901` (VNC)
+  - `6080` (web desktop/noVNC)
+
+These defaults keep access for you (and trusted local forwarding endpoints), not broad network listeners.
+
+## Penguin terminal dev naming (Proxy + Docker + Dummy)
 
 If you want the laptop Penguin terminal to use stable developer names that parallel
 the original proxy/docker/dummy model, use:
@@ -81,11 +96,48 @@ This creates/maintains:
 
 - proxy namespace: `hum-proxy-ns`
 - proxy veth pair: `hum-proxy-host0` (root) <-> `hum-proxy-ns0` (inside netns)
-- peer namespace: `hum-peer-ns` (enabled by default)
-- peer veth pair: `hum-proxy-peer0` (inside `hum-proxy-ns`) <-> `hum-peer-ns0` (inside `hum-peer-ns`)
 - dummy interface: `hum-dummy0`
 - a status view that also reports `docker0` if present
 
+Useful commands:
+
+```bash
+sudo bash scripts/hum-dev-netns.sh status
+sudo bash scripts/hum-dev-netns.sh status --json
+sudo bash scripts/hum-dev-netns.sh down
+```
+
+- peer namespace: `hum-peer-ns`
+- proxy veth pair: `hum-proxy-host0` (root) <-> `hum-proxy-ns0` (inside proxy netns)
+- peer chain veth pair: `hum-proxy-peer0` (inside proxy netns) <-> `hum-peer-ns0` (inside peer netns)
+- proxy veth pair: `hum-proxy-host0` (root) <-> `hum-proxy-ns0` (inside netns)
+- peer namespace: `hum-peer-ns`
+- peer veth pair: `hum-peer-host0` (inside `hum-proxy-ns`) <-> `hum-peer-ns0` (inside `hum-peer-ns`)
+- dummy interface: `hum-dummy0`
+- a status view that also reports `docker0` if present
+
+The default topology is now a peer chain:
+
+`root -> hum-proxy-host0 -> hum-proxy-ns -> hum-peer-host0 -> hum-peer-ns`
+- peer namespace: `hum-peer-ns` (enabled by default)
+- peer veth pair: `hum-proxy-peer0` (inside `hum-proxy-ns`) <-> `hum-peer-ns0` (inside `hum-peer-ns`)
+- dummy interface: `hum-dummy0`
+- a status view that also reports `docker0` if present and shows peer-route state
+
+Peer veth chain sketch:
+
+```text
+root namespace
+  hum-proxy-host0 10.200.0.1/30 fe80::1/64
+    || veth peer ||
+netns hum-proxy-ns
+  hum-proxy-ns0   10.200.0.2/30 fe80::2/64
+    -> default IPv4 via 10.200.0.1
+    -> default IPv6 via fe80::1
+
+side links:
+  hum-dummy0
+  docker0 (if present)
 ### Merger plot guidance
 
 For merger plot work, use the default peer veth chain so traces include both legs:
@@ -116,10 +168,18 @@ sudo env HUM_ENABLE_PEER_CHAIN=0 bash scripts/hum-dev-netns.sh up
 Useful commands:
 
 ```bash
+bash scripts/hum-dev-netns.sh guide
 sudo bash scripts/hum-dev-netns.sh status
 sudo bash scripts/hum-dev-netns.sh trace
+sudo bash scripts/hum-dev-netns.sh plot
 sudo bash scripts/hum-dev-netns.sh down
 ```
+
+`guide` prints the current peer veth chain plus the exact `up`, `status`,
+`ping`, `trace`, and `down` commands to verify it end-to-end. When run
+without `sudo`, the netns side can show as `unknown` if `ip -n` introspection
+is denied; use `sudo bash scripts/hum-dev-netns.sh status` for authoritative
+peer state.
 
 All names can be overridden through `HUM_*` environment variables shown by:
 
@@ -127,19 +187,168 @@ All names can be overridden through `HUM_*` environment variables shown by:
 bash scripts/hum-dev-netns.sh --help
 ```
 
-The proxy veth pair now also carries link-local IPv6 for tracing:
+`plot` prints a merger-style topology and guidance commands for bringing the
+peer veth chain up or validating traffic when it is already up.
 
-- host side: `fe80::1/64` (default `HUM_PROXY_HOST_LL6`)
-- netns side: `fe80::2/64` (default `HUM_PROXY_NS_LL6`)
+The veth chain carries link-local IPv6 for tracing:
+
+- root side: `fe80::1/64` on `hum-proxy-host0` (default `HUM_PROXY_HOST_LL6`)
+- proxy side (root link): `fe80::2/64` on `hum-proxy-ns0` (default `HUM_PROXY_NS_LL6`)
+- proxy side (peer link): `fe80::11/64` on `hum-proxy-peer0` (default `HUM_PROXY_PEER_LL6`)
+- peer side: `fe80::12/64` on `hum-peer-ns0` (default `HUM_PEER_NS_LL6`)
+
+The peer chain also carries link-local IPv6 for tracing:
+
+- proxy side: `fe80::5/64` (default `HUM_PEER_PROXY_LL6`)
+- peer side: `fe80::6/64` (default `HUM_PEER_NS_LL6`)
+
+Set `HUM_ENABLE_PEER_CHAIN=0` if you want to keep the original single-pair setup.
 
 `trace` reports:
 
+- peer recv-ready state for both root<->proxy and proxy<->peer links
+- downstream nested RX packet counters (host + proxy + peer)
+- SMAC64-style trace IDs derived from interface MAC addresses
+- IPv4/IPv6 route and neighbor snapshots for the proxy + peer namespaces
 - peer recv-ready state
+- peer chain recv-ready state plus the guidance path
+- downstream nested RX packet counters (host + netns)
+- peer chain RX packet counters (proxy + peer)
+- SMAC64-style trace IDs derived from interface MAC addresses
+- IPv4/IPv6 route and neighbor snapshots for the proxy and peer namespaces
 - peer-chain recv-ready state (when enabled)
 - downstream nested RX packet counters (host + netns, or host + proxy-main + proxy-peer + peer when enabled)
 - SMAC64-style trace IDs derived from interface MAC addresses
 - IPv4/IPv6 route and neighbor snapshots for the proxy namespace
 - IPv4/IPv6 route and neighbor snapshots for the peer namespace (when enabled)
+
+## Merger plot – peer veth chain
+
+A multi-hop peer veth chain extends the single proxy veth pair into a
+series of namespaces connected end-to-end.  Each namespace acts as a
+forwarding peer, and the final namespace is the **merger point** where
+traffic from every preceding hop converges.
+
+```
+[root] ──veth── [peer:1] ──veth── [peer:2] ──veth── [merge:3]
+```
+
+### Quick start
+
+```bash
+# Bring up a 3-hop chain (default)
+sudo bash scripts/hum-veth-chain.sh up
+
+# Print the ASCII merger-plot diagram
+bash scripts/hum-veth-chain.sh plot
+
+# Check per-hop peer readiness and rx counters
+sudo bash scripts/hum-veth-chain.sh status
+
+# Tear down
+sudo bash scripts/hum-veth-chain.sh down
+```
+
+Use `--length N` to change the number of hops (1–16):
+
+```bash
+sudo bash scripts/hum-veth-chain.sh up --length 5
+bash scripts/hum-veth-chain.sh plot --length 5
+```
+
+### Addressing scheme
+
+Each hop gets a `/30` IPv4 subnet plus link-local IPv6:
+
+| Hop | Left (upstream) | Right (downstream) |
+|-----|----------------|--------------------|
+| 1 | `10.201.1.1/30` (root) | `10.201.1.2/30` (ns-1) |
+| 2 | `10.201.2.1/30` (ns-1) | `10.201.2.2/30` (ns-2) |
+| 3 | `10.201.3.1/30` (ns-2) | `10.201.3.2/30` (ns-3) |
+
+IPv6 link-local follows the pattern `fe80::H:1/64` / `fe80::H:2/64`
+per hop H.
+
+Override the base network with `HUM_CHAIN_BASE_NET` (default `10.201`).
+
+### Merger plot guidance
+
+The merger plot is a traffic-convergence model:
+
+- **Peer namespaces** (intermediate hops) have `ip_forward=1` enabled
+  automatically.  They relay packets toward the next hop.
+- **The merger namespace** (final hop) is where all forwarded traffic
+  arrives.  Use it for captures, filters, or services that need to
+  observe the full chain's traffic.
+- **Verification** – from the tail of the chain, confirm end-to-end
+  reachability:
+  ```bash
+  sudo ip netns exec hum-chain-ns3 ping -c2 10.201.1.1
+  ```
+- **Traffic shaping** – add `iptables`/`nftables` rules in any peer
+  namespace to mark, redirect, or rate-limit packets as they traverse
+  the chain.
+- **Capture at the merger point**:
+  ```bash
+  sudo ip netns exec hum-chain-ns3 tcpdump -n -i hum-chain-h3R
+  ```
+- **Coexistence** – the chain uses the `10.201.x.y` range and
+  `hum-chain-*` names, so it runs alongside the existing
+  `hum-proxy-*` setup without conflicts.
+
+### Environment overrides
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `HUM_CHAIN_PREFIX` | `hum-chain` | Namespace/interface name prefix |
+| `HUM_CHAIN_LENGTH` | `3` | Number of hops |
+| `HUM_CHAIN_BASE_NET` | `10.201` | First two octets of hop subnets |
+
+Quick peer verification:
+
+```bash
+sudo ip netns exec hum-proxy-ns ping -c 1 10.200.0.1
+sudo ip netns exec hum-proxy-ns ping -6 -I hum-proxy-ns0 -c 1 fe80::1
+# optional zone-style form:
+# sudo ip netns exec hum-proxy-ns ping -6 -c 1 fe80::1%hum-proxy-ns0
+```
+
+If IPv6 still fails while IPv4 works, use `status` to inspect the host veth's
+other `fe80::/64` address and test that EUI-64 address, then check ICMPv6
+policy such as `ip6tables`/`nft` rules or
+`sysctl net.ipv6.icmp.echo_ignore_all`.
+
+### Merger plot workflow
+
+The FF0000 page at `/ff0000.html` now includes a merger-plot guide for the peer
+veth chain. Before using the plot, bring up the proxy path and confirm the chain
+is ready:
+
+```bash
+sudo bash scripts/hum-dev-netns.sh up
+sudo bash scripts/hum-dev-netns.sh status
+```
+
+The guide and plot assume the default chain:
+
+- root namespace interface: `hum-proxy-host0` (`10.200.0.1/30`, `fe80::1/64`)
+- proxy namespace interface: `hum-proxy-ns0` (`10.200.0.2/30`, `fe80::2/64`)
+- proxy namespace: `hum-proxy-ns`
+- dummy endpoint: `hum-dummy0` (`198.18.0.1/24`)
+
+Readiness checks before relying on the plot:
+
+- `peer recv-ready: yes`
+- populated `trace-smac64 host` and `trace-smac64 ns` values
+- root and netns addresses that match the chain shown in the page
+
+Use trace mode when the merger plot suggests changed redraw cadence or
+downstream activity:
+
+```bash
+sudo bash scripts/hum-dev-netns.sh trace
+sudo bash scripts/hum-dev-netns.sh down
+```
 
 ## DeepSeek backup -> SQLite database linking
 
@@ -190,6 +399,104 @@ sqlite3 data/deepseek_backup.db "SELECT COUNT(*) FROM source_files;"
 sqlite3 data/deepseek_backup.db "SELECT COUNT(*) FROM conversations;"
 sqlite3 data/deepseek_backup.db "SELECT COUNT(*) FROM messages;"
 ```
+
+## Snap package bypass (no snapd / no cgroups)
+
+Snap packages are squashfs images compressed with xz.  Normally `snapd` manages
+them via systemd, cgroup scopes, and AppArmor profiles.  In environments where
+those subsystems are missing (containers, Penguin terminals, minimal VMs) you
+can use the bypass script instead:
+
+```bash
+bash scripts/hum-snap-bypass.sh deps          # check required tools
+bash scripts/hum-snap-bypass.sh info  foo.snap # squashfs metadata + snap.yaml
+bash scripts/hum-snap-bypass.sh extract foo.snap [dest]
+bash scripts/hum-snap-bypass.sh mount   foo.snap [mountpoint]
+bash scripts/hum-snap-bypass.sh unmount <mountpoint>
+bash scripts/hum-snap-bypass.sh run     foo.snap <binary> [args...]
+bash scripts/hum-snap-bypass.sh list           # active FUSE mounts
+```
+
+### How it works
+
+1. **extract** uses `unsquashfs` to decompress the xz-compressed squashfs
+   image into a plain directory tree—no snapd, no cgroup scope, no AppArmor.
+2. **mount** uses `squashfuse` to FUSE-mount the `.snap` file read-only.
+   No kernel squashfs module or root privileges needed (FUSE runs in userspace).
+3. **run** extracts once, sets the `SNAP*` environment variables and
+   `LD_LIBRARY_PATH` that snaps expect, then execs the binary directly.
+
+### Required host packages
+
+```bash
+sudo apt-get install -y squashfs-tools squashfuse xz-utils file fuse3
+```
+
+These are already included in the dev container Dockerfile.
+
+All paths can be overridden via `HUM_SNAP_EXTRACT_ROOT` and
+`HUM_SNAP_MOUNT_ROOT` environment variables.  Run `--help` for full usage.
+
+## Snap server (loop-mount + cgroup scope)
+
+When your environment has loop devices (loop0–9), kernel squashfs support,
+and cgroup v2 but **no systemd as PID 1**, the snap server script can:
+
+1. Move root-cgroup processes into a child cgroup (`hum-init`) so the root
+   `subtree_control` becomes writable.
+2. Create a `snap.hum` cgroup scope for snap workloads.
+3. Loop-mount `.snap` files at `/snap/<name>` using the kernel squashfs
+   driver — exactly like snapd would, but without snapd.
+
+```bash
+sudo bash scripts/hum-snap-server.sh up                           # bootstrap
+sudo bash scripts/hum-snap-server.sh loop-mount foo.snap mysnap   # mount at /snap/mysnap
+/snap/mysnap/bin/some-binary                                      # run directly
+sudo bash scripts/hum-snap-server.sh loop-unmount mysnap          # clean up
+sudo bash scripts/hum-snap-server.sh status                       # full report
+sudo bash scripts/hum-snap-server.sh down                         # teardown
+```
+
+### Why not just use snapd directly?
+
+`snapd` v2.73 has a 5-second idle timeout and exits expecting systemd
+socket-activation to restart it.  Without systemd as PID 1 (PID 1 is
+`pod-daemon` in Cursor Cloud, `init` in Penguin, etc.) snapd becomes a
+zombie within seconds.  The server script replaces the mount/cgroup layer
+that snapd would normally manage, while `hum-snap-bypass.sh` handles
+the userspace FUSE/extract path for environments without root.
+
+### Choosing between bypass and server
+
+| Feature | `hum-snap-bypass.sh` | `hum-snap-server.sh` |
+|---|---|---|
+| Root required | No (FUSE/extract) | Yes (loop + mount) |
+| Mount type | FUSE userspace | Kernel squashfs |
+| Performance | Good | Native (best) |
+| cgroup scope | No | Yes |
+| Loop devices needed | No | Yes |
+
+Run `--help` on either script for full usage.
+
+## Build a bootable ISO
+
+Generate a bootable ISO containing all HUM toolkit scripts:
+
+```bash
+sudo apt-get install -y genisoimage syslinux-utils isolinux
+bash scripts/hum-build-iso.sh dist/hum-toolkit.iso
+```
+
+The ISO uses ISOLINUX, includes all scripts and documentation, and can be
+burned to USB/CD or loop-mounted:
+
+```bash
+sudo mount -o loop dist/hum-toolkit.iso /mnt
+ls /mnt/hum/scripts/
+```
+
+A download page is available at `docs/download.html`—host it on any static
+server and point the download link to wherever you publish the ISO.
 
 ## Dev container status indicator (`<>`)
 

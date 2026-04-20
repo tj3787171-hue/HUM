@@ -2,53 +2,46 @@
 
 ## Cursor Cloud specific instructions
 
-### Repository overview
+### Overview
 
-HUM is a LAN-ready development and network lab project. The consolidated codebase includes:
+HUM is a lightweight utility repository (no package manager, no build step, no lockfiles). It contains:
 
-| Component | Path | Description |
+- **Dev Container config** (`.devcontainer/`) — Ubuntu 24.04-based container with LAN/network tools.
+- **`scripts/hum-dev-netns.sh`** — Bash script for Linux network namespace setup (requires `iproute2` and root).
+- **`scripts/deepseek_db_link.py`** — Python 3 CLI that indexes DeepSeek backup exports into SQLite. Uses only stdlib modules (zero pip dependencies).
+
+### Running scripts
+
+| Script | Command | Notes |
 |---|---|---|
-| DevContainer | `.devcontainer/` | Ubuntu 24.04 dev container with LAN networking tools |
-| URI checker | `check.py`, `test_check.py` | Python CLI to check HTTP status of URIs (stdlib only) |
-| Site / Web presence | `site/` | PHP pages + JS SVG map + CSS + data pipeline |
-| Data pipeline | `site/data/name_factory.py` | Builds FINAL-PRODUCT JSON from topology + recup data |
-| FINAL-PRODUCT | `site/data/FINAL-PRODUCT/` | Output: `gram.json`, `comb.json`, `palace.json`, `corps_full.json` |
-| Convo API | `site/convo.php` | JSON API serving all data sources |
-| SDV (Software-Defined Validation) | `websetup/sdv/` | Network validation pipeline (pool, macsec, docker wait) |
-| Virtual setup | `websetup/virtual/` | Network matrix, bindings, inventory, schemas |
-| Scripts | `scripts/` | Networking, recovery, telemetry, DB linking, snap handling |
-| Tests | `tests/test_sdv.py`, `scripts/tests/` | SDV and connect_again test suites |
-| ISO build | `iso-build/` | Reproducible Kali ISO build recipe |
-| Kali defenses | `kali-iso-server/hostile-env-defense/` | Hardening scripts for Kali installation |
+| Post-create | `bash .devcontainer/post-create.sh` | Prints network summary |
+| Network namespace status | `bash scripts/hum-dev-netns.sh status` | Requires `iproute2` |
+| Network namespace up/down | `sudo bash scripts/hum-dev-netns.sh up` | Requires root + `iproute2` |
+| DeepSeek importer | `python3 scripts/deepseek_db_link.py --source <dir> --database <db>` | Stdlib-only Python 3 |
+| Snap bypass | `bash scripts/hum-snap-bypass.sh <subcommand>` | Requires `squashfs-tools`, `squashfuse`, `xz-utils`, `file`, `fuse3` |
 
-### Running tests
+### Linting
 
-All Python code uses stdlib only — no `pip install` needed.
+No project-level lint config exists. Use these tools for quality checks:
 
-```bash
-# URI checker tests (8/9 pass in cloud; test_unreachable_host is env-limited)
-python3 -m unittest test_check -v
+- **Bash**: `shellcheck scripts/hum-dev-netns.sh .devcontainer/post-create.sh`
+- **Python**: `pyright scripts/deepseek_db_link.py` (install via `pip install pyright`)
 
-# Connect-again retry utility tests
-python3 -m unittest scripts.tests.test_connect_again -v
+### Docker / Dev Container build
 
-# SDV validation tests (9/9 pass)
-python3 -m unittest tests.test_sdv -v
+Building the `.devcontainer/Dockerfile` requires pulling `mcr.microsoft.com/devcontainers/base:ubuntu-24.04` from Microsoft Container Registry. This will fail in environments with restricted egress (e.g., Cursor Cloud VMs). The Dockerfile itself is valid and builds successfully on unrestricted networks.
 
-# Name Factory data pipeline
-cd site/data && python3 name_factory.py
-```
+- Docker must be started manually in the cloud VM: `sudo dockerd &` (wait ~3 seconds before running Docker commands).
+- Docker Hub is also blocked for image pulls in cloud VMs.
+- The host Ubuntu 24.04 environment matches the Dockerfile's base image, so networking tools can be installed and tested directly on the host as a substitute.
 
-### Serving the site locally
+### Snap bypass script
 
-The `site/` directory contains PHP pages. To serve locally with PHP's built-in server:
-```bash
-cd site && php -S 0.0.0.0:8000
-```
-Or use Python for static file serving: `python3 -m http.server 8000 --directory site`
+`scripts/hum-snap-bypass.sh` lets you extract, mount, inspect, and run snap packages (squashfs + xz) without snapd/systemd/cgroups. Run `bash scripts/hum-snap-bypass.sh deps` to check required host tooling. See `README.md` for full usage.
 
-### Known environment caveats
+### Key caveats
 
-- `test_unreachable_host` errors in cloud/sandboxed environments (egress proxy returns `RemoteDisconnected` instead of timeout). Not a code bug.
-- External HTTP requests may be blocked. Use a local HTTP server for reliable URI checker testing.
-- `iproute2` and `traceroute` must be installed for `post-create.sh` to display network info.
+- There are no automated tests in this repository.
+- There is no build step — scripts are run directly.
+- The `hum-dev-netns.sh up/down` subcommands require root privileges and will modify host network namespaces.
+- System dependency `iproute2` must be installed for the network namespace script to work (`sudo apt-get install -y iproute2`).

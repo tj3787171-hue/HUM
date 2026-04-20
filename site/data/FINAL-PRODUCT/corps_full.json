@@ -1,7 +1,7 @@
 {
   "house_of_corps": {
     "origin": "hum.org",
-    "timestamp": "2026-04-16T20:32:03.427309+00:00",
+    "timestamp": "2026-04-19T06:23:03.839887+00:00",
     "version": "1.0.0",
     "name_factory": "HUM Name Factory v1",
     "description": "Collective data after the Name Factory \u2014 reachability, velocity, and mission scored"
@@ -71,10 +71,178 @@
     "namespaces": []
   },
   "recup": {
-    "summary": {},
-    "templates": [],
-    "photos": [],
-    "manifest": []
+    "summary": {
+      "origin": "hum.org",
+      "timestamp": "2026-04-19T01:34:49Z",
+      "recup_home": "/home/troy",
+      "total_scanned": 13,
+      "photos_imported": 3,
+      "templates_imported": 10,
+      "skipped": 0,
+      "directories": {
+        "templates": "/home/troy/TEMPLATES",
+        "photos": "/home/troy/PHOTOS",
+        "recup_input": "/home/troy/recup_output"
+      }
+    },
+    "templates": [
+      {
+        "category": "code",
+        "files": [
+          "recovered_001.py",
+          "recovered_002.js",
+          "recovered_003.php",
+          "setup.sh"
+        ],
+        "count": 4
+      },
+      {
+        "category": "configs",
+        "files": [
+          "config.yaml",
+          "settings.json"
+        ],
+        "count": 2
+      },
+      {
+        "category": "data",
+        "files": [],
+        "count": 0
+      },
+      {
+        "category": "documents",
+        "files": [
+          "dump.sql",
+          "page.html",
+          "readme.md",
+          "style.css"
+        ],
+        "count": 4
+      },
+      {
+        "category": "scripts",
+        "files": [],
+        "count": 0
+      }
+    ],
+    "photos": [
+      {
+        "category": "gif",
+        "files": [
+          "anim.gif"
+        ],
+        "count": 1
+      },
+      {
+        "category": "jpg",
+        "files": [],
+        "count": 0
+      },
+      {
+        "category": "other",
+        "files": [],
+        "count": 0
+      },
+      {
+        "category": "png",
+        "files": [
+          "photo_001.png"
+        ],
+        "count": 1
+      },
+      {
+        "category": "svg",
+        "files": [
+          "diagram.svg"
+        ],
+        "count": 1
+      },
+      {
+        "category": "webp",
+        "files": [],
+        "count": 0
+      }
+    ],
+    "manifest": [
+      {
+        "file": "config.yaml",
+        "source": "recup_dir.1",
+        "class": "CONFIG",
+        "factory_tag": "HUM-RECUP-d8d04223"
+      },
+      {
+        "file": "page.html",
+        "source": "recup_dir.1",
+        "class": "DOC",
+        "factory_tag": "HUM-RECUP-f2df9ef3"
+      },
+      {
+        "file": "readme.md",
+        "source": "recup_dir.1",
+        "class": "DOC",
+        "factory_tag": "HUM-RECUP-5a831ea6"
+      },
+      {
+        "file": "recovered_001.py",
+        "source": "recup_dir.1",
+        "class": "CODE",
+        "factory_tag": "HUM-RECUP-e441b800"
+      },
+      {
+        "file": "recovered_002.js",
+        "source": "recup_dir.1",
+        "class": "CODE",
+        "factory_tag": "HUM-RECUP-a7ec1a4f"
+      },
+      {
+        "file": "recovered_003.php",
+        "source": "recup_dir.1",
+        "class": "CODE",
+        "factory_tag": "HUM-RECUP-226cc68a"
+      },
+      {
+        "file": "settings.json",
+        "source": "recup_dir.1",
+        "class": "CONFIG",
+        "factory_tag": "HUM-RECUP-e9e1aabe"
+      },
+      {
+        "file": "anim.gif",
+        "source": "recup_dir.2",
+        "class": "PHOTO",
+        "factory_tag": "HUM-RECUP-789b23dc"
+      },
+      {
+        "file": "diagram.svg",
+        "source": "recup_dir.2",
+        "class": "PHOTO",
+        "factory_tag": "HUM-RECUP-8bfd000e"
+      },
+      {
+        "file": "dump.sql",
+        "source": "recup_dir.2",
+        "class": "DOC",
+        "factory_tag": "HUM-RECUP-7d54fde5"
+      },
+      {
+        "file": "photo_001.png",
+        "source": "recup_dir.2",
+        "class": "PHOTO",
+        "factory_tag": "HUM-RECUP-1ca527fa"
+      },
+      {
+        "file": "setup.sh",
+        "source": "recup_dir.2",
+        "class": "CODE",
+        "factory_tag": "HUM-RECUP-4209d788"
+      },
+      {
+        "file": "style.css",
+        "source": "recup_dir.2",
+        "class": "DOC",
+        "factory_tag": "HUM-RECUP-b78be019"
+      }
+    ]
   },
   "wanted_comb": {
     "description": "Test/mock/log/comment/drop-camp banded data scored by reachability, velocity, mission",
@@ -90,6 +258,7 @@
         "type": "test",
         "message": "Container origin verified: hum.org",
         "timestamp": "2026-04-16T20:32:03.427243+00:00",
+        "timestamp": "2026-04-19T06:23:03.839794+00:00",
         "band": "alpha",
         "reachability": 60,
         "velocity": 90,
@@ -102,6 +271,22 @@
         "type": "mock",
         "message": "NETNS veth peer scan completed",
         "timestamp": "2026-04-16T20:32:03.427243+00:00",
+        "id": "log-009",
+        "type": "test",
+        "message": "Net driver recovery: check mode passed",
+        "timestamp": "2026-04-19T06:23:03.839794+00:00",
+        "band": "alpha",
+        "reachability": 60,
+        "velocity": 90,
+        "mission": 95,
+        "comb_score": 81.25,
+        "factory_tag": "HUM-ALPHA-eacd3306"
+      },
+      {
+        "id": "log-002",
+        "type": "mock",
+        "message": "NETNS veth peer scan completed",
+        "timestamp": "2026-04-19T06:23:03.839794+00:00",
         "band": "alpha",
         "reachability": 60,
         "velocity": 85,
@@ -114,6 +299,22 @@
         "type": "test",
         "message": "Topology JSON/XML sync validated",
         "timestamp": "2026-04-16T20:32:03.427243+00:00",
+        "id": "log-011",
+        "type": "mock",
+        "message": "RTNETLINK flush + loopback purge ready",
+        "timestamp": "2026-04-19T06:23:03.839794+00:00",
+        "band": "alpha",
+        "reachability": 60,
+        "velocity": 85,
+        "mission": 95,
+        "comb_score": 79.75,
+        "factory_tag": "HUM-ALPHA-506660fd"
+      },
+      {
+        "id": "log-004",
+        "type": "test",
+        "message": "Topology JSON/XML sync validated",
+        "timestamp": "2026-04-19T06:23:03.839794+00:00",
         "band": "beta",
         "reachability": 50,
         "velocity": 90,
@@ -126,6 +327,7 @@
         "type": "comment",
         "message": "Recup import pipeline initialized",
         "timestamp": "2026-04-16T20:32:03.427243+00:00",
+        "timestamp": "2026-04-19T06:23:03.839794+00:00",
         "band": "beta",
         "reachability": 40,
         "velocity": 70,
@@ -138,6 +340,22 @@
         "type": "test",
         "message": "Name factory hierarchy pass complete",
         "timestamp": "2026-04-16T20:32:03.427243+00:00",
+        "id": "log-010",
+        "type": "camp",
+        "message": "Systemd default.target tree captured",
+        "timestamp": "2026-04-19T06:23:03.839794+00:00",
+        "band": "beta",
+        "reachability": 40,
+        "velocity": 65,
+        "mission": 80,
+        "comb_score": 61.5,
+        "factory_tag": "HUM-BETA-d4d8d5dd"
+      },
+      {
+        "id": "log-008",
+        "type": "test",
+        "message": "Name factory hierarchy pass complete",
+        "timestamp": "2026-04-19T06:23:03.839794+00:00",
         "band": "delta",
         "reachability": 30,
         "velocity": 90,
@@ -150,6 +368,22 @@
         "type": "camp",
         "message": "Camp baseline: eth0 UP 172.30.0.2/24",
         "timestamp": "2026-04-16T20:32:03.427243+00:00",
+        "id": "log-012",
+        "type": "comment",
+        "message": "Driver unbind/rebind codex verified",
+        "timestamp": "2026-04-19T06:23:03.839794+00:00",
+        "band": "gamma",
+        "reachability": 30,
+        "velocity": 70,
+        "mission": 65,
+        "comb_score": 54.25,
+        "factory_tag": "HUM-GAMMA-5ae5a1b6"
+      },
+      {
+        "id": "log-006",
+        "type": "camp",
+        "message": "Camp baseline: eth0 UP 172.30.0.2/24",
+        "timestamp": "2026-04-19T06:23:03.839794+00:00",
         "band": "gamma",
         "reachability": 30,
         "velocity": 65,
@@ -162,6 +396,7 @@
         "type": "drop",
         "message": "Dropped packet analysis: 0% loss on lo",
         "timestamp": "2026-04-16T20:32:03.427243+00:00",
+        "timestamp": "2026-04-19T06:23:03.839794+00:00",
         "band": "gamma",
         "reachability": 30,
         "velocity": 60,
@@ -174,6 +409,7 @@
         "type": "comment",
         "message": "Palace of Web assembly started",
         "timestamp": "2026-04-16T20:32:03.427243+00:00",
+        "timestamp": "2026-04-19T06:23:03.839794+00:00",
         "band": "delta",
         "reachability": 20,
         "velocity": 70,
@@ -191,5 +427,490 @@
     "templates_categories": 0,
     "photos_categories": 0,
     "total_data_points": 14
+  "systemd": {
+    "default_target": "graphical.target",
+    "summary": {
+      "total_tracked": 71,
+      "active": 0,
+      "inactive": 0,
+      "failed": 0
+    },
+    "units": [
+      {
+        "unit": "ModemManager.service",
+        "active": "unknown",
+        "enabled": "unknown"
+      },
+      {
+        "unit": "NetworkManager.service",
+        "active": "unknown",
+        "enabled": "unknown"
+      },
+      {
+        "unit": "apt-daily-upgrade.timer",
+        "active": "unknown",
+        "enabled": "enabled"
+      },
+      {
+        "unit": "apt-daily.timer",
+        "active": "unknown",
+        "enabled": "enabled"
+      },
+      {
+        "unit": "avahi-daemon.service",
+        "active": "unknown",
+        "enabled": "unknown"
+      },
+      {
+        "unit": "avahi-daemon.socket",
+        "active": "unknown",
+        "enabled": "unknown"
+      },
+      {
+        "unit": "console-getty.service",
+        "active": "unknown",
+        "enabled": "unknown"
+      },
+      {
+        "unit": "dbus.service",
+        "active": "unknown",
+        "enabled": "static"
+      },
+      {
+        "unit": "dbus.socket",
+        "active": "unknown",
+        "enabled": "static"
+      },
+      {
+        "unit": "dev-hugepages.mount",
+        "active": "unknown",
+        "enabled": "static"
+      },
+      {
+        "unit": "dev-mqueue.mount",
+        "active": "unknown",
+        "enabled": "static"
+      },
+      {
+        "unit": "display-manager.service",
+        "active": "unknown",
+        "enabled": "unknown"
+      },
+      {
+        "unit": "docker.service",
+        "active": "unknown",
+        "enabled": "enabled"
+      },
+      {
+        "unit": "dpkg-db-backup.timer",
+        "active": "unknown",
+        "enabled": "enabled"
+      },
+      {
+        "unit": "e2scrub_all.timer",
+        "active": "unknown",
+        "enabled": "enabled"
+      },
+      {
+        "unit": "e2scrub_reap.service",
+        "active": "unknown",
+        "enabled": "enabled"
+      },
+      {
+        "unit": "fstrim.timer",
+        "active": "unknown",
+        "enabled": "enabled"
+      },
+      {
+        "unit": "getty-static.service",
+        "active": "unknown",
+        "enabled": "static"
+      },
+      {
+        "unit": "getty@tty1.service",
+        "active": "unknown",
+        "enabled": "enabled"
+      },
+      {
+        "unit": "kmod-static-nodes.service",
+        "active": "unknown",
+        "enabled": "static"
+      },
+      {
+        "unit": "lynis.timer",
+        "active": "unknown",
+        "enabled": "unknown"
+      },
+      {
+        "unit": "man-db.timer",
+        "active": "unknown",
+        "enabled": "enabled"
+      },
+      {
+        "unit": "networking.service",
+        "active": "unknown",
+        "enabled": "unknown"
+      },
+      {
+        "unit": "nftables.service",
+        "active": "unknown",
+        "enabled": "unknown"
+      },
+      {
+        "unit": "proc-sys-fs-binfmt_misc.automount",
+        "active": "unknown",
+        "enabled": "static"
+      },
+      {
+        "unit": "rtkit-daemon.service",
+        "active": "unknown",
+        "enabled": "unknown"
+      },
+      {
+        "unit": "ssh.service",
+        "active": "unknown",
+        "enabled": "unknown"
+      },
+      {
+        "unit": "ssh.socket",
+        "active": "unknown",
+        "enabled": "unknown"
+      },
+      {
+        "unit": "sys-fs-fuse-connections.mount",
+        "active": "unknown",
+        "enabled": "static"
+      },
+      {
+        "unit": "sys-kernel-config.mount",
+        "active": "unknown",
+        "enabled": "static"
+      },
+      {
+        "unit": "sys-kernel-debug.mount",
+        "active": "unknown",
+        "enabled": "static"
+      },
+      {
+        "unit": "sys-kernel-tracing.mount",
+        "active": "unknown",
+        "enabled": "static"
+      },
+      {
+        "unit": "systemd-ask-password-console.path",
+        "active": "unknown",
+        "enabled": "static"
+      },
+      {
+        "unit": "systemd-ask-password-wall.path",
+        "active": "unknown",
+        "enabled": "static"
+      },
+      {
+        "unit": "systemd-binfmt.service",
+        "active": "unknown",
+        "enabled": "static"
+      },
+      {
+        "unit": "systemd-firstboot.service",
+        "active": "unknown",
+        "enabled": "static"
+      },
+      {
+        "unit": "systemd-initctl.socket",
+        "active": "unknown",
+        "enabled": "static"
+      },
+      {
+        "unit": "systemd-journal-flush.service",
+        "active": "unknown",
+        "enabled": "static"
+      },
+      {
+        "unit": "systemd-journald-audit.socket",
+        "active": "unknown",
+        "enabled": "unknown"
+      },
+      {
+        "unit": "systemd-journald-dev-log.socket",
+        "active": "unknown",
+        "enabled": "static"
+      },
+      {
+        "unit": "systemd-journald.service",
+        "active": "unknown",
+        "enabled": "static"
+      },
+      {
+        "unit": "systemd-journald.socket",
+        "active": "unknown",
+        "enabled": "static"
+      },
+      {
+        "unit": "systemd-logind.service",
+        "active": "unknown",
+        "enabled": "static"
+      },
+      {
+        "unit": "systemd-machine-id-commit.service",
+        "active": "unknown",
+        "enabled": "static"
+      },
+      {
+        "unit": "systemd-modules-load.service",
+        "active": "unknown",
+        "enabled": "static"
+      },
+      {
+        "unit": "systemd-network-generator.service",
+        "active": "unknown",
+        "enabled": "unknown"
+      },
+      {
+        "unit": "systemd-networkd.service",
+        "active": "unknown",
+        "enabled": "unknown"
+      },
+      {
+        "unit": "systemd-pcrphase-sysinit.service",
+        "active": "unknown",
+        "enabled": "static"
+      },
+      {
+        "unit": "systemd-pcrphase.service",
+        "active": "unknown",
+        "enabled": "static"
+      },
+      {
+        "unit": "systemd-pstore.service",
+        "active": "unknown",
+        "enabled": "enabled"
+      },
+      {
+        "unit": "systemd-random-seed.service",
+        "active": "unknown",
+        "enabled": "static"
+      },
+      {
+        "unit": "systemd-remount-fs.service",
+        "active": "unknown",
+        "enabled": "static"
+      },
+      {
+        "unit": "systemd-repart.service",
+        "active": "unknown",
+        "enabled": "static"
+      },
+      {
+        "unit": "systemd-resolved.service",
+        "active": "unknown",
+        "enabled": "unknown"
+      },
+      {
+        "unit": "systemd-sysctl.service",
+        "active": "unknown",
+        "enabled": "static"
+      },
+      {
+        "unit": "systemd-sysext.service",
+        "active": "unknown",
+        "enabled": "unknown"
+      },
+      {
+        "unit": "systemd-sysusers.service",
+        "active": "unknown",
+        "enabled": "static"
+      },
+      {
+        "unit": "systemd-timesyncd.service",
+        "active": "unknown",
+        "enabled": "unknown"
+      },
+      {
+        "unit": "systemd-tmpfiles-clean.timer",
+        "active": "unknown",
+        "enabled": "static"
+      },
+      {
+        "unit": "systemd-tmpfiles-setup-dev.service",
+        "active": "unknown",
+        "enabled": "static"
+      },
+      {
+        "unit": "systemd-tmpfiles-setup.service",
+        "active": "unknown",
+        "enabled": "static"
+      },
+      {
+        "unit": "systemd-udev-trigger.service",
+        "active": "unknown",
+        "enabled": "unknown"
+      },
+      {
+        "unit": "systemd-udevd-control.socket",
+        "active": "unknown",
+        "enabled": "unknown"
+      },
+      {
+        "unit": "systemd-udevd-kernel.socket",
+        "active": "unknown",
+        "enabled": "unknown"
+      },
+      {
+        "unit": "systemd-udevd.service",
+        "active": "unknown",
+        "enabled": "unknown"
+      },
+      {
+        "unit": "systemd-update-utmp-runlevel.service",
+        "active": "unknown",
+        "enabled": "static"
+      },
+      {
+        "unit": "systemd-update-utmp.service",
+        "active": "unknown",
+        "enabled": "static"
+      },
+      {
+        "unit": "systemd-user-sessions.service",
+        "active": "unknown",
+        "enabled": "static"
+      },
+      {
+        "unit": "tmp.mount",
+        "active": "unknown",
+        "enabled": "unknown"
+      },
+      {
+        "unit": "usr-share-fonts-chromeos.mount",
+        "active": "unknown",
+        "enabled": "unknown"
+      },
+      {
+        "unit": "wpa_supplicant.service",
+        "active": "unknown",
+        "enabled": "unknown"
+      }
+    ],
+    "targets": [
+      {
+        "unit": "default.target",
+        "active": "unknown",
+        "enabled": "alias"
+      },
+      {
+        "unit": "multi-user.target",
+        "active": "unknown",
+        "enabled": "static"
+      },
+      {
+        "unit": "basic.target",
+        "active": "unknown",
+        "enabled": "static"
+      },
+      {
+        "unit": "paths.target",
+        "active": "unknown",
+        "enabled": "static"
+      },
+      {
+        "unit": "slices.target",
+        "active": "unknown",
+        "enabled": "static"
+      },
+      {
+        "unit": "sockets.target",
+        "active": "unknown",
+        "enabled": "static"
+      },
+      {
+        "unit": "sysinit.target",
+        "active": "unknown",
+        "enabled": "static"
+      },
+      {
+        "unit": "timers.target",
+        "active": "unknown",
+        "enabled": "static"
+      },
+      {
+        "unit": "getty.target",
+        "active": "unknown",
+        "enabled": "static"
+      },
+      {
+        "unit": "local-fs.target",
+        "active": "unknown",
+        "enabled": "static"
+      },
+      {
+        "unit": "swap.target",
+        "active": "unknown",
+        "enabled": "static"
+      },
+      {
+        "unit": "cryptsetup.target",
+        "active": "unknown",
+        "enabled": "static"
+      },
+      {
+        "unit": "integritysetup.target",
+        "active": "unknown",
+        "enabled": "static"
+      },
+      {
+        "unit": "veritysetup.target",
+        "active": "unknown",
+        "enabled": "static"
+      },
+      {
+        "unit": "remote-cryptsetup.target",
+        "active": "unknown",
+        "enabled": "unknown"
+      },
+      {
+        "unit": "remote-fs.target",
+        "active": "unknown",
+        "enabled": "enabled"
+      },
+      {
+        "unit": "remote-veritysetup.target",
+        "active": "unknown",
+        "enabled": "unknown"
+      }
+    ]
+  },
+  "recovery": {
+    "script": "net-driver-recover-auto.sh",
+    "codex_node": "auto-recover-netdriver",
+    "capabilities": [
+      "interface-detect",
+      "rtnetlink-flush",
+      "driver-unbind-rebind",
+      "modalias-probe",
+      "dhcp-lease",
+      "dns-reset",
+      "loopback-purge",
+      "self-update",
+      "systemd-install",
+      "snapshot-state"
+    ],
+    "commands": [
+      "recover",
+      "check",
+      "update",
+      "install",
+      "help"
+    ]
+  },
+  "gram_comb_totals": {
+    "topology_interfaces": 3,
+    "topology_routes": 3,
+    "recup_files": 13,
+    "wanted_comb_entries": 12,
+    "templates_categories": 5,
+    "photos_categories": 6,
+    "systemd_units": 71,
+    "total_data_points": 115
   }
 }

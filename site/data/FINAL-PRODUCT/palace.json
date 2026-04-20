@@ -1,9 +1,9 @@
 {
   "palace_of_web": true,
   "origin": "hum.org",
-  "timestamp": "2026-04-16T20:32:03.427309+00:00",
+  "timestamp": "2026-04-19T06:23:03.839887+00:00",
   "name_factory": "HUM Name Factory v1",
-  "total_data_points": 14,
+  "total_data_points": 115,
   "sections": [
     {
       "id": "topology",
@@ -13,22 +13,22 @@
     {
       "id": "recup",
       "label": "Recup Recovery",
-      "count": 0
+      "count": 13
     },
     {
       "id": "wanted_comb",
       "label": "Wanted Comb",
-      "count": 8
+      "count": 12
     },
     {
       "id": "templates",
       "label": "Templates",
-      "count": 0
+      "count": 5
     },
     {
       "id": "photos",
       "label": "Photos",
-      "count": 0
+      "count": 6
     }
   ]
 }

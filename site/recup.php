@@ -83,6 +83,8 @@ $photos_tree    = scan_dir("$recup_home/PHOTOS");
     <a href="recup.php" class="active">Recup</a>
     <a href="palace.php">Palace</a>
     <a href="playbook.php">Playbook</a>
+    <a href="recover.php">Recover</a>
+    <a href="palace.php">Palace</a>
     <a href="convo.php?source=list" target="_blank">API</a>
   </nav>
   <span style="margin-left:auto; font-size:.75rem; color:var(--text-dim);">

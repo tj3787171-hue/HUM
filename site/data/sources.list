@@ -1,5 +1,5 @@
 # sources.list — HUM.org House of Corps data source manifest
-# Generated: 2026-04-16T20:32:03.427309+00:00
+# Generated: 2026-04-19T06:23:03.839887+00:00
 # Origin: hum.org
 
 ## Topology Sources
@@ -16,6 +16,14 @@
   mock_logs              (generated: test, mock, comment, drop, camp)
   bands                  alpha, beta, gamma, delta
 
+## Systemd Service Tree
+  systemd_tree.json      /workspace/site/data/systemd_tree.json
+
+## Net Driver Recovery
+  net-driver-recover-auto.sh  (codex: auto-recover-netdriver)
+  capabilities           interface-detect, rtnetlink-flush, driver-unbind-rebind
+                         modalias-probe, dhcp-lease, dns-reset, loopback-purge
+
 ## FINAL-PRODUCT Output
   corps.json             /workspace/site/data/corps.json
   sources.list           /workspace/site/data/sources.list
@@ -24,8 +32,9 @@
 ## Totals
   topology_interfaces            3
   topology_routes                3
-  recup_files                    0
-  wanted_comb_entries            8
-  templates_categories           0
-  photos_categories              0
-  total_data_points              14
+  recup_files                    13
+  wanted_comb_entries            12
+  templates_categories           5
+  photos_categories              6
+  systemd_units                  71
+  total_data_points              115

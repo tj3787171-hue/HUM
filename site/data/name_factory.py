@@ -48,6 +48,10 @@ def load_recup_summary() -> dict:
     return load_json(RECUP_HOME / "recup_summary.json") or {}
 
 
+def load_systemd_tree() -> dict:
+    return load_json(HERE / "systemd_tree.json") or {}
+
+
 def scan_recup_tree(base: Path) -> list[dict]:
     items = []
     if not base.is_dir():
@@ -74,6 +78,10 @@ def generate_mock_logs() -> list[dict]:
         {"id": "log-006", "type": "camp",    "message": "Camp baseline: eth0 UP 172.30.0.2/24",    "timestamp": ts, "band": "gamma"},
         {"id": "log-007", "type": "comment", "message": "Palace of Web assembly started",          "timestamp": ts, "band": "delta"},
         {"id": "log-008", "type": "test",    "message": "Name factory hierarchy pass complete",     "timestamp": ts, "band": "delta"},
+        {"id": "log-009", "type": "test",    "message": "Net driver recovery: check mode passed",  "timestamp": ts, "band": "alpha"},
+        {"id": "log-010", "type": "camp",    "message": "Systemd default.target tree captured",    "timestamp": ts, "band": "beta"},
+        {"id": "log-011", "type": "mock",    "message": "RTNETLINK flush + loopback purge ready",  "timestamp": ts, "band": "alpha"},
+        {"id": "log-012", "type": "comment", "message": "Driver unbind/rebind codex verified",     "timestamp": ts, "band": "gamma"},
     ]
 
 # ---------------------------------------------------------------------------
@@ -134,6 +142,7 @@ def build_house_of_corps() -> dict:
     topology = load_topology()
     recup_manifest = load_recup_manifest()
     recup_summary = load_recup_summary()
+    systemd_data = load_systemd_tree()
     templates_tree = scan_recup_tree(RECUP_HOME / "TEMPLATES")
     photos_tree = scan_recup_tree(RECUP_HOME / "PHOTOS")
     mock_logs = generate_mock_logs()
@@ -188,6 +197,22 @@ def build_house_of_corps() -> dict:
             "bands": list(BAND_WEIGHTS.keys()),
             "entries": scored_logs,
         },
+        "systemd": {
+            "default_target": systemd_data.get("default_target", "unknown"),
+            "summary": systemd_data.get("summary", {}),
+            "units": systemd_data.get("units", []),
+            "targets": systemd_data.get("targets", []),
+        },
+        "recovery": {
+            "script": "net-driver-recover-auto.sh",
+            "codex_node": "auto-recover-netdriver",
+            "capabilities": [
+                "interface-detect", "rtnetlink-flush", "driver-unbind-rebind",
+                "modalias-probe", "dhcp-lease", "dns-reset", "loopback-purge",
+                "self-update", "systemd-install", "snapshot-state",
+            ],
+            "commands": ["recover", "check", "update", "install", "help"],
+        },
         "gram_comb_totals": {
             "topology_interfaces": len(iface_items),
             "topology_routes": len(topology.get("routes", [])),
@@ -195,11 +220,13 @@ def build_house_of_corps() -> dict:
             "wanted_comb_entries": len(scored_logs),
             "templates_categories": len(templates_tree),
             "photos_categories": len(photos_tree),
+            "systemd_units": len(systemd_data.get("units", [])),
             "total_data_points": (
                 len(iface_items) + len(topology.get("routes", [])) +
                 len(recup_items) + len(scored_logs) +
                 sum(c["count"] for c in templates_tree) +
-                sum(c["count"] for c in photos_tree)
+                sum(c["count"] for c in photos_tree) +
+                len(systemd_data.get("units", []))
             ),
         },
     }
@@ -228,6 +255,14 @@ def build_sources_list(corps: dict) -> str:
         "## Wanted Comb Sources",
         "  mock_logs              (generated: test, mock, comment, drop, camp)",
         "  bands                  alpha, beta, gamma, delta",
+        "",
+        "## Systemd Service Tree",
+        f"  systemd_tree.json      {HERE / 'systemd_tree.json'}",
+        "",
+        "## Net Driver Recovery",
+        "  net-driver-recover-auto.sh  (codex: auto-recover-netdriver)",
+        "  capabilities           interface-detect, rtnetlink-flush, driver-unbind-rebind",
+        "                         modalias-probe, dhcp-lease, dns-reset, loopback-purge",
         "",
         "## FINAL-PRODUCT Output",
         f"  corps.json             {HERE / 'corps.json'}",

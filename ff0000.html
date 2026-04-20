@@ -72,6 +72,97 @@
         border-top: 1px solid rgba(255, 255, 255, 0.3);
       }
 
+      .guide-panel {
+        margin-top: 1.25rem;
+        padding: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 14px;
+        background: rgba(0, 0, 0, 0.2);
+      }
+
+      .guide-panel h2,
+      .guide-panel h3 {
+        margin-top: 0;
+      }
+
+      .guide-grid {
+        display: grid;
+        gap: 0.75rem;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      }
+
+      .guide-card {
+        padding: 0.9rem;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+      }
+
+      .guide-card p,
+      .guide-card ol,
+      .guide-card ul {
+        margin-bottom: 0;
+      }
+
+      .chain-diagram {
+        display: grid;
+        gap: 0.75rem;
+        margin-top: 0.85rem;
+      }
+
+      .chain-link {
+        display: grid;
+        gap: 0.5rem;
+        align-items: center;
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      }
+
+      .chain-node {
+        padding: 0.8rem;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        text-align: center;
+      }
+
+      .chain-node strong,
+      .chain-node span {
+        display: block;
+      }
+
+      .chain-arrow {
+        text-align: center;
+        font-size: 1.15rem;
+        opacity: 0.85;
+      }
+
+      .command-list {
+        margin: 0.85rem 0 0;
+        padding-left: 1.25rem;
+      }
+
+      .command-list code {
+        white-space: nowrap;
+      .guidance {
+        margin-top: 1rem;
+        padding: 1rem;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      .guidance h3 {
+        margin: 0 0 0.5rem;
+      }
+
+      .guidance ol {
+        margin: 0.5rem 0 0;
+        padding-left: 1.25rem;
+      }
+
+      .guidance code {
+        font-size: 0.92rem;
+      }
+
       .control-row {
         display: grid;
         gap: 0.75rem;
@@ -135,13 +226,93 @@
       </section>
 
       <section id="screen-2" class="screen" hidden>
-        <h1>Next Navigation Screen</h1>
-        <p>The next screen is now active on top of the FF0000 theme.</p>
+        <h1>Merger Plot</h1>
+        <p>Bring the peer veth chain up first, then use the FF0000 plot controls to watch redraw cadence.</p>
         <button class="back" id="back-btn" type="button">Back</button>
+
+        <div class="guide-panel" aria-labelledby="guide-title">
+          <h2 id="guide-title">Peer veth chain guidance</h2>
+          <p>
+            The merger plot expects the developer proxy chain to exist before you start tracing behavior.
+            Use the defaults from <code>scripts/hum-dev-netns.sh</code> unless you have overridden
+            them with <code>HUM_*</code> variables.
+          </p>
+
+          <div class="chain-diagram" aria-label="Peer veth chain diagram">
+            <div class="chain-link">
+              <div class="chain-node">
+                <strong>root namespace</strong>
+                <span><code>hum-proxy-host0</code></span>
+                <span><code>10.200.0.1/30</code></span>
+                <span><code>fe80::1/64</code></span>
+              </div>
+              <div class="chain-arrow" aria-hidden="true">⇄ peer veth ⇄</div>
+              <div class="chain-node">
+                <strong>proxy namespace</strong>
+                <span><code>hum-proxy-ns0</code></span>
+                <span><code>10.200.0.2/30</code></span>
+                <span><code>fe80::2/64</code></span>
+              </div>
+            </div>
+            <div class="chain-link">
+              <div class="chain-node">
+                <strong>netns</strong>
+                <span><code>hum-proxy-ns</code></span>
+                <span>default via <code>10.200.0.1</code></span>
+              </div>
+              <div class="chain-arrow" aria-hidden="true">→ downstream hint →</div>
+              <div class="chain-node">
+                <strong>dummy endpoint</strong>
+                <span><code>hum-dummy0</code></span>
+                <span><code>198.18.0.1/24</code></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="guide-grid">
+            <article class="guide-card">
+              <h3>1. Create the chain</h3>
+              <p>Provision the root/netns peer pair and the dummy endpoint.</p>
+              <ol class="command-list">
+                <li><code>sudo bash scripts/hum-dev-netns.sh up</code></li>
+                <li><code>sudo bash scripts/hum-dev-netns.sh status</code></li>
+              </ol>
+            </article>
+            <article class="guide-card">
+              <h3>2. Confirm readiness</h3>
+              <ul class="command-list">
+                <li>Look for <code>peer recv-ready: yes</code>.</li>
+                <li>Verify both SMAC64 trace IDs are populated.</li>
+                <li>Confirm root and netns addresses match the diagram.</li>
+              </ul>
+            </article>
+            <article class="guide-card">
+              <h3>3. Trace downstream state</h3>
+              <p>Use trace mode when the plot suggests traffic or cadence changes.</p>
+              <ol class="command-list">
+                <li><code>sudo bash scripts/hum-dev-netns.sh trace</code></li>
+                <li><code>sudo bash scripts/hum-dev-netns.sh down</code></li>
+              </ol>
+            </article>
+          </div>
+        </div>
 
         <div class="grid-panel">
           <h2>Auto Grid Refresh</h2>
           <p>Grid redraw speed increases as velocity approaches 1.00.</p>
+          <div class="guidance" aria-label="Merger plot guidance">
+            <h3>Merger plot guidance</h3>
+            <p>
+              Read the grid left-to-right as a peer veth chain:
+              <strong>root</strong> to <strong>proxy</strong> to <strong>peer</strong>.
+            </p>
+            <ol>
+              <li>Use <strong>Lines</strong> to represent stacked merge lanes or packet batches.</li>
+              <li>Use <strong>Columns</strong> to represent each hop in the chain and its redraw density.</li>
+              <li>Increase <strong>Velocity</strong> to simulate faster peer turnover and merger pressure.</li>
+              <li>Pair this view with <code>sudo bash scripts/hum-dev-netns.sh status</code> for live chain guidance.</li>
+            </ol>
+          </div>
           <div class="control-row">
             <label for="lines-input">
               Lines
