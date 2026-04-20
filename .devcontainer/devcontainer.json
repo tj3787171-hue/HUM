@@ -1,4 +1,12 @@
 {
+  "name": "hum-lan-dev",
+  "dockerComposeFile": [
+    "docker-compose.lan.yml"
+  ],
+  "service": "dev",
+  "shutdownAction": "stopCompose",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  "remoteUser": "vscode",
   "name": "hum-private-dev",
   "build": {
     "dockerfile": "Dockerfile",
@@ -49,6 +57,9 @@
     3000,
     5173,
     8000,
+    8080
+  ],
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
     8080,
     5901,
     6080,
@@ -72,6 +83,7 @@
     "vscode": {
       "extensions": [
         "ms-azuretools.vscode-docker",
+        "ms-vscode-remote.remote-containers"
         "ms-vscode-remote.remote-containers",
         "ms-python.python",
         "redhat.vscode-yaml"
