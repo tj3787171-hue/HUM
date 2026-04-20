@@ -1,0 +1,242 @@
+{
+  "$schema": "./schemas/network-matrix.schema.json",
+  "version": 1,
+  "description": "L2/L3 edges for virtual setup: host bridges, veth pairs, planned nodes, and assertion links.",
+  "network_id": "hum-net-01",
+  "generated_at": "2026-04-05T00:00:00Z",
+  "nodes": [
+    {
+      "id": "HUM",
+      "kind": "host",
+      "role": "kali-host",
+      "mac": "4c:ea:41:63:e6:c6",
+      "labels": [
+        "physical",
+        "headless"
+      ]
+    },
+    {
+      "id": "local-laptop-dev",
+      "kind": "host",
+      "role": "developer-laptop",
+      "mac": "00:00:00:00:00:00",
+      "labels": [
+        "lan",
+        "workstation"
+      ]
+    },
+    {
+      "id": "virt-edge-01",
+      "kind": "virtual",
+      "role": "edge-router",
+      "labels": [
+        "planned"
+      ]
+    },
+    {
+      "id": "virt-lab-01",
+      "kind": "virtual",
+      "role": "forced-browser",
+      "labels": [
+        "planned"
+      ]
+    },
+    {
+      "id": "virt-ci-01",
+      "kind": "virtual",
+      "role": "ephemeral-runner",
+      "labels": [
+        "planned"
+      ]
+      "id": "penguin",
+      "kind": "host",
+      "role": "chromebook-linux",
+      "mac": "00:00:00:00:00:01",
+      "labels": [
+        "dev-ns",
+        "crostini",
+        "veth-pair",
+        "installer-proxy"
+      ],
+      "metadata": {
+        "gateway": "192.168.68.51",
+        "dns": ["209.18.47.61", "209.18.47.62"],
+        "ip_address": "192.168.68.52",
+        "veth_host": "penguin-veth0",
+        "veth_peer": "penguin-peer0",
+        "proxy_port": 3128
+      }
+    },
+    {
+      "id": "router-68-51",
+      "kind": "host",
+      "role": "home-router",
+      "labels": [
+        "lan",
+        "gateway",
+        "infra"
+      ],
+      "metadata": {
+        "ip_address": "192.168.68.51",
+        "dns": ["209.18.47.61", "209.18.47.62"],
+        "subnet": "192.168.68.0/22"
+      }
+    },
+    {
+      "id": "install-agent",
+      "kind": "virtual",
+      "role": "installer-agent",
+      "labels": [
+        "ssh-management",
+        "preseed",
+        "key-automation"
+      ],
+      "metadata": {
+        "scripts": [
+          "scripts/installer-agent/ssh-installer-agent.sh",
+          "scripts/installer-agent/ssh-key-manager.sh",
+          "scripts/installer-agent/setup-penguin-proxy.sh"
+        ],
+        "proxy_via": "penguin"
+      }
+    },
+    {
+      "id": "lab-www",
+      "kind": "virtual",
+      "role": "lab-web-server",
+      "labels": [
+        "lab-www",
+        "netns",
+        "veth-pair",
+        "reverse-proxy"
+      ],
+      "metadata": {
+        "ip_address": "10.223.77.2",
+        "veth_host": "lab-www-host0",
+        "veth_peer": "lab-www-ns0",
+        "cidr": "10.223.77.0/30",
+        "proxy_script": "scripts/lab-www-reverse-proxy.py",
+        "proxy_listen": "10.223.77.1:8080",
+        "upstream": "10.223.77.2:80"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "from": "docker0",
+      "to": "hum-proxy-host0",
+      "type": "bridge_path",
+      "bidirectional": true
+    },
+    {
+      "from": "hum-proxy-host0",
+      "to": "hum-proxy-ns0",
+      "type": "veth_pair",
+      "bidirectional": true
+    },
+    {
+      "from": "hum-proxy-peer0",
+      "to": "hum-peer-ns0",
+      "type": "veth_pair",
+      "bidirectional": true
+    },
+    {
+      "from": "virt-edge-01",
+      "to": "10.11.8.0/24",
+      "type": "routed_segment",
+      "gateway": "10.11.8.1",
+      "state": "planned"
+    },
+    {
+      "from": "local-laptop-dev",
+      "to": "192.168.68.0/24",
+      "type": "routed_segment",
+      "gateway": "192.168.68.1",
+      "state": "planned"
+    },
+    {
+      "from": "local-laptop-dev",
+      "to": "virt-edge-01",
+      "type": "logical_path",
+      "state": "planned",
+      "note": "Developer path into SDV 10.11.8.0/24 segment via edge node."
+    },
+    {
+      "from": "router-68-51",
+      "to": "192.168.68.0/22",
+      "type": "routed_segment",
+      "gateway": "192.168.68.51",
+      "state": "active",
+      "note": "Home router at 192.168.68.51 for dev-ns subnet with DNS 209.18.47.61/62"
+    },
+    {
+      "from": "penguin-veth0",
+      "to": "penguin-peer0",
+      "type": "veth_pair",
+      "bidirectional": true,
+      "state": "active",
+      "note": "veth pair connecting penguin host side to namespace peer side"
+    },
+    {
+      "from": "penguin",
+      "to": "penguin-peer0",
+      "type": "ns_attachment",
+      "state": "active",
+      "note": "penguin namespace attached via peer0 interface"
+    },
+    {
+      "from": "penguin",
+      "to": "router-68-51",
+      "type": "routed_path",
+      "gateway": "192.168.68.51",
+      "state": "active",
+      "note": "penguin routes to LAN via home router 192.168.68.51"
+    },
+    {
+      "from": "penguin",
+      "to": "install-agent",
+      "type": "proxy_path",
+      "state": "active",
+      "note": "Penguin namespace acts as APT proxy and SSH relay for installer targets via http://192.168.68.52:3128/"
+    },
+    {
+      "from": "install-agent",
+      "to": "HUM",
+      "type": "ssh_management",
+      "state": "active",
+      "note": "SSH installer agent manages Kali host installation remotely"
+    },
+    {
+      "from": "lab-www-host0",
+      "to": "lab-www-ns0",
+      "type": "veth_pair",
+      "bidirectional": true,
+      "state": "active",
+      "note": "Point-to-point veth for lab-www namespace (10.223.77.0/30)"
+    },
+    {
+      "from": "lab-www",
+      "to": "lab-www-ns0",
+      "type": "ns_attachment",
+      "state": "active",
+      "note": "lab-www namespace attached via ns0 interface at 10.223.77.2/30"
+    }
+  ],
+  "foreign_assertions": [
+    {
+      "subject_ref": {
+        "type": "node",
+        "id": "HUM"
+      },
+      "asserts": "gateway_for",
+      "object_ref": {
+        "type": "network",
+        "id": "hum-net-01"
+      },
+      "evidence_ref": {
+        "type": "evidence",
+        "id": "ev-bootstrap-001"
+      }
+    }
+  ]
+}

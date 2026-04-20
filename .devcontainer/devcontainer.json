@@ -1,33 +1,80 @@
 {
-  "name": "hum-lan-dev",
+  "name": "hum-private-dev",
   "build": {
     "dockerfile": "Dockerfile",
     "context": ".."
   },
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
   "remoteUser": "vscode",
+  "userEnvProbe": "loginInteractiveShell",
+  "runArgs": [
+    "--init",
+    "--add-host=host.docker.internal:host-gateway",
+    "--security-opt=no-new-privileges:true"
   "containerEnv": {
-    "HUM_ORIGIN": "hum.org",
-    "RECUP_HOME": "/home/troy"
+    "PYTHONPATH": "/workspaces/${localWorkspaceFolderBasename}"
   },
   "runArgs": [
     "--network=host",
-    "--hostname=hum.org",
-    "--add-host=hum.org:127.0.0.1",
-    "--add-host=host.docker.internal:host-gateway"
+    "--privileged",
+    "--cap-add=NET_ADMIN",
+    "--cap-add=NET_RAW",
+    "--add-host=host.docker.internal:host-gateway",
+    "--tmpfs=/mnt/default:rw,exec,size=128g",
+    "--sysctl=net.ipv4.ip_forward=1",
+    "--sysctl=net.ipv4.conf.all.rp_filter=0",
+    "--sysctl=net.ipv6.conf.all.disable_ipv6=0"
   ],
+  "mounts": [
+    "source=hum-iso-staging,target=/iso-staging,type=volume",
+    "source=hum-iso-output,target=/iso-output,type=volume",
+    "source=hum-vdrive-cache,target=/mnt/virtual-drive,type=volume",
+    "source=hum-vdrive-data,target=/mnt/default-vol,type=volume"
+    "source=hum-iso-output,target=/iso-output,type=volume"
+  ],
+  "containerEnv": {
+    "HUM_ENV_FILE": "${containerWorkspaceFolder}/.devcontainer/dev.env",
+    "HUM_VDESK_BIND": "127.0.0.1",
+    "HUM_VDESK_PORT": "6080",
+    "HUM_CHROME_REMOTE_DEBUG_ADDR": "127.0.0.1",
+    "HUM_CHROME_REMOTE_DEBUG_PORT": "9222"
+  },
+  "remoteEnv": {
+    "HTTP_PROXY": "${localEnv:HTTP_PROXY}",
+    "HTTPS_PROXY": "${localEnv:HTTPS_PROXY}",
+    "NO_PROXY": "${localEnv:NO_PROXY}",
+    "ALL_PROXY": "${localEnv:ALL_PROXY}"
+  },
   "forwardPorts": [
     3000,
     5173,
     8000,
-    8080
+    8080,
+    5901,
+    6080,
+    9222
   ],
+  "portsAttributes": {
+    "5901": {
+      "label": "virtual-desktop-vnc"
+    },
+    "6080": {
+      "label": "virtual-desktop-web"
+    },
+    "9222": {
+      "label": "chrome-remote-debug-local-only",
+      "onAutoForward": "silent"
+    }
+  },
   "postCreateCommand": "bash .devcontainer/post-create.sh",
+  "postStartCommand": "bash .devcontainer/post-start.sh",
   "customizations": {
     "vscode": {
       "extensions": [
         "ms-azuretools.vscode-docker",
-        "ms-vscode-remote.remote-containers"
+        "ms-vscode-remote.remote-containers",
+        "ms-python.python",
+        "redhat.vscode-yaml"
       ],
       "settings": {
         "terminal.integrated.defaultProfile.linux": "bash"

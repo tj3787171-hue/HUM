@@ -1,0 +1,118 @@
+# HUM Automated Installation Preseed
+# Avoids deprecated btrfs, uses ext4
+# Bypasses CDROM corruption by prioritizing network sources
+# Configured for SSH-based installation via penguin proxy
+
+# Localization
+d-i debian-installer/locale string en_US.UTF-8
+d-i keyboard-configuration/xkb-keymap select us
+
+# Disable CDROM scanning - use network only
+d-i apt-setup/cdrom boolean false
+d-i apt-setup/use_mirror boolean true
+d-i apt-setup/mirror/error select Ignore
+d-i apt-setup/disable-cdrom-entries boolean true
+
+# CDROM bypass: unmount and remove corrupt packages before install begins
+d-i preseed/early_command string \
+  umount /cdrom 2>/dev/null || true; \
+  umount /media/cdrom 2>/dev/null || true; \
+  rm -f /cdrom/pool/main/libm/libmd/libmd0_1.1.0-2+b1_amd64.deb 2>/dev/null || true; \
+  echo 'APT::CDROM::NoMount "true";' > /target/etc/apt/apt.conf.d/99no-cdrom 2>/dev/null || true
+
+# Network configuration
+d-i netcfg/choose_interface select auto
+d-i netcfg/get_hostname string hum-installer
+d-i netcfg/get_domain string local
+d-i netcfg/disable_autoconfig boolean false
+
+# Mirror configuration - use network mirror via proxy
+d-i mirror/country string manual
+d-i mirror/http/hostname string http.kali.org
+d-i mirror/http/directory string /kali
+d-i mirror/http/proxy string http://192.168.68.52:3128/
+
+# APT retry and fallback settings
+d-i apt-setup/services-select multiselect security, updates
+d-i apt-setup/security_host string http.kali.org
+
+# Clock and timezone
+d-i clock-setup/utc boolean true
+d-i time/zone string America/Chicago
+d-i clock-setup/ntp boolean true
+
+# Partitioning - EXT4 only, avoid btrfs
+d-i partman-auto/method string regular
+d-i partman-auto/choose_recipe select atomic
+d-i partman/default_filesystem string ext4
+d-i partman-auto/expert_recipe string \
+  boot-root :: \
+    512 512 512 fat32 \
+      $primary{ } \
+      method{ efi } \
+      format{ } \
+    . \
+    8192 8192 8192 linux-swap \
+      method{ swap } \
+      format{ } \
+    . \
+    10240 20480 -1 ext4 \
+      $primary{ } \
+      $bootable{ } \
+      method{ format } \
+      format{ } \
+      use_filesystem{ } \
+      filesystem{ ext4 } \
+      mountpoint{ / } \
+    .
+d-i partman-partitioning/confirm_write_new_label boolean true
+d-i partman/choose_partition select finish
+d-i partman/confirm boolean true
+d-i partman/confirm_nooverwrite boolean true
+
+# Force no btrfs
+d-i partman/filter_mounted boolean false
+d-i partman-basicfilesystems/no_swap boolean false
+
+# Account setup
+d-i passwd/root-login boolean true
+d-i passwd/root-password-crypted string !
+d-i passwd/user-fullname string HUM Admin
+d-i passwd/username string hum
+d-i passwd/user-password-crypted string !
+d-i user-setup/allow-password-weak boolean true
+d-i user-setup/encrypt-home boolean false
+
+# Base system installation
+d-i base-installer/kernel/image string linux-image-amd64
+
+# Package selection
+tasksel tasksel/first multiselect standard
+d-i pkgsel/include string openssh-server ca-certificates curl iproute2 jq tcpdump python3
+d-i pkgsel/upgrade select full-upgrade
+
+# Boot loader
+d-i grub-installer/only_debian boolean true
+d-i grub-installer/with_other_os boolean true
+d-i grub-installer/bootdev string default
+
+# DNS configuration
+d-i netcfg/get_nameservers string 209.18.47.61 209.18.47.62
+
+# Avoid popularity contest
+popularity-contest popularity-contest/participate boolean false
+
+# Finish installation
+d-i finish-install/reboot_in_progress note
+d-i debian-installer/exit/halt boolean false
+d-i debian-installer/exit/poweroff boolean false
+
+# Late command: ensure SSH, clean up, set DNS
+d-i preseed/late_command string \
+  in-target systemctl enable ssh; \
+  echo 'nameserver 209.18.47.61' > /target/etc/resolv.conf; \
+  echo 'nameserver 209.18.47.62' >> /target/etc/resolv.conf; \
+  echo 'Acquire::Retries "5";' > /target/etc/apt/apt.conf.d/80retries; \
+  echo 'Acquire::http::Timeout "30";' >> /target/etc/apt/apt.conf.d/80retries; \
+  sed -i 's/^deb cdrom:/# deb cdrom:/' /target/etc/apt/sources.list 2>/dev/null || true; \
+  echo 'APT::CDROM::NoMount "true";' > /target/etc/apt/apt.conf.d/99no-cdrom

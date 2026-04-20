@@ -1,47 +1,62 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-export HUM_ORIGIN="${HUM_ORIGIN:-hum.org}"
-export RECUP_HOME="${RECUP_HOME:-/home/troy}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+WORKSPACE_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
-echo "============================================"
-echo "  HUM.org Dev Container Ready"
-echo "  Origin:  $HUM_ORIGIN"
-echo "============================================"
-echo ""
+if [[ ! -f "${WORKSPACE_DIR}/.devcontainer/dev.env" && -f "${WORKSPACE_DIR}/.devcontainer/dev.env.example" ]]; then
+  cp "${WORKSPACE_DIR}/.devcontainer/dev.env.example" "${WORKSPACE_DIR}/.devcontainer/dev.env"
+  chmod 600 "${WORKSPACE_DIR}/.devcontainer/dev.env"
+  echo "Created .devcontainer/dev.env from example. Review and edit private values."
+fi
 
+bash "${SCRIPT_DIR}/import-environment.sh" "${WORKSPACE_DIR}/.devcontainer/dev.env"
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+echo "Dev container ready."
+echo "Workspace: $ROOT_DIR"
+echo
 echo "Network summary:"
 ip -brief addr || true
 echo
-echo "Default route:"
+echo "Default route(s):"
 ip route show default || true
 echo
-
-echo "--- Recup Data Import ---"
-if command -v recup-setup &>/dev/null; then
-    recup-setup
-elif [ -f .devcontainer/recup-setup.sh ]; then
-    bash .devcontainer/recup-setup.sh
+echo "Default route(s) IPv6:"
+ip -6 route show default || true
+echo
+echo "Kernel module check (macsec):"
+if command -v lsmod >/dev/null 2>&1; then
+  if lsmod | grep -q "^macsec"; then
+    echo "macsec module is loaded."
+  else
+    echo "macsec module is not currently loaded (load on demand if needed)."
+  fi
 else
-    echo "  recup-setup not found; creating workspace directories."
-    mkdir -p "$RECUP_HOME"/{TEMPLATES/{code,documents,configs,scripts,data},PHOTOS/{jpg,png,gif,svg,webp,other},recup_output}
-fi
-
-echo ""
-echo "--- Net Driver Recovery (check mode) ---"
-if command -v net-driver-recover-auto.sh &>/dev/null; then
-    net-driver-recover-auto.sh check 2>&1 | head -40 || true
-elif [ -f .devcontainer/net-driver-recover-auto.sh ]; then
-    bash .devcontainer/net-driver-recover-auto.sh check 2>&1 | head -40 || true
+  echo "lsmod command is unavailable; cannot inspect kernel modules."
+if lsmod | grep -q "^macsec"; then
+  echo "macsec module is loaded."
 else
-    echo "  net-driver-recover-auto.sh not found; skipping."
+  echo "macsec module is not currently loaded (load on demand if needed)."
 fi
+echo
+echo "Tooling check:"
+for cmd in ip jq yq python3 shellcheck; do
+  if command -v "$cmd" >/dev/null 2>&1; then
+    echo "  - $cmd: ok"
+  else
+    echo "  - $cmd: missing"
+  fi
+done
 
-echo ""
-echo "--- Workspace Layout ---"
-echo "  TEMPLATES: $RECUP_HOME/TEMPLATES/"
-ls -1d "$RECUP_HOME/TEMPLATES"/*/ 2>/dev/null | sed 's/^/    /' || echo "    (empty)"
-echo "  PHOTOS:    $RECUP_HOME/PHOTOS/"
-ls -1d "$RECUP_HOME/PHOTOS"/*/ 2>/dev/null | sed 's/^/    /' || echo "    (empty)"
-echo ""
-echo "Dev container setup complete."
+echo
+echo "Mountpoint check:"
+for mp in /iso-staging /iso-output /mnt/default /mnt/default-vol /mnt/virtual-drive; do
+  if mountpoint -q "$mp" 2>/dev/null; then
+    echo "  - $mp: mounted"
+  elif [[ -d "$mp" ]]; then
+    echo "  - $mp: present (not mounted)"
+  else
+    echo "  - $mp: missing"
+  fi
+done
