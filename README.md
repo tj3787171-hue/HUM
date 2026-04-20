@@ -81,6 +81,14 @@ This creates/maintains:
 
 - proxy namespace: `hum-proxy-ns`
 - proxy veth pair: `hum-proxy-host0` (root) <-> `hum-proxy-ns0` (inside netns)
+- peer namespace: `hum-peer-ns`
+- peer veth pair: `hum-peer-host0` (inside `hum-proxy-ns`) <-> `hum-peer-ns0` (inside `hum-peer-ns`)
+- dummy interface: `hum-dummy0`
+- a status view that also reports `docker0` if present
+
+The default topology is now a peer chain:
+
+`root -> hum-proxy-host0 -> hum-proxy-ns -> hum-peer-host0 -> hum-peer-ns`
 - peer namespace: `hum-peer-ns` (enabled by default)
 - peer veth pair: `hum-proxy-peer0` (inside `hum-proxy-ns`) <-> `hum-peer-ns0` (inside `hum-peer-ns`)
 - dummy interface: `hum-dummy0`
@@ -153,9 +161,21 @@ The proxy veth pair now also carries link-local IPv6 for tracing:
 - host side: `fe80::1/64` (default `HUM_PROXY_HOST_LL6`)
 - netns side: `fe80::2/64` (default `HUM_PROXY_NS_LL6`)
 
+The peer chain also carries link-local IPv6 for tracing:
+
+- proxy side: `fe80::5/64` (default `HUM_PEER_PROXY_LL6`)
+- peer side: `fe80::6/64` (default `HUM_PEER_NS_LL6`)
+
+Set `HUM_ENABLE_PEER_CHAIN=0` if you want to keep the original single-pair setup.
+
 `trace` reports:
 
 - peer recv-ready state
+- peer chain recv-ready state plus the guidance path
+- downstream nested RX packet counters (host + netns)
+- peer chain RX packet counters (proxy + peer)
+- SMAC64-style trace IDs derived from interface MAC addresses
+- IPv4/IPv6 route and neighbor snapshots for the proxy and peer namespaces
 - peer-chain recv-ready state (when enabled)
 - downstream nested RX packet counters (host + netns, or host + proxy-main + proxy-peer + peer when enabled)
 - SMAC64-style trace IDs derived from interface MAC addresses

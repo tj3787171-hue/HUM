@@ -10,6 +10,16 @@ PROXY_NS_CIDR="${HUM_PROXY_NS_CIDR:-10.200.0.2/30}"
 PROXY_DEFAULT_GW="${HUM_PROXY_DEFAULT_GW:-10.200.0.1}"
 PROXY_HOST_LL6="${HUM_PROXY_HOST_LL6:-fe80::1/64}"
 PROXY_NS_LL6="${HUM_PROXY_NS_LL6:-fe80::2/64}"
+ENABLE_PEER_CHAIN="${HUM_ENABLE_PEER_CHAIN:-1}"
+PEER_NS="${HUM_PEER_NS:-hum-peer-ns}"
+PEER_PROXY_IF="${HUM_PEER_PROXY_IF:-hum-peer-host0}"
+PEER_NS_IF="${HUM_PEER_NS_IF:-hum-peer-ns0}"
+PEER_PROXY_CIDR="${HUM_PEER_PROXY_CIDR:-10.200.0.5/30}"
+PEER_NS_CIDR="${HUM_PEER_NS_CIDR:-10.200.0.6/30}"
+PEER_DEFAULT_GW="${HUM_PEER_DEFAULT_GW:-10.200.0.5}"
+PEER_CHAIN_SUBNET="${HUM_PEER_CHAIN_SUBNET:-10.200.0.4/30}"
+PEER_PROXY_LL6="${HUM_PEER_PROXY_LL6:-fe80::5/64}"
+PEER_NS_LL6="${HUM_PEER_NS_LL6:-fe80::6/64}"
 PEER_CHAIN_ENABLE="${HUM_ENABLE_PEER_CHAIN:-1}"
 PEER_NS="${HUM_PEER_NS:-hum-peer-ns}"
 PROXY_PEER_IF="${HUM_PROXY_PEER_IF:-hum-proxy-peer0}"
@@ -47,6 +57,13 @@ Optional environment overrides:
   HUM_PROXY_NS_LL6
   HUM_ENABLE_PEER_CHAIN
   HUM_PEER_NS
+  HUM_PEER_PROXY_IF
+  HUM_PEER_NS_IF
+  HUM_PEER_PROXY_CIDR
+  HUM_PEER_NS_CIDR
+  HUM_PEER_DEFAULT_GW
+  HUM_PEER_CHAIN_SUBNET
+  HUM_PEER_PROXY_LL6
   HUM_PROXY_PEER_IF
   HUM_PEER_NS_IF
   HUM_PROXY_PEER_CIDR
@@ -135,6 +152,10 @@ ns_rx_packets() {
   ip -n "$1" -s link show dev "$2" 2>/dev/null | awk '/RX:/{getline; print $2; exit}'
 }
 
+cidr_ip() {
+  printf '%s\n' "${1%%/*}"
+}
+
 link_is_up() {
   ip -br link show dev "$1" 2>/dev/null | awk '{print $2}' | grep -q "UP"
 }
@@ -166,6 +187,17 @@ peer_recv_ready() {
     ns_link_is_up "$PROXY_NS" "$PROXY_NS_IF"
 }
 
+peer_chain_enabled() {
+  [[ "$ENABLE_PEER_CHAIN" != "0" ]]
+}
+
+peer_chain_recv_ready() {
+  peer_chain_enabled && \
+    netns_exists "$PROXY_NS" && \
+    netns_exists "$PEER_NS" && \
+    ns_link_exists "$PROXY_NS" "$PEER_PROXY_IF" && \
+    ns_link_exists "$PEER_NS" "$PEER_NS_IF" && \
+    ns_link_is_up "$PROXY_NS" "$PEER_PROXY_IF" && \
 # True when ip -n can read interfaces in PROXY_NS (fails for non-root with EPERM).
 netns_ip_n_readable() {
   ip -n "$PROXY_NS" link show lo >/dev/null 2>&1
@@ -272,6 +304,18 @@ up() {
     fi
 
     # Keep the peer chain coherent; recreate if either side is missing.
+    if ! ns_link_exists "$PROXY_NS" "$PEER_PROXY_IF" || ! ns_link_exists "$PEER_NS" "$PEER_NS_IF"; then
+      ip -n "$PROXY_NS" link del "$PEER_PROXY_IF" 2>/dev/null || true
+      ip -n "$PEER_NS" link del "$PEER_NS_IF" 2>/dev/null || true
+      ip -n "$PROXY_NS" link add "$PEER_PROXY_IF" type veth peer name "$PEER_NS_IF"
+      ip -n "$PROXY_NS" link set "$PEER_NS_IF" netns "$PEER_NS"
+    fi
+
+    ip -n "$PROXY_NS" link set "$PEER_PROXY_IF" up
+    ip -n "$PROXY_NS" addr replace "$PEER_PROXY_CIDR" dev "$PEER_PROXY_IF"
+    ip -n "$PROXY_NS" -6 addr replace "$PEER_PROXY_LL6" dev "$PEER_PROXY_IF"
+    ip netns exec "$PROXY_NS" sysctl -qw net.ipv4.ip_forward=1
+    ip netns exec "$PROXY_NS" sysctl -qw net.ipv6.conf.all.forwarding=1
     if ! ns_link_exists "$PROXY_NS" "$PROXY_PEER_IF" || ! ns_link_exists "$PEER_NS" "$PEER_NS_IF"; then
       ip -n "$PROXY_NS" link del "$PROXY_PEER_IF" 2>/dev/null || true
       ip -n "$PEER_NS" link del "$PEER_NS_IF" 2>/dev/null || true
@@ -288,6 +332,9 @@ up() {
     ip -n "$PEER_NS" addr replace "$PEER_NS_CIDR" dev "$PEER_NS_IF"
     ip -n "$PEER_NS" -6 addr replace "$PEER_NS_LL6" dev "$PEER_NS_IF"
     ip -n "$PEER_NS" route replace default via "$PEER_DEFAULT_GW" dev "$PEER_NS_IF"
+    ip -n "$PEER_NS" -6 route replace default via "${PEER_PROXY_LL6%%/*}" dev "$PEER_NS_IF"
+
+    ip route replace "$PEER_CHAIN_SUBNET" via "$(cidr_ip "$PROXY_NS_CIDR")" dev "$PROXY_HOST_IF"
     ip -n "$PEER_NS" -6 route replace default via "${PROXY_PEER_LL6%%/*}" dev "$PEER_NS_IF"
   fi
 
@@ -308,6 +355,8 @@ up() {
 
 down() {
   ip link del "$DUMMY_IF" 2>/dev/null || true
+  ip route del "$PEER_CHAIN_SUBNET" via "$(cidr_ip "$PROXY_NS_CIDR")" dev "$PROXY_HOST_IF" 2>/dev/null || true
+  ip -n "$PROXY_NS" link del "$PEER_PROXY_IF" 2>/dev/null || true
   ip -n "$PROXY_NS" link del "$PROXY_PEER_IF" 2>/dev/null || true
   ip -n "$PEER_NS" link del "$PEER_NS_IF" 2>/dev/null || true
   ip netns delete "$PEER_NS" 2>/dev/null || true
@@ -319,6 +368,7 @@ down() {
 
 status() {
   local host_mac ns_mac host_smac64 ns_smac64 host_rx ns_rx
+  local peer_proxy_mac peer_ns_mac peer_proxy_smac64 peer_ns_smac64 peer_proxy_rx peer_ns_rx
   local proxy_peer_mac peer_ns_mac proxy_peer_smac64 peer_ns_smac64 proxy_peer_rx peer_ns_rx
   host_mac="$(iface_mac "$PROXY_HOST_IF" || true)"
   ns_mac="$(ns_iface_mac "$PROXY_NS" "$PROXY_NS_IF" || true)"
@@ -326,6 +376,13 @@ status() {
   ns_smac64="$(smac64_from_mac "$ns_mac")"
   host_rx="$(root_rx_packets "$PROXY_HOST_IF" || true)"
   ns_rx="$(ns_rx_packets "$PROXY_NS" "$PROXY_NS_IF" || true)"
+  peer_proxy_mac="$(ns_iface_mac "$PROXY_NS" "$PEER_PROXY_IF" || true)"
+  peer_ns_mac="$(ns_iface_mac "$PEER_NS" "$PEER_NS_IF" || true)"
+  peer_proxy_smac64="$(smac64_from_mac "$peer_proxy_mac")"
+  peer_ns_smac64="$(smac64_from_mac "$peer_ns_mac")"
+  peer_proxy_rx="$(ns_rx_packets "$PROXY_NS" "$PEER_PROXY_IF" || true)"
+  peer_ns_rx="$(ns_rx_packets "$PEER_NS" "$PEER_NS_IF" || true)"
+
   proxy_peer_mac="$(ns_iface_mac "$PROXY_NS" "$PROXY_PEER_IF" || true)"
   peer_ns_mac="$(ns_iface_mac "$PEER_NS" "$PEER_NS_IF" || true)"
   proxy_peer_smac64="$(smac64_from_mac "$proxy_peer_mac")"
@@ -339,6 +396,8 @@ status() {
   echo "peer recv-ready: $HUM_PEER_RECV_READY"
   echo "proxy namespace: $PROXY_NS"
   echo "proxy links: host=$PROXY_HOST_IF ns=$PROXY_NS_IF"
+  echo "peer namespace: $PEER_NS"
+  echo "peer links: proxy=$PEER_PROXY_IF ns=$PEER_NS_IF"
   if peer_chain_enabled; then
     echo "peer chain: enabled"
     echo "peer namespace: $PEER_NS"
@@ -358,6 +417,18 @@ status() {
     else
       echo "peer chain recv-ready: no"
     fi
+    echo "guidance: root -> $PROXY_NS -> $PEER_NS"
+  else
+    echo "peer chain recv-ready: disabled"
+    echo "guidance: set HUM_ENABLE_PEER_CHAIN=1 to create a peer veth chain"
+  fi
+  echo "trace-smac64 host: $host_smac64"
+  echo "trace-smac64 ns:   $ns_smac64"
+  echo "downstream nested packets (rx): host=${host_rx:-0} ns=${ns_rx:-0}"
+  if peer_chain_enabled; then
+    echo "trace-smac64 peer-proxy: $peer_proxy_smac64"
+    echo "trace-smac64 peer-ns:    $peer_ns_smac64"
+    echo "peer chain packets (rx): proxy=${peer_proxy_rx:-0} peer=${peer_ns_rx:-0}"
   fi
   echo "trace-smac64 host: $host_smac64"
   echo "trace-smac64 ns:   $ns_smac64"
@@ -391,6 +462,12 @@ status() {
   if peer_chain_enabled; then
     echo
     if netns_exists "$PEER_NS"; then
+      echo "[netns:$PROXY_NS] $PEER_PROXY_IF"
+      ip -n "$PROXY_NS" -br addr show dev "$PEER_PROXY_IF" 2>/dev/null || true
+      echo
+      echo "[root] peer chain route"
+      ip route show "$PEER_CHAIN_SUBNET" 2>/dev/null || true
+      echo
       echo "[netns:$PEER_NS] $PEER_NS_IF"
       ip -n "$PEER_NS" -br addr show dev "$PEER_NS_IF" 2>/dev/null || true
       echo "[netns:$PEER_NS] default route"
@@ -465,6 +542,18 @@ trace() {
 
   if peer_chain_enabled; then
     echo
+    echo "[netns:$PROXY_NS] peer link counters"
+    ip -n "$PROXY_NS" -s link show dev "$PEER_PROXY_IF" 2>/dev/null || true
+    echo
+    echo "[netns:$PEER_NS] link counters"
+    ip -n "$PEER_NS" -s link show dev "$PEER_NS_IF" 2>/dev/null || true
+    echo
+    echo "[netns:$PEER_NS] IPv6 neighbors"
+    ip -n "$PEER_NS" -6 neigh show dev "$PEER_NS_IF" 2>/dev/null || true
+    echo
+    echo "[netns:$PEER_NS] route table"
+    ip -n "$PEER_NS" route show 2>/dev/null || true
+    ip -n "$PEER_NS" -6 route show 2>/dev/null || true
     echo "[netns:$PROXY_NS] peer-link counters"
     ip -n "$PROXY_NS" -s link show dev "$PROXY_PEER_IF" 2>/dev/null || true
     if netns_exists "$PEER_NS"; then
@@ -503,6 +592,9 @@ main() {
   case "$action" in
     up)
       need_cmd ip
+      if peer_chain_enabled; then
+        need_cmd sysctl
+      fi
       require_root
       up
       ;;
