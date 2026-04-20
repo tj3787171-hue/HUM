@@ -1,0 +1,102 @@
+lab-www — namespace-isolated HTTP lab with reverse proxy
+========================================================
+
+Overview
+--------
+lab-www provides a network-namespace-isolated web server slot reachable
+from the host through a Python reverse proxy.  The host-side veth
+endpoint runs the proxy (scripts/lab-www-reverse-proxy.py); the
+namespace-side endpoint is where you run any HTTP server of your choice.
+
+Default addressing uses the 10.223.77.0/30 point-to-point link:
+
+  host side  (lab-www-host0)  10.223.77.1/30   ← proxy listens here
+  ns side    (lab-www-ns0)    10.223.77.2/30   ← your web server here
+
+If 10.223.77.0/30 clashes with something else on your machine, override
+with the environment variables listed below.
+
+
+Quick start (needs root for netns/veth)
+---------------------------------------
+
+  # 1. Create the namespace and veth pair
+  sudo ip netns add lab-www
+  sudo ip link add lab-www-host0 type veth peer name lab-www-ns0
+  sudo ip link set lab-www-ns0 netns lab-www
+
+  # 2. Bring up and address the host side
+  sudo ip link set lab-www-host0 up
+  sudo ip addr add 10.223.77.1/30 dev lab-www-host0
+
+  # 3. Bring up and address the namespace side
+  sudo ip -n lab-www link set lo up
+  sudo ip -n lab-www link set lab-www-ns0 up
+  sudo ip -n lab-www addr add 10.223.77.2/30 dev lab-www-ns0
+  sudo ip -n lab-www route add default via 10.223.77.1 dev lab-www-ns0
+
+  # 4. Start a test web server inside the namespace
+  sudo ip netns exec lab-www python3 -m http.server 80 --bind 10.223.77.2 &
+
+  # 5. Start the reverse proxy on the host
+  python3 scripts/lab-www-reverse-proxy.py
+
+  # 6. Verify
+  curl http://10.223.77.1:8080/
+
+
+Tear-down
+---------
+
+  sudo ip link del lab-www-host0 2>/dev/null
+  sudo ip netns delete lab-www 2>/dev/null
+
+
+Environment overrides
+---------------------
+All overrides are optional; defaults are shown.
+
+  LAB_WWW_HOST_IP         10.223.77.1     host-side veth address
+  LAB_WWW_NS_IP           10.223.77.2     namespace-side veth address
+  LAB_WWW_LISTEN_PORT     8080            proxy listen port
+  LAB_WWW_UPSTREAM_PORT   80              upstream port inside namespace
+  LAB_WWW_UPSTREAM_TIMEOUT 30             upstream connect/read timeout (s)
+  LAB_WWW_BIND            (= HOST_IP)     bind address for proxy listener
+
+Example with custom addressing:
+
+  export LAB_WWW_HOST_IP=172.30.0.1
+  export LAB_WWW_NS_IP=172.30.0.2
+  # then repeat the quick-start steps with those IPs
+
+
+Naming conventions
+------------------
+Follows the existing hum-dev-netns.sh pattern:
+
+  namespace:  lab-www
+  host veth:  lab-www-host0
+  ns veth:    lab-www-ns0
+  segment:    10.223.77.0/30  (point-to-point, /30)
+
+
+Network topology
+----------------
+Registered in websetup/virtual/ as:
+
+  network-matrix.json  →  node "lab-www" + veth_pair edge
+  virtual-setup.yml    →  segment "lab-www", namespace entry, node
+  inventory.csv        →  lab-www, lab-www-host0, lab-www-ns0 rows
+
+The lab-www namespace does NOT route to the internet by default.
+Only host-to-ns connectivity is provided via the /30 link.
+To add outbound NAT, run:
+
+  sudo iptables -t nat -A POSTROUTING -s 10.223.77.0/30 -j MASQUERADE
+  sudo sysctl -w net.ipv4.ip_forward=1
+
+
+Files
+-----
+  scripts/lab-www-reverse-proxy.py   Reverse proxy (stdlib, no deps)
+  scripts/lab-www.txt                This file
