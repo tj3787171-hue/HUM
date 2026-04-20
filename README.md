@@ -86,6 +86,20 @@ This creates/maintains:
 - dummy interface: `hum-dummy0`
 - a status view that also reports `docker0` if present
 
+Peer veth chain sketch:
+
+```text
+root namespace
+  hum-proxy-host0 10.200.0.1/30 fe80::1/64
+    || veth peer ||
+netns hum-proxy-ns
+  hum-proxy-ns0   10.200.0.2/30 fe80::2/64
+    -> default IPv4 via 10.200.0.1
+    -> default IPv6 via fe80::1
+
+side links:
+  hum-dummy0
+  docker0 (if present)
 ### Merger plot guidance
 
 For merger plot work, use the default peer veth chain so traces include both legs:
@@ -116,10 +130,17 @@ sudo env HUM_ENABLE_PEER_CHAIN=0 bash scripts/hum-dev-netns.sh up
 Useful commands:
 
 ```bash
+bash scripts/hum-dev-netns.sh guide
 sudo bash scripts/hum-dev-netns.sh status
 sudo bash scripts/hum-dev-netns.sh trace
 sudo bash scripts/hum-dev-netns.sh down
 ```
+
+`guide` prints the current peer veth chain plus the exact `up`, `status`,
+`ping`, `trace`, and `down` commands to verify it end-to-end. When run
+without `sudo`, the netns side can show as `unknown` if `ip -n` introspection
+is denied; use `sudo bash scripts/hum-dev-netns.sh status` for authoritative
+peer state.
 
 All names can be overridden through `HUM_*` environment variables shown by:
 
@@ -222,6 +243,20 @@ The merger plot is a traffic-convergence model:
 | `HUM_CHAIN_PREFIX` | `hum-chain` | Namespace/interface name prefix |
 | `HUM_CHAIN_LENGTH` | `3` | Number of hops |
 | `HUM_CHAIN_BASE_NET` | `10.201` | First two octets of hop subnets |
+
+Quick peer verification:
+
+```bash
+sudo ip netns exec hum-proxy-ns ping -c 1 10.200.0.1
+sudo ip netns exec hum-proxy-ns ping -6 -I hum-proxy-ns0 -c 1 fe80::1
+# optional zone-style form:
+# sudo ip netns exec hum-proxy-ns ping -6 -c 1 fe80::1%hum-proxy-ns0
+```
+
+If IPv6 still fails while IPv4 works, use `status` to inspect the host veth's
+other `fe80::/64` address and test that EUI-64 address, then check ICMPv6
+policy such as `ip6tables`/`nft` rules or
+`sysctl net.ipv6.icmp.echo_ignore_all`.
 
 ## DeepSeek backup -> SQLite database linking
 
