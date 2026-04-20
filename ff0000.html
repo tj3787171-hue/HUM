@@ -72,6 +72,16 @@
         border-top: 1px solid rgba(255, 255, 255, 0.3);
       }
 
+      .guidance {
+        margin-top: 0.75rem;
+        border-left: 3px solid rgba(255, 255, 255, 0.6);
+        padding-left: 0.75rem;
+      }
+
+      .guidance ul {
+        margin-top: 0.4rem;
+        margin-bottom: 0;
+        padding-left: 1rem;
       .guide-panel {
         margin-top: 1.25rem;
         padding: 1rem;
@@ -301,6 +311,12 @@
           <h2>Auto Grid Refresh</h2>
           <p>Grid redraw speed increases as velocity approaches 1.00.</p>
           <div class="guidance" aria-label="Merger plot guidance">
+            <strong>Merger plot guidance</strong>
+            <ul>
+              <li>Set <em>Lines</em>/<em>Columns</em> first to define plot density.</li>
+              <li>Raise <em>Velocity</em> to merge updates faster.</li>
+              <li>Use <em>Start auto refresh</em> after control changes.</li>
+            </ul>
             <h3>Merger plot guidance</h3>
             <p>
               Read the grid left-to-right as a peer veth chain:
@@ -329,6 +345,7 @@
               <input id="velocity-input" type="range" min="0" max="1" step="0.01" value="0.5" />
             </label>
           </div>
+          <p>Current refresh interval: <strong><span id="interval-value">3000</span>ms</strong></p>
 
           <div class="control-buttons">
             <button id="start-auto-btn" type="button">Start auto refresh</button>
@@ -350,6 +367,7 @@
       const columnsInput = document.getElementById("columns-input");
       const velocityInput = document.getElementById("velocity-input");
       const velocityValue = document.getElementById("velocity-value");
+      const intervalValue = document.getElementById("interval-value");
       const startAutoButton = document.getElementById("start-auto-btn");
       const stopAutoButton = document.getElementById("stop-auto-btn");
       const gridElement = document.getElementById("grid");
@@ -397,12 +415,22 @@
         };
       }
 
+      function intervalFromVelocity(velocity) {
+        const v = Math.max(0, Math.min(1, velocity));
+        return Math.max(500, Math.round(5000 - v * 4000));
+      }
+
+      function updateIntervalLabel(velocity) {
+        intervalValue.textContent = String(intervalFromVelocity(velocity));
+      }
+
       function showScreen2() {
         screen1.hidden = true;
         screen2.hidden = false;
         history.replaceState(null, "", "#next");
 
         const { lines, columns, velocity } = getSettings();
+        updateIntervalLabel(velocity);
         startAutoGrid(lines, columns, velocity);
       }
 
@@ -417,15 +445,16 @@
         if (autoTimer) clearInterval(autoTimer);
 
         const v = Math.max(0, Math.min(1, velocity)); // clamp 0..1
-        const interval = Math.max(500, 5000 - v * 4000);
+        const interval = intervalFromVelocity(v);
+        updateIntervalLabel(v);
 
         // Run once immediately so user doesn't wait for first interval
         drawGrid(lines, columns, v);
-        log(`Auto-grid refresh @ velocity=${v.toFixed(2)}`);
+        log(`Auto-grid refresh @ velocity=${v.toFixed(2)} interval=${interval}ms`);
 
         autoTimer = setInterval(() => {
           drawGrid(lines, columns, v);
-          log(`Auto-grid refresh @ velocity=${v.toFixed(2)}`);
+          log(`Auto-grid refresh @ velocity=${v.toFixed(2)} interval=${interval}ms`);
         }, interval);
       }
 
@@ -442,6 +471,7 @@
       function restartFromControls() {
         const { lines, columns, velocity } = getSettings();
         velocityValue.textContent = velocity.toFixed(2);
+        updateIntervalLabel(velocity);
         if (!screen2.hidden) {
           startAutoGrid(lines, columns, velocity);
         }
