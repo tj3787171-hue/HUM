@@ -1,0 +1,27 @@
+{
+  "$schema": "./schemas/features.schema.json",
+  "phase": "virtual",
+  "version": 1,
+  "description": "Feature toggles for virtual-setup phase.",
+  "features": {
+    "compose_v2": {
+      "enabled": true
+    },
+    "libvirt": {
+      "enabled": false,
+      "uri": "qemu:///system"
+    },
+    "multicast_lab": {
+      "enabled": true
+    },
+    "macsec_lab": {
+      "enabled": false
+    },
+    "sdv_apply_before_virtual": {
+      "enabled": true
+    },
+    "require_docker0": {
+      "enabled": true
+    }
+  }
+}

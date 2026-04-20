@@ -11,6 +11,26 @@
     "--init",
     "--add-host=host.docker.internal:host-gateway",
     "--security-opt=no-new-privileges:true"
+  "containerEnv": {
+    "PYTHONPATH": "/workspaces/${localWorkspaceFolderBasename}"
+  },
+  "runArgs": [
+    "--network=host",
+    "--privileged",
+    "--cap-add=NET_ADMIN",
+    "--cap-add=NET_RAW",
+    "--add-host=host.docker.internal:host-gateway",
+    "--tmpfs=/mnt/default:rw,exec,size=128g",
+    "--sysctl=net.ipv4.ip_forward=1",
+    "--sysctl=net.ipv4.conf.all.rp_filter=0",
+    "--sysctl=net.ipv6.conf.all.disable_ipv6=0"
+  ],
+  "mounts": [
+    "source=hum-iso-staging,target=/iso-staging,type=volume",
+    "source=hum-iso-output,target=/iso-output,type=volume",
+    "source=hum-vdrive-cache,target=/mnt/virtual-drive,type=volume",
+    "source=hum-vdrive-data,target=/mnt/default-vol,type=volume"
+    "source=hum-iso-output,target=/iso-output,type=volume"
   ],
   "containerEnv": {
     "HUM_ENV_FILE": "${containerWorkspaceFolder}/.devcontainer/dev.env",
@@ -52,7 +72,9 @@
     "vscode": {
       "extensions": [
         "ms-azuretools.vscode-docker",
-        "ms-vscode-remote.remote-containers"
+        "ms-vscode-remote.remote-containers",
+        "ms-python.python",
+        "redhat.vscode-yaml"
       ],
       "settings": {
         "terminal.integrated.defaultProfile.linux": "bash"
