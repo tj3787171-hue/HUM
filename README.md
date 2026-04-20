@@ -80,6 +80,9 @@ Requirement: `ip` command from `iproute2` must be installed in the Penguin termi
 This creates/maintains:
 
 - proxy namespace: `hum-proxy-ns`
+- peer namespace: `hum-peer-ns`
+- proxy veth pair: `hum-proxy-host0` (root) <-> `hum-proxy-ns0` (inside proxy netns)
+- peer chain veth pair: `hum-proxy-peer0` (inside proxy netns) <-> `hum-peer-ns0` (inside peer netns)
 - proxy veth pair: `hum-proxy-host0` (root) <-> `hum-proxy-ns0` (inside netns)
 - peer namespace: `hum-peer-ns`
 - peer veth pair: `hum-peer-host0` (inside `hum-proxy-ns`) <-> `hum-peer-ns0` (inside `hum-peer-ns`)
@@ -92,7 +95,7 @@ The default topology is now a peer chain:
 - peer namespace: `hum-peer-ns` (enabled by default)
 - peer veth pair: `hum-proxy-peer0` (inside `hum-proxy-ns`) <-> `hum-peer-ns0` (inside `hum-peer-ns`)
 - dummy interface: `hum-dummy0`
-- a status view that also reports `docker0` if present
+- a status view that also reports `docker0` if present and shows peer-route state
 
 Peer veth chain sketch:
 
@@ -141,6 +144,7 @@ Useful commands:
 bash scripts/hum-dev-netns.sh guide
 sudo bash scripts/hum-dev-netns.sh status
 sudo bash scripts/hum-dev-netns.sh trace
+sudo bash scripts/hum-dev-netns.sh plot
 sudo bash scripts/hum-dev-netns.sh down
 ```
 
@@ -156,10 +160,15 @@ All names can be overridden through `HUM_*` environment variables shown by:
 bash scripts/hum-dev-netns.sh --help
 ```
 
-The proxy veth pair now also carries link-local IPv6 for tracing:
+`plot` prints a merger-style topology and guidance commands for bringing the
+peer veth chain up or validating traffic when it is already up.
 
-- host side: `fe80::1/64` (default `HUM_PROXY_HOST_LL6`)
-- netns side: `fe80::2/64` (default `HUM_PROXY_NS_LL6`)
+The veth chain carries link-local IPv6 for tracing:
+
+- root side: `fe80::1/64` on `hum-proxy-host0` (default `HUM_PROXY_HOST_LL6`)
+- proxy side (root link): `fe80::2/64` on `hum-proxy-ns0` (default `HUM_PROXY_NS_LL6`)
+- proxy side (peer link): `fe80::11/64` on `hum-proxy-peer0` (default `HUM_PROXY_PEER_LL6`)
+- peer side: `fe80::12/64` on `hum-peer-ns0` (default `HUM_PEER_NS_LL6`)
 
 The peer chain also carries link-local IPv6 for tracing:
 
@@ -170,6 +179,10 @@ Set `HUM_ENABLE_PEER_CHAIN=0` if you want to keep the original single-pair setup
 
 `trace` reports:
 
+- peer recv-ready state for both root<->proxy and proxy<->peer links
+- downstream nested RX packet counters (host + proxy + peer)
+- SMAC64-style trace IDs derived from interface MAC addresses
+- IPv4/IPv6 route and neighbor snapshots for the proxy + peer namespaces
 - peer recv-ready state
 - peer chain recv-ready state plus the guidance path
 - downstream nested RX packet counters (host + netns)
