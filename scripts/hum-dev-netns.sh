@@ -64,6 +64,8 @@ Optional environment overrides:
   HUM_PROXY_HOST_CIDR
   HUM_PROXY_NS_CIDR
   HUM_PROXY_DEFAULT_GW
+  HUM_PROXY_HOST_LL6
+  HUM_PROXY_NS_LL6
   HUM_DUMMY_IF
   HUM_DUMMY_CIDR
   HUM_DOCKER_HINT_IF
@@ -313,17 +315,24 @@ up() {
 
   ip link set "$PROXY_HOST_IF" up
   ip addr replace "$PROXY_HOST_CIDR" dev "$PROXY_HOST_IF"
+  ip -6 addr replace "$PROXY_HOST_LL6" dev "$PROXY_HOST_IF"
 
   ip -n "$PROXY_NS" link set lo up
   ip -n "$PROXY_NS" link set "$PROXY_NS_IF" up
   ip -n "$PROXY_NS" addr replace "$PROXY_NS_CIDR" dev "$PROXY_NS_IF"
+  ip -n "$PROXY_NS" -6 addr replace "$PROXY_NS_LL6" dev "$PROXY_NS_IF"
   ip -n "$PROXY_NS" route replace default via "$PROXY_DEFAULT_GW" dev "$PROXY_NS_IF"
+  ip -n "$PROXY_NS" -6 route replace default via "${PROXY_HOST_LL6%%/*}" dev "$PROXY_NS_IF"
 
   if ! root_link_exists "$DUMMY_IF"; then
-    ip link add "$DUMMY_IF" type dummy
+    if ! ip link add "$DUMMY_IF" type dummy 2>/dev/null; then
+      echo "Warning: dummy interface type is unavailable; skipping $DUMMY_IF." >&2
+    fi
   fi
-  ip link set "$DUMMY_IF" up
-  ip addr replace "$DUMMY_CIDR" dev "$DUMMY_IF"
+  if root_link_exists "$DUMMY_IF"; then
+    ip link set "$DUMMY_IF" up
+    ip addr replace "$DUMMY_CIDR" dev "$DUMMY_IF"
+  fi
 
   status
   # Proxy namespace <-> peer namespace veth chain.
@@ -424,6 +433,14 @@ down() {
 }
 
 status() {
+  local host_mac ns_mac host_smac64 ns_smac64 host_rx ns_rx
+  host_mac="$(iface_mac "$PROXY_HOST_IF" || true)"
+  ns_mac="$(ns_iface_mac "$PROXY_NS" "$PROXY_NS_IF" || true)"
+  host_smac64="$(smac64_from_mac "$host_mac")"
+  ns_smac64="$(smac64_from_mac "$ns_mac")"
+  host_rx="$(root_rx_packets "$PROXY_HOST_IF" || true)"
+  ns_rx="$(ns_rx_packets "$PROXY_NS" "$PROXY_NS_IF" || true)"
+
   echo "=== HUM dev naming status ==="
   echo "proxy namespace: $PROXY_NS"
   echo "proxy links: host=$PROXY_HOST_IF ns=$PROXY_NS_IF"
@@ -548,6 +565,8 @@ status() {
     ip -n "$PROXY_NS" -br addr show dev "$PROXY_NS_IF" 2>/dev/null || true
     echo "[netns:$PROXY_NS] default route"
     ip -n "$PROXY_NS" route show default 2>/dev/null || true
+    echo "[netns:$PROXY_NS] default route (IPv6)"
+    ip -n "$PROXY_NS" -6 route show default 2>/dev/null || true
   else
     echo "Namespace $PROXY_NS does not exist."
   fi
@@ -858,6 +877,10 @@ main() {
       else
         status
       fi
+      ;;
+    trace)
+      need_cmd ip
+      trace
       ;;
     -h|--help|help)
       usage

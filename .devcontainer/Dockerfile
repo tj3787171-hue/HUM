@@ -16,11 +16,6 @@ RUN apt-get update \
         jq \
         kmod \
         net-tools \
-        netcat-openbsd \
-        python3 \
-        python3-pip \
-        python3-venv \
-        shellcheck \
         tcpdump \
         traceroute \
         yq \
