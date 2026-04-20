@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# "noauto" prevents recursive execution of auto/build.
+lb build noauto "$@"

@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HUM Toolkit – Download</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --card: #161b22;
+      --border: #30363d;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --accent: #58a6ff;
+      --accent-hover: #79c0ff;
+      --green: #3fb950;
+      --orange: #d29922;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    .container { max-width: 960px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+    header {
+      text-align: center;
+      padding: 3rem 0 2rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 2rem;
+    }
+    header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    header h1 span { color: var(--accent); }
+    header p { color: var(--muted); font-size: 1.1rem; margin-top: 0.5rem; }
+
+    /* ── Download hero area ── */
+    .download-area {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2.5rem;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .download-area .iso-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      display: block;
+    }
+    .download-area h2 { font-size: 1.5rem; margin-bottom: 0.5rem; }
+    .download-area .meta {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+    }
+
+    /* ── Primary download link ── */
+    .download-btn {
+      display: inline-block;
+      background: var(--accent);
+      color: #fff;
+      text-decoration: none;
+      padding: 0.85rem 2.5rem;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+    .download-btn:hover { background: var(--accent-hover); }
+    .download-btn:active { transform: translateY(1px); }
+
+    .checksum {
+      margin-top: 1.25rem;
+      font-family: 'SFMono-Regular', Consolas, monospace;
+      font-size: 0.8rem;
+      color: var(--muted);
+      word-break: break-all;
+    }
+
+    /* ── Image map / HREF area ── */
+    .href-map {
+      margin: 2rem auto;
+      text-align: center;
+    }
+    .href-map img { max-width: 100%; height: auto; }
+
+    /* ── What's inside ── */
+    .contents {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+    }
+    .card h3 {
+      font-size: 1rem;
+      margin-bottom: 0.4rem;
+      color: var(--green);
+    }
+    .card p { font-size: 0.9rem; color: var(--muted); }
+
+    /* ── Instructions ── */
+    .instructions {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .instructions h2 { font-size: 1.2rem; margin-bottom: 1rem; }
+    .instructions pre {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1rem;
+      overflow-x: auto;
+      font-size: 0.85rem;
+      line-height: 1.7;
+      color: var(--text);
+    }
+    .instructions pre .comment { color: var(--muted); }
+
+    footer {
+      text-align: center;
+      padding: 2rem 0;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    /* ── Build-your-own section ── */
+    .build-note {
+      background: #1c1e24;
+      border: 1px dashed var(--orange);
+      border-radius: 8px;
+      padding: 1.25rem;
+      margin-bottom: 2rem;
+      font-size: 0.9rem;
+    }
+    .build-note h3 { color: var(--orange); margin-bottom: 0.5rem; }
+    .build-note code {
+      background: var(--bg);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <header>
+      <h1><span>HUM</span> Toolkit</h1>
+      <p>LAN-ready dev tools &amp; snap bypass — no snapd, no systemd, no cgroups required</p>
+    </header>
+
+    <!-- ════════════════════════════════════════════
+         Primary download area with HREF
+         ════════════════════════════════════════════ -->
+    <div class="download-area">
+      <span class="iso-icon">&#128191;</span>
+      <h2>hum-toolkit.iso</h2>
+      <p class="meta">Bootable ISO &middot; ISOLINUX &middot; x86_64 &middot; ~400 KB</p>
+
+      <!--
+        HREF download link.
+        Update the href to point to your hosting location.
+        Examples:
+          href="https://hum.org/releases/hum-toolkit.iso"
+          href="https://github.com/youruser/HUM/releases/download/v1.0/hum-toolkit.iso"
+          href="/dist/hum-toolkit.iso"
+      -->
+      <a class="download-btn"
+         id="download-link"
+         href="https://github.com/tj3787171-hue/HUM/releases/latest/download/hum-toolkit.iso"
+         download="hum-toolkit.iso"
+         title="Download HUM Toolkit ISO">
+        &#11015; Download ISO
+      </a>
+
+      <p class="checksum" id="checksum-display">
+        SHA-256 checksum will appear here after the ISO is built and published.
+      </p>
+    </div>
+
+    <!--
+      Image-map HREF area: clickable diagram linking to the download.
+      The <area> tag provides an additional clickable download region.
+      Replace the SVG data URI with your own diagram if desired.
+    -->
+    <div class="href-map">
+      <svg id="iso-map" width="600" height="120" viewBox="0 0 600 120"
+           xmlns="http://www.w3.org/2000/svg" role="img"
+           aria-label="HUM ISO download area">
+        <rect x="0" y="0" width="600" height="120" rx="10" fill="#161b22" stroke="#30363d"/>
+        <text x="300" y="40" text-anchor="middle" fill="#58a6ff" font-size="18" font-family="sans-serif" font-weight="bold">
+          hum-toolkit.iso
+        </text>
+        <text x="300" y="65" text-anchor="middle" fill="#8b949e" font-size="13" font-family="sans-serif">
+          Click anywhere in this area to download
+        </text>
+        <text x="300" y="95" text-anchor="middle" fill="#3fb950" font-size="12" font-family="monospace">
+          snap-bypass &bull; snap-server &bull; dev-netns &bull; deepseek-importer
+        </text>
+        <a href="https://github.com/tj3787171-hue/HUM/releases/latest/download/hum-toolkit.iso"
+           download="hum-toolkit.iso">
+          <rect x="0" y="0" width="600" height="120" fill="transparent" style="cursor:pointer"/>
+        </a>
+      </svg>
+    </div>
+
+    <!-- ── What's inside ── -->
+    <h2 style="margin-bottom:1rem;">What's on the ISO</h2>
+    <div class="contents">
+      <div class="card">
+        <h3>hum-snap-bypass.sh</h3>
+        <p>Extract, FUSE-mount, inspect, and run snap packages without snapd. No root required.</p>
+      </div>
+      <div class="card">
+        <h3>hum-snap-server.sh</h3>
+        <p>Loop-mount snaps at /snap via kernel squashfs + cgroup v2 scope. Replaces snapd mount units.</p>
+      </div>
+      <div class="card">
+        <h3>hum-dev-netns.sh</h3>
+        <p>Create network namespaces, veth pairs, and dummy interfaces for LAN dev naming.</p>
+      </div>
+      <div class="card">
+        <h3>deepseek_db_link.py</h3>
+        <p>Index DeepSeek backup exports into a local SQLite database. Zero pip dependencies.</p>
+      </div>
+    </div>
+
+    <!-- ── Usage instructions ── -->
+    <div class="instructions">
+      <h2>Quick start after download</h2>
+      <pre><span class="comment"># Mount the ISO</span>
+sudo mkdir -p /mnt/hum
+sudo mount -o loop hum-toolkit.iso /mnt/hum
+
+<span class="comment"># Copy scripts to your system</span>
+cp -r /mnt/hum/hum/scripts/ ~/hum-toolkit/
+
+<span class="comment"># Or run directly from the mount</span>
+bash /mnt/hum/hum/scripts/hum-snap-bypass.sh deps
+bash /mnt/hum/hum/scripts/hum-snap-bypass.sh info some-package.snap
+sudo bash /mnt/hum/hum/scripts/hum-snap-server.sh up
+
+<span class="comment"># Unmount when done</span>
+sudo umount /mnt/hum</pre>
+    </div>
+
+    <!-- ── Build your own ── -->
+    <div class="build-note">
+      <h3>Build your own ISO</h3>
+      <p>
+        Clone the repo and run the build script to generate a fresh ISO from source:
+      </p>
+      <pre style="background:#0d1117;border:1px solid #30363d;border-radius:6px;padding:0.75rem;margin-top:0.75rem;font-size:0.85rem;color:#e6edf3;">git clone https://github.com/tj3787171-hue/HUM.git
+cd HUM
+bash scripts/hum-build-iso.sh dist/hum-toolkit.iso</pre>
+      <p style="margin-top:0.5rem;">
+        Requires: <code>genisoimage</code>, <code>syslinux-utils</code>, <code>isolinux</code>
+      </p>
+    </div>
+
+    <footer>
+      <p>
+        <a href="https://github.com/tj3787171-hue/HUM">GitHub Repository</a>
+        &middot; MIT License &middot; HUM Toolkit
+      </p>
+    </footer>
+
+  </div>
+
+  <script>
+    // If the page is served from a location where the ISO exists locally,
+    // auto-detect and update the download link + checksum.
+    (function() {
+      var link = document.getElementById('download-link');
+      // Allow override via URL parameter: ?iso=https://example.com/hum.iso
+      var params = new URLSearchParams(window.location.search);
+      var isoUrl = params.get('iso');
+      if (isoUrl) {
+        link.href = isoUrl;
+        var svgLink = document.querySelector('#iso-map a');
+        if (svgLink) svgLink.setAttribute('href', isoUrl);
+      }
+    })();
+  </script>
+</body>
+</html>
