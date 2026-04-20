@@ -1,0 +1,28 @@
+<?xml version="1.0" ?>
+<hum-topology timestamp="2026-04-18T16:45:28.070164+00:00" hostname="cursor">
+  <interfaces>
+    <interface name="lo" state="UNKNOWN" mac="00:00:00:00:00:00">
+      <address>127.0.0.1/8</address>
+      <address>::1/128</address>
+    </interface>
+    <interface name="eth0" state="UP" mac="82:2b:38:3d:bc:d0">
+      <address>172.30.0.2/24</address>
+      <address>fe80::802b:38ff:fe3d:bcd0/64</address>
+    </interface>
+    <interface name="docker0" state="DOWN" mac="06:b5:f4:e4:50:4b">
+      <address>172.18.0.1/16</address>
+      <address>fe80::4b5:f4ff:fee4:504b/64</address>
+    </interface>
+  </interfaces>
+  <routes>
+    <route dst="default" gateway="172.30.0.1" dev="eth0"/>
+    <route dst="172.18.0.0/16" gateway="" dev="docker0"/>
+    <route dst="172.30.0.0/24" gateway="" dev="eth0"/>
+  </routes>
+  <namespaces/>
+  <veth-peers>
+    <veth ifname="eth0" ifindex="2" operstate="UP"/>
+    <veth ifname="docker0" ifindex="3" operstate="DOWN"/>
+  </veth-peers>
+  <docker-networks/>
+</hum-topology>
