@@ -1,6 +1,6 @@
 # HUM
 
-LAN-ready development container configuration for online/local development.
+Private-by-default development container configuration for online/local development.
 
 ## What's included
 
@@ -13,6 +13,12 @@ LAN-ready development container configuration for online/local development.
   - `iptables`, `bridge-utils`, `ethtool`
   - `python3`, `jq`, `yq`, `shellcheck`
 - `.devcontainer/devcontainer.json` with:
+  - secure runtime defaults (`--init`, `no-new-privileges`)
+  - `host.docker.internal` mapping via `host-gateway`
+  - common forwarded ports (`3000`, `5173`, `8000`, `8080`) plus virtual desktop ports (`5901`, `6080`)
+- `.devcontainer/post-create.sh` to print network info when container is created
+- `.devcontainer/post-start.sh` to re-import private env and refresh runtime metadata
+- `.devcontainer/import-environment.sh` to load `.devcontainer/dev.env` and generate runtime JSON metadata
   - host-network runtime flag (`--network=host`) for Linux LAN access
   - privileged runtime for netns/veth/macsec experiments (`NET_ADMIN`, `NET_RAW`)
   - `host.docker.internal` mapping via `host-gateway`
@@ -47,26 +53,35 @@ management of local ISO/IMG files.
 ## LAN notes
 
 - This setup is optimized for Linux with Docker engine networking.
-- `--network=host` allows services in the container to be reachable on the host/LAN stack.
-- On non-Linux hosts, host-network support can be limited by Docker Desktop behavior.
+- It defaults to bridge networking and forwarded ports to reduce accidental exposure.
+- For local-only access, bind services to `127.0.0.1` and use forwarded ports.
+- If you intentionally need host-network mode for LAN testing, use a temporary local override.
 
-## Virtual setup config bundle
+## Re-container + import environment workflow
 
-The repository now includes a `websetup/` tree for virtual phase planning:
+1. Rebuild/reopen the dev container.
+2. On first create, `.devcontainer/dev.env` is generated from `.devcontainer/dev.env.example`.
+3. Edit `.devcontainer/dev.env` with your private values (`chmod 600 .devcontainer/dev.env`).
+4. Restart/reopen the container again to re-import values cleanly.
 
-- `websetup/sdv/manifest.json` and `python3 -m websetup.sdv validate`
-- `websetup/virtual/virtual-setup.yml`
-- `websetup/virtual/inventory.csv`
-- `websetup/virtual/*.json` with schemas
+Environment import outputs:
 
-Start points:
+- shell export file: `~/.config/hum-dev/imported.env`
+- runtime JSON metadata: `~/.config/hum-dev/runtime.json`
 
-```bash
-PYTHONPATH=/workspaces/<repo> python3 -m websetup.sdv validate
-PYTHONPATH=/workspaces/<repo> python3 -m websetup.sdv apply
-```
+This keeps settings in a JSON-readable form for tools/extensions while keeping secrets out of git.
 
-## Penguin terminal dev naming (Proxy + Peer Chain + Docker + Dummy)
+## Virtual desktop privacy defaults
+
+- Recommended virtual desktop bind host: `127.0.0.1`
+- Recommended Chrome debug bind host: `127.0.0.1`
+- Suggested forwarded virtual desktop ports:
+  - `5901` (VNC)
+  - `6080` (web desktop/noVNC)
+
+These defaults keep access for you (and trusted local forwarding endpoints), not broad network listeners.
+
+## Penguin terminal dev naming (Proxy + Docker + Dummy)
 
 If you want the laptop Penguin terminal to use stable developer names that parallel
 the original proxy/docker/dummy model, use:
@@ -80,6 +95,18 @@ Requirement: `ip` command from `iproute2` must be installed in the Penguin termi
 This creates/maintains:
 
 - proxy namespace: `hum-proxy-ns`
+- proxy veth pair: `hum-proxy-host0` (root) <-> `hum-proxy-ns0` (inside netns)
+- dummy interface: `hum-dummy0`
+- a status view that also reports `docker0` if present
+
+Useful commands:
+
+```bash
+sudo bash scripts/hum-dev-netns.sh status
+sudo bash scripts/hum-dev-netns.sh status --json
+sudo bash scripts/hum-dev-netns.sh down
+```
+
 - peer namespace: `hum-peer-ns`
 - proxy veth pair: `hum-proxy-host0` (root) <-> `hum-proxy-ns0` (inside proxy netns)
 - peer chain veth pair: `hum-proxy-peer0` (inside proxy netns) <-> `hum-peer-ns0` (inside peer netns)

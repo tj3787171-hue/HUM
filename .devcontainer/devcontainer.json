@@ -1,11 +1,16 @@
 {
-  "name": "hum-lan-dev",
+  "name": "hum-private-dev",
   "build": {
     "dockerfile": "Dockerfile",
     "context": ".."
   },
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
   "remoteUser": "vscode",
+  "userEnvProbe": "loginInteractiveShell",
+  "runArgs": [
+    "--init",
+    "--add-host=host.docker.internal:host-gateway",
+    "--security-opt=no-new-privileges:true"
   "containerEnv": {
     "PYTHONPATH": "/workspaces/${localWorkspaceFolderBasename}"
   },
@@ -27,13 +32,42 @@
     "source=hum-vdrive-data,target=/mnt/default-vol,type=volume"
     "source=hum-iso-output,target=/iso-output,type=volume"
   ],
+  "containerEnv": {
+    "HUM_ENV_FILE": "${containerWorkspaceFolder}/.devcontainer/dev.env",
+    "HUM_VDESK_BIND": "127.0.0.1",
+    "HUM_VDESK_PORT": "6080",
+    "HUM_CHROME_REMOTE_DEBUG_ADDR": "127.0.0.1",
+    "HUM_CHROME_REMOTE_DEBUG_PORT": "9222"
+  },
+  "remoteEnv": {
+    "HTTP_PROXY": "${localEnv:HTTP_PROXY}",
+    "HTTPS_PROXY": "${localEnv:HTTPS_PROXY}",
+    "NO_PROXY": "${localEnv:NO_PROXY}",
+    "ALL_PROXY": "${localEnv:ALL_PROXY}"
+  },
   "forwardPorts": [
     3000,
     5173,
     8000,
-    8080
+    8080,
+    5901,
+    6080,
+    9222
   ],
+  "portsAttributes": {
+    "5901": {
+      "label": "virtual-desktop-vnc"
+    },
+    "6080": {
+      "label": "virtual-desktop-web"
+    },
+    "9222": {
+      "label": "chrome-remote-debug-local-only",
+      "onAutoForward": "silent"
+    }
+  },
   "postCreateCommand": "bash .devcontainer/post-create.sh",
+  "postStartCommand": "bash .devcontainer/post-start.sh",
   "customizations": {
     "vscode": {
       "extensions": [

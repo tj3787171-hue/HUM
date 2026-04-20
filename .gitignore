@@ -1,3 +1,8 @@
+# Private devcontainer environment overrides.
+.devcontainer/dev.env
+
+# Local runtime artifacts generated from imported env values.
+.devcontainer/*.local.json
 __pycache__/
 *.pyc
 data/
