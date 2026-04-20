@@ -452,6 +452,20 @@ status() {
   ip -n "$PEER_NS" link del "$PEER_NS_IF" 2>/dev/null || true
   ip netns delete "$PEER_NS" 2>/dev/null || true
   ip link del "$PROXY_HOST_IF" 2>/dev/null || true
+  ip -n "$PROXY_NS" link del "$PROXY_NS_IF" 2>/dev/null || true
+  ip netns delete "$PROXY_NS" 2>/dev/null || true
+  echo "Removed dev namespace/interface naming setup."
+}
+
+status() {
+  local host_mac ns_mac host_smac64 ns_smac64 host_rx ns_rx
+  local proxy_peer_mac peer_ns_mac proxy_peer_smac64 peer_ns_smac64 proxy_peer_rx peer_ns_rx
+  host_mac="$(iface_mac "$PROXY_HOST_IF" || true)"
+  ns_mac="$(ns_iface_mac "$PROXY_NS" "$PROXY_NS_IF" || true)"
+  host_smac64="$(smac64_from_mac "$host_mac")"
+  ns_smac64="$(smac64_from_mac "$ns_mac")"
+  host_rx="$(root_rx_packets "$PROXY_HOST_IF" || true)"
+  ns_rx="$(ns_rx_packets "$PROXY_NS" "$PROXY_NS_IF" || true)"
   ip -n "$PROXY_NS" link del "$PROXY_PEER_IF" 2>/dev/null || true
   ip -n "$PROXY_NS" link del "$PROXY_NS_IF" 2>/dev/null || true
   ip -n "$PEER_NS" link del "$PEER_NS_IF" 2>/dev/null || true
@@ -567,6 +581,10 @@ status() {
     ip -n "$PROXY_NS" route show default 2>/dev/null || true
     echo "[netns:$PROXY_NS] default route (IPv6)"
     ip -n "$PROXY_NS" -6 route show default 2>/dev/null || true
+    if peer_chain_enabled; then
+      echo "[netns:$PROXY_NS] $PROXY_PEER_IF"
+      ip -n "$PROXY_NS" -br addr show dev "$PROXY_PEER_IF" 2>/dev/null || true
+    fi
   else
     echo "Namespace $PROXY_NS does not exist."
   fi

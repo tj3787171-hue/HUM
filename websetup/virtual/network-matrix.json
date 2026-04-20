@@ -48,6 +48,8 @@
       "labels": [
         "planned"
       ]
+    },
+    {
       "id": "penguin",
       "kind": "host",
       "role": "chromebook-linux",

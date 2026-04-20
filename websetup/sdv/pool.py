@@ -31,6 +31,7 @@ def validate_network(manifest: Mapping[str, object]) -> tuple[bool, str]:
     subnet = network.get("subnet_cidr")
     reserved = network.get("reserved_br_int")
     assigned = network.get("script_assigned")
+    alloc = network.get("allocatable_range")
     alloc = network.get("allocatable_range") or network.get("allocatable_pool")
     alloc = network.get("allocatable_pool")
     if not isinstance(subnet, str) or not isinstance(reserved, str):
