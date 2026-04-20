@@ -1,0 +1,118 @@
+{
+  "origin": "hum.org",
+  "timestamp": "2026-04-16T20:32:03.427309+00:00",
+  "totals": {
+    "topology_interfaces": 3,
+    "topology_routes": 3,
+    "recup_files": 0,
+    "wanted_comb_entries": 8,
+    "templates_categories": 0,
+    "photos_categories": 0,
+    "total_data_points": 14
+  "timestamp": "2026-04-19T06:23:03.839887+00:00",
+  "totals": {
+    "topology_interfaces": 3,
+    "topology_routes": 3,
+    "recup_files": 13,
+    "wanted_comb_entries": 12,
+    "templates_categories": 5,
+    "photos_categories": 6,
+    "systemd_units": 71,
+    "total_data_points": 115
+  },
+  "top_scored": [
+    {
+      "id": "log-001",
+      "type": "test",
+      "message": "Container origin verified: hum.org",
+      "timestamp": "2026-04-16T20:32:03.427243+00:00",
+      "timestamp": "2026-04-19T06:23:03.839794+00:00",
+      "band": "alpha",
+      "reachability": 60,
+      "velocity": 90,
+      "mission": 95,
+      "comb_score": 81.25,
+      "factory_tag": "HUM-ALPHA-cff32e91"
+    },
+    {
+      "id": "log-002",
+      "type": "mock",
+      "message": "NETNS veth peer scan completed",
+      "timestamp": "2026-04-16T20:32:03.427243+00:00",
+      "id": "log-009",
+      "type": "test",
+      "message": "Net driver recovery: check mode passed",
+      "timestamp": "2026-04-19T06:23:03.839794+00:00",
+      "band": "alpha",
+      "reachability": 60,
+      "velocity": 90,
+      "mission": 95,
+      "comb_score": 81.25,
+      "factory_tag": "HUM-ALPHA-eacd3306"
+    },
+    {
+      "id": "log-002",
+      "type": "mock",
+      "message": "NETNS veth peer scan completed",
+      "timestamp": "2026-04-19T06:23:03.839794+00:00",
+      "band": "alpha",
+      "reachability": 60,
+      "velocity": 85,
+      "mission": 95,
+      "comb_score": 79.75,
+      "factory_tag": "HUM-ALPHA-a58445d3"
+    },
+    {
+      "id": "log-004",
+      "type": "test",
+      "message": "Topology JSON/XML sync validated",
+      "timestamp": "2026-04-16T20:32:03.427243+00:00",
+      "id": "log-011",
+      "type": "mock",
+      "message": "RTNETLINK flush + loopback purge ready",
+      "timestamp": "2026-04-19T06:23:03.839794+00:00",
+      "band": "alpha",
+      "reachability": 60,
+      "velocity": 85,
+      "mission": 95,
+      "comb_score": 79.75,
+      "factory_tag": "HUM-ALPHA-506660fd"
+    },
+    {
+      "id": "log-004",
+      "type": "test",
+      "message": "Topology JSON/XML sync validated",
+      "timestamp": "2026-04-19T06:23:03.839794+00:00",
+      "band": "beta",
+      "reachability": 50,
+      "velocity": 90,
+      "mission": 80,
+      "comb_score": 72.5,
+      "factory_tag": "HUM-BETA-17b1e8da"
+    },
+    {
+      "id": "log-003",
+      "type": "comment",
+      "message": "Recup import pipeline initialized",
+      "timestamp": "2026-04-16T20:32:03.427243+00:00",
+      "band": "beta",
+      "reachability": 40,
+      "velocity": 70,
+      "mission": 80,
+      "comb_score": 63.0,
+      "factory_tag": "HUM-BETA-de28d124"
+    },
+    {
+      "id": "log-008",
+      "type": "test",
+      "message": "Name factory hierarchy pass complete",
+      "timestamp": "2026-04-16T20:32:03.427243+00:00",
+      "band": "delta",
+      "reachability": 30,
+      "velocity": 90,
+      "mission": 50,
+      "comb_score": 55.0,
+      "factory_tag": "HUM-DELTA-a3fea16a"
+    }
+  ]
+}
