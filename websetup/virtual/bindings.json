@@ -20,9 +20,6 @@
       "sdv": {
         "artifact": "manifest.json.network.allocatable_range",
         "path": "../sdv/manifest.json#/network/allocatable_range"
-      "sdv": {
-        "artifact": "manifest.json.network.allocatable_pool",
-        "path": "../sdv/manifest.json#/network/allocatable_pool"
       },
       "virtual": {
         "artifact": "inventory.csv",
@@ -32,9 +29,6 @@
     },
     {
       "id": "hum-dev-netns-to-network-matrix",
-      "purpose": "Inventory IP rows for workload and ephemeral nodes must stay inside allocatable pool."
-    },
-    {
       "sdv": {
         "artifact": "scripts/hum-dev-netns.sh",
         "path": "../../scripts/hum-dev-netns.sh"
