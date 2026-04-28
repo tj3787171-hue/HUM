@@ -136,7 +136,7 @@ run_probe() {
   fi
 
   if [ -n "$STRIPE_EXPECT_TEXT" ]; then
-    if rg --fixed-strings --quiet "$STRIPE_EXPECT_TEXT" "$tmp_body"; then
+    if grep -Fq "$STRIPE_EXPECT_TEXT" "$tmp_body"; then
       log "[$label] CONTENT: PASS (found expected text)"
     else
       log "[$label] CONTENT: FAIL (missing expected text)"
