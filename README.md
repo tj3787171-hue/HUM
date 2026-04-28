@@ -26,6 +26,42 @@ Private-by-default development container configuration for online/local developm
 - `.devcontainer/post-create.sh` to print network/module/tooling status at container create
 - `websetup/` bundle for SDV + virtual phase configuration (`.yml`, `.csv`, `.json`)
 
+## Main runbook
+
+Use `docs/HUM_MAIN_RUNBOOK.md` as the consolidated operations document. It
+links the YAML/JSON virtual layer, Python evidence scripts, browser/PHP lab
+views, archive/deb/squashfs inspection, and ISO creation workflows.
+
+Generate a refreshed artifact-layer report from disk:
+
+```bash
+python3 scripts/hum_artifact_layers.py \
+  --root . \
+  --output-json site/data/artifact-layers.json \
+  --output-markdown docs/HUM_ARTIFACT_LAYERS.generated.md \
+  --benchmark \
+  --max-bytes 1048576 \
+  --copy-layer
+```
+
+Then serve the interactive lab and open `layers.html`:
+
+```bash
+php -S 127.0.0.1:8000 -t site
+```
+
+Generate the apt/pkg/cache/libclang interval assembly:
+
+```bash
+python3 scripts/hum_cache_assembly.py \
+  --root . \
+  --root /var/cache/apt \
+  --root /var/lib/apt \
+  --root /usr/lib \
+  --prefix hum-cache \
+  --exponent 1.618
+```
+
 ## Use it
 
 1. Open this repository in VS Code.

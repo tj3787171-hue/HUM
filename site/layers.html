@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HUM Lab — Artifact Layers</title>
+  <link rel="stylesheet" href="assets/info.css">
+</head>
+<body>
+<header>
+  <span class="logo">HUM.org</span>
+  <nav>
+    <a href="welcome.html">Welcome</a>
+    <a href="index.php">Map</a>
+    <a href="layers.html" class="active">Layers</a>
+    <a href="navigate.php">Navigate</a>
+    <a href="recup.php">Recup</a>
+    <a href="recover.php">Recover</a>
+    <a href="palace.php">Palace</a>
+    <a href="convo.php?source=list" target="_blank">API</a>
+  </nav>
+  <span style="margin-left:auto; font-size:.75rem; color:var(--text-dim);">
+    YAML → archive → Debian pool → ISO
+  </span>
+</header>
+
+<div class="container">
+  <section class="panel layer-hero">
+    <h2>Artifact Layers</h2>
+    <p>
+      Generate with
+      <code>python3 scripts/hum_artifact_layers.py --root . --output-json site/data/artifact-layers.json --output-markdown docs/HUM_ARTIFACT_LAYERS.generated.md --benchmark</code>.
+      This page reads the JSON evidence directly and lets you filter the disk-backed layers.
+    </p>
+  </section>
+
+  <section class="panel layer-controls">
+    <label for="layer-filter">Layer</label>
+    <select id="layer-filter" size="4">
+      <option value="all">All layers</option>
+    </select>
+    <label for="search-filter">Search</label>
+    <input id="search-filter" type="search" placeholder="path, extension, sha256">
+    <button id="refresh-layers" type="button">Refresh JSON</button>
+  </section>
+
+  <section id="layer-summary" class="layer-summary"></section>
+
+  <section class="panel" style="margin-bottom:1.5rem;">
+    <h2>Cache Assembly</h2>
+    <p style="color:var(--text-dim); margin-bottom:1rem;">
+      Apt/package/cache/image/libclang assembly with interval predicate plot.
+    </p>
+    <p id="cache-formula" style="color:var(--accent-hi); font-family:var(--mono); margin-bottom:1rem;">
+      Loading cache assembly...
+    </p>
+    <section id="cache-summary" class="layer-summary"></section>
+    <object data="data/cache-interval-plot.svg" type="image/svg+xml" class="cache-plot" aria-label="Cache interval plot"></object>
+    <table style="margin-top:1rem;">
+      <thead>
+        <tr>
+          <th>Interval</th>
+          <th>Path</th>
+          <th>Size</th>
+          <th>n</th>
+          <th>y</th>
+        </tr>
+      </thead>
+      <tbody id="cache-table-body">
+        <tr><td colspan="5">Loading cache assembly...</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="panel">
+    <h2>Layer Inventory</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Layer</th>
+          <th>Path</th>
+          <th>Size</th>
+          <th>SHA-256</th>
+          <th>Read</th>
+        </tr>
+      </thead>
+      <tbody id="layer-table-body">
+        <tr><td colspan="5">Loading artifact layers...</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="panel" style="margin-top:1.5rem;">
+    <h2>Generation Log</h2>
+    <div id="layer-log" class="feedback-log"></div>
+  </section>
+</div>
+
+<footer>HUM.org Lab &middot; direct-run JavaScript layer viewer &middot; Python evidence JSON</footer>
+<script src="assets/app.js"></script>
+</body>
+</html>

@@ -158,6 +158,164 @@ const HUM = (() => {
     }
   }
 
+  /* ---- Artifact layer viewer ---- */
+  async function loadArtifactLayers() {
+    const res = await fetch("data/artifact-layers.json?t=" + Date.now());
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  }
+
+  async function loadCacheAssembly() {
+    const res = await fetch("data/cache-assembly.json?t=" + Date.now());
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  }
+
+  function formatBytes(bytes) {
+    const safeBytes = Math.max(0, Number(bytes) || 0);
+    if (safeBytes < 1024) return `${safeBytes} B`;
+    const units = ["KB", "MB", "GB"];
+    let value = safeBytes / 1024;
+    for (const unit of units) {
+      if (value < 1024) return `${value.toFixed(1)} ${unit}`;
+      value /= 1024;
+    }
+    return `${value.toFixed(1)} TB`;
+  }
+
+  function formatSpeed(benchmark) {
+    if (!benchmark) return "not sampled";
+    const speed = Math.max(0, Number(benchmark.mb_per_sec) || 0);
+    return `${speed.toFixed(3)} MB/s`;
+  }
+
+  function renderLayerSummary(payload) {
+    const wrap = document.getElementById("layer-summary");
+    if (!wrap) return;
+    const layers = payload.layers || {};
+    wrap.innerHTML = Object.entries(layers).sort().map(([layer, data]) => `
+      <article class="panel layer-card">
+        <strong>${layer}</strong>
+        <span>${data.count || 0} files</span>
+        <small>${formatBytes(data.size_bytes || 0)}</small>
+      </article>
+    `).join("");
+  }
+
+  function renderCacheAssembly(payload) {
+    const wrap = document.getElementById("cache-summary");
+    const tbody = document.getElementById("cache-table-body");
+    const meta = document.getElementById("cache-meta");
+    if (!wrap) return;
+
+    const categories = payload.categories || {};
+    wrap.innerHTML = Object.entries(categories).sort().map(([category, data]) => `
+      <article class="panel layer-card">
+        <strong>${category}</strong>
+        <span>${data.count || 0} pieces</span>
+        <small>${formatBytes(data.size_bytes || 0)}</small>
+      </article>
+    `).join("");
+
+    if (meta) {
+      meta.textContent = `${payload.prefix || "cache"} · ${payload.interval_plot?.formula || "no formula"} · ${payload.piece_count || 0} pieces`;
+    }
+
+    if (!tbody) return;
+    const points = payload.interval_plot?.points || [];
+    tbody.innerHTML = points.slice(0, 40).map(point => `
+      <tr>
+        <td><code>${point.id || ""}</code><br><small>${point.category}</small></td>
+        <td>${point.path}</td>
+        <td>${formatBytes(point.size_bytes || 0)}</td>
+        <td>${point.n}</td>
+        <td>${point.y}</td>
+      </tr>
+    `).join("") || '<tr><td colspan="5">No cache assembly points.</td></tr>';
+  }
+
+  function renderLayerTable(payload) {
+    const tbody = document.getElementById("layer-table-body");
+    const select = document.getElementById("layer-filter");
+    const search = document.getElementById("search-filter");
+    if (!tbody || !select || !search) return;
+
+    const query = (search.value || "").toLowerCase();
+    if (query && select.value !== "all") {
+      select.value = "all";
+    }
+    const layerValue = select.value || "all";
+    const rows = (payload.artifacts || []).filter(item => {
+      const haystack = `${item.layer} ${item.kind} ${item.path} ${item.sha256_prefix || ""}`.toLowerCase();
+      return (layerValue === "all" || item.layer === layerValue) && haystack.includes(query);
+    });
+
+    if (!rows.length) {
+      tbody.innerHTML = '<tr><td colspan="5">No matching artifact layers.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = rows.map(item => {
+      const speed = formatSpeed(item.benchmark);
+      return `
+        <tr>
+          <td><span class="badge badge-unknown">${item.layer}</span><br><small>${item.kind}</small></td>
+          <td>${item.path}</td>
+          <td>${formatBytes(item.size_bytes || 0)}</td>
+          <td><code>${item.sha256_prefix || ""}</code></td>
+          <td>${speed}</td>
+        </tr>
+      `;
+    }).join("");
+  }
+
+  function populateLayerFilter(payload) {
+    const select = document.getElementById("layer-filter");
+    if (!select) return;
+    const current = select.value || "all";
+    const layers = Object.keys(payload.layers || {}).sort();
+    select.innerHTML = '<option value="all">All layers</option>' +
+      layers.map(layer => `<option value="${layer}">${layer}</option>`).join("");
+    select.value = layers.includes(current) ? current : "all";
+  }
+
+  async function refreshLayers() {
+    const logId = "layer-log";
+    appendLog(logId, "Fetching artifact-layer JSON...");
+    try {
+      const payload = await loadArtifactLayers();
+      window.HUM_LAYER_PAYLOAD = payload;
+      populateLayerFilter(payload);
+      renderLayerSummary(payload);
+      renderLayerTable(payload);
+      appendLog(logId, `Loaded ${payload.artifact_count || 0} artifacts from ${payload.generated_at || "unknown time"}.`);
+    } catch (e) {
+      appendLog(logId, `ERROR: ${e.message}`);
+    }
+  }
+
+  async function refreshCacheAssembly() {
+    const logId = "layer-log";
+    if (!document.getElementById("cache-summary")) return;
+    appendLog(logId, "Fetching cache assembly JSON...");
+    try {
+      const payload = await loadCacheAssembly();
+      renderCacheAssembly(payload);
+      appendLog(logId, `Loaded cache assembly ${payload.prefix || ""}: ${payload.piece_count || 0} pieces, ${payload.interval_plot?.formula || "no formula"}.`);
+    } catch (e) {
+      appendLog(logId, `Cache assembly unavailable: ${e.message}`);
+    }
+  }
+
+  function initLayerViewer() {
+    if (!document.getElementById("layer-table-body")) return;
+    document.getElementById("refresh-layers")?.addEventListener("click", refreshLayers);
+    document.getElementById("layer-filter")?.addEventListener("change", () => renderLayerTable(window.HUM_LAYER_PAYLOAD || {}));
+    document.getElementById("search-filter")?.addEventListener("input", () => renderLayerTable(window.HUM_LAYER_PAYLOAD || {}));
+    refreshLayers();
+    refreshCacheAssembly();
+  }
+
   /* ---- Navigation active state ---- */
   function highlightNav() {
     const path = window.location.pathname;
@@ -178,9 +336,10 @@ const HUM = (() => {
       refreshMap("svg-map", "feedback-log");
       setInterval(() => refreshMap("svg-map", "feedback-log"), 15000);
     }
+    initLayerViewer();
   }
 
   document.addEventListener("DOMContentLoaded", init);
 
-  return { renderSvgMap, refreshMap, appendLog, loadTopology, init };
+  return { renderSvgMap, refreshMap, appendLog, loadTopology, loadArtifactLayers, loadCacheAssembly, refreshLayers, init };
 })();
