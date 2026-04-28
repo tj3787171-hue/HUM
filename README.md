@@ -525,6 +525,34 @@ ls /mnt/hum/scripts/
 A download page is available at `docs/download.html`—host it on any static
 server and point the download link to wherever you publish the ISO.
 
+## Chromebook lab download site + startup Stripe checks
+
+Use this helper when lab startup flows (for example MAGMA and KALI) cannot
+see Stripe reliably.
+
+```bash
+# 1) Check Stripe visibility for MAGMA + KALI startup probes
+bash scripts/chromebook-lab-download-site.sh check-stripe
+
+# 2) Host the download page for Chromebook lab clients
+LAB_PORT=8088 bash scripts/chromebook-lab-download-site.sh serve
+```
+
+You can override startup probe URLs if MAGMA/KALI use different endpoints:
+
+```bash
+MAGMA_CHECK_URL="http://magma-startup.local/stripe" \
+KALI_CHECK_URL="http://kali-startup.local/stripe" \
+STRIPE_EXPECT_TEXT="stripe" \
+bash scripts/chromebook-lab-download-site.sh check-stripe
+```
+
+To run checks and then launch the download site in one command:
+
+```bash
+bash scripts/chromebook-lab-download-site.sh all
+```
+
 ## Dev container status indicator (`<>`)
 
 If you see the `<>` style status indicator in the bottom-right status area in
