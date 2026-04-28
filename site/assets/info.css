@@ -124,6 +124,21 @@ nav a:hover, nav a.active { background: rgba(88,166,255,.12); }
   font-size: .75rem;
   padding: .12rem .45rem;
 }
+.cache-assembly img {
+  background: #0b0e13;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  display: block;
+  margin-top: 1rem;
+  max-width: 100%;
+}
+.cache-category-list {
+  display: grid;
+  gap: .45rem;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  margin-top: .75rem;
+}
+.cache-category-list code { color: var(--accent-hi); }
 
 /* --- Layout --- */
 .container { max-width: 1200px; margin: 0 auto; padding: 1.5rem; }

@@ -165,6 +165,12 @@ const HUM = (() => {
     return await res.json();
   }
 
+  async function loadCacheAssembly() {
+    const res = await fetch("data/cache-assembly.json?t=" + Date.now());
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  }
+
   function formatBytes(bytes) {
     const safeBytes = Math.max(0, Number(bytes) || 0);
     if (safeBytes < 1024) return `${safeBytes} B`;
@@ -194,6 +200,38 @@ const HUM = (() => {
         <small>${formatBytes(data.size_bytes || 0)}</small>
       </article>
     `).join("");
+  }
+
+  function renderCacheAssembly(payload) {
+    const wrap = document.getElementById("cache-summary");
+    const tbody = document.getElementById("cache-table-body");
+    const meta = document.getElementById("cache-meta");
+    if (!wrap) return;
+
+    const categories = payload.categories || {};
+    wrap.innerHTML = Object.entries(categories).sort().map(([category, data]) => `
+      <article class="panel layer-card">
+        <strong>${category}</strong>
+        <span>${data.count || 0} pieces</span>
+        <small>${formatBytes(data.size_bytes || 0)}</small>
+      </article>
+    `).join("");
+
+    if (meta) {
+      meta.textContent = `${payload.prefix || "cache"} · ${payload.interval_plot?.formula || "no formula"} · ${payload.piece_count || 0} pieces`;
+    }
+
+    if (!tbody) return;
+    const points = payload.interval_plot?.points || [];
+    tbody.innerHTML = points.slice(0, 40).map(point => `
+      <tr>
+        <td><code>${point.id || ""}</code><br><small>${point.category}</small></td>
+        <td>${point.path}</td>
+        <td>${formatBytes(point.size_bytes || 0)}</td>
+        <td>${point.n}</td>
+        <td>${point.y}</td>
+      </tr>
+    `).join("") || '<tr><td colspan="5">No cache assembly points.</td></tr>';
   }
 
   function renderLayerTable(payload) {
@@ -256,12 +294,26 @@ const HUM = (() => {
     }
   }
 
+  async function refreshCacheAssembly() {
+    const logId = "layer-log";
+    if (!document.getElementById("cache-summary")) return;
+    appendLog(logId, "Fetching cache assembly JSON...");
+    try {
+      const payload = await loadCacheAssembly();
+      renderCacheAssembly(payload);
+      appendLog(logId, `Loaded cache assembly ${payload.prefix || ""}: ${payload.piece_count || 0} pieces, ${payload.interval_plot?.formula || "no formula"}.`);
+    } catch (e) {
+      appendLog(logId, `Cache assembly unavailable: ${e.message}`);
+    }
+  }
+
   function initLayerViewer() {
     if (!document.getElementById("layer-table-body")) return;
     document.getElementById("refresh-layers")?.addEventListener("click", refreshLayers);
     document.getElementById("layer-filter")?.addEventListener("change", () => renderLayerTable(window.HUM_LAYER_PAYLOAD || {}));
     document.getElementById("search-filter")?.addEventListener("input", () => renderLayerTable(window.HUM_LAYER_PAYLOAD || {}));
     refreshLayers();
+    refreshCacheAssembly();
   }
 
   /* ---- Navigation active state ---- */
@@ -289,5 +341,5 @@ const HUM = (() => {
 
   document.addEventListener("DOMContentLoaded", init);
 
-  return { renderSvgMap, refreshMap, appendLog, loadTopology, loadArtifactLayers, refreshLayers, init };
+  return { renderSvgMap, refreshMap, appendLog, loadTopology, loadArtifactLayers, loadCacheAssembly, refreshLayers, init };
 })();

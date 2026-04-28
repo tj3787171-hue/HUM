@@ -50,6 +50,18 @@ Then serve the interactive lab and open `layers.html`:
 php -S 127.0.0.1:8000 -t site
 ```
 
+Generate the apt/pkg/cache/libclang interval assembly:
+
+```bash
+python3 scripts/hum_cache_assembly.py \
+  --root . \
+  --root /var/cache/apt \
+  --root /var/lib/apt \
+  --root /usr/lib \
+  --prefix hum-cache \
+  --exponent 1.618
+```
+
 ## Use it
 
 1. Open this repository in VS Code.

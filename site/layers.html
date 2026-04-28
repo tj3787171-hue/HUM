@@ -46,6 +46,32 @@
 
   <section id="layer-summary" class="layer-summary"></section>
 
+  <section class="panel" style="margin-bottom:1.5rem;">
+    <h2>Cache Assembly</h2>
+    <p style="color:var(--text-dim); margin-bottom:1rem;">
+      Apt/package/cache/image/libclang assembly with interval predicate plot.
+    </p>
+    <p id="cache-formula" style="color:var(--accent-hi); font-family:var(--mono); margin-bottom:1rem;">
+      Loading cache assembly...
+    </p>
+    <section id="cache-summary" class="layer-summary"></section>
+    <object data="data/cache-interval-plot.svg" type="image/svg+xml" class="cache-plot" aria-label="Cache interval plot"></object>
+    <table style="margin-top:1rem;">
+      <thead>
+        <tr>
+          <th>Interval</th>
+          <th>Path</th>
+          <th>Size</th>
+          <th>n</th>
+          <th>y</th>
+        </tr>
+      </thead>
+      <tbody id="cache-table-body">
+        <tr><td colspan="5">Loading cache assembly...</td></tr>
+      </tbody>
+    </table>
+  </section>
+
   <section class="panel">
     <h2>Layer Inventory</h2>
     <table>

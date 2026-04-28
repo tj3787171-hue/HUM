@@ -87,6 +87,29 @@ surface into `dist/hum-copy-layer/` and compresses it to
 shell scripts, SVG/vector files, `.txt` files, and bitmap-style assets with a
 `COPY_LAYER_MANIFEST.json` that records copied paths and hashes.
 
+## Cache assembly interval plot
+
+Generate source/package/cache/image/library assembly evidence from the repo plus
+apt and library cache roots:
+
+```bash
+python3 scripts/hum_cache_assembly.py \
+  --root . \
+  --root /var/cache/apt \
+  --root /var/lib/apt \
+  --root /usr/lib \
+  --prefix hum-cache \
+  --exponent 1.618 \
+  --output-json site/data/cache-assembly.json \
+  --output-markdown docs/HUM_CACHE_ASSEMBLY.generated.md \
+  --output-svg docs/hum-cache-interval-plot.svg
+```
+
+The generated assembly groups apt indexes, package cache files, image assets,
+source metadata, libraries, and libclang/libclang-cpp/LLVM-family pieces. The
+interval plot writes points with the predicate `y = n^exponent` and prefix IDs
+such as `hum-cache-0001`.
+
 ## Debian and `.deb` path
 
 For Debian mirror/package workflows:

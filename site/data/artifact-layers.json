@@ -29,12 +29,12 @@
       }
     }
   ],
-  "artifact_count": 88,
+  "artifact_count": 93,
   "artifacts": [
     {
       "benchmark": {
-        "elapsed_ms": 0.026,
-        "mb_per_sec": 99.754,
+        "elapsed_ms": 0.029,
+        "mb_per_sec": 87.682,
         "read_bytes": 2697
       },
       "kind": "config-json",
@@ -51,8 +51,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.008,
-        "mb_per_sec": 36.439,
+        "elapsed_ms": 0.01,
+        "mb_per_sec": 27.499,
         "read_bytes": 291
       },
       "kind": "config-yaml",
@@ -69,7 +69,7 @@
     {
       "benchmark": {
         "elapsed_ms": 0.007,
-        "mb_per_sec": 251.132,
+        "mb_per_sec": 276.456,
         "read_bytes": 1926
       },
       "kind": "shell-code",
@@ -86,7 +86,7 @@
     {
       "benchmark": {
         "elapsed_ms": 0.008,
-        "mb_per_sec": 1263.339,
+        "mb_per_sec": 1253.786,
         "read_bytes": 10954
       },
       "kind": "shell-code",
@@ -103,7 +103,7 @@
     {
       "benchmark": {
         "elapsed_ms": 0.007,
-        "mb_per_sec": 276.596,
+        "mb_per_sec": 260.904,
         "read_bytes": 1900
       },
       "kind": "shell-code",
@@ -119,8 +119,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.007,
-        "mb_per_sec": 132.94,
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 141.075,
         "read_bytes": 921
       },
       "kind": "shell-code",
@@ -136,8 +136,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.007,
-        "mb_per_sec": 918.203,
+        "elapsed_ms": 0.008,
+        "mb_per_sec": 823.297,
         "read_bytes": 6782
       },
       "kind": "shell-code",
@@ -153,8 +153,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.006,
-        "mb_per_sec": 399.32,
+        "elapsed_ms": 0.008,
+        "mb_per_sec": 309.527,
         "read_bytes": 2689
       },
       "kind": "markdown-document",
@@ -170,25 +170,25 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.015,
-        "mb_per_sec": 1594.22,
-        "read_bytes": 25772
+        "elapsed_ms": 0.017,
+        "mb_per_sec": 1451.554,
+        "read_bytes": 26006
       },
       "kind": "markdown-document",
       "layer": "document",
-      "mtime": "2026-04-28T21:53:39+00:00",
+      "mtime": "2026-04-28T22:24:18+00:00",
       "path": "README.md",
       "probe": {
-        "lines": 790,
-        "non_empty_lines": 592
+        "lines": 802,
+        "non_empty_lines": 602
       },
-      "sha256_prefix": "21c4c452999ae27e",
-      "size_bytes": 25772
+      "sha256_prefix": "2b8f3407c4cb449d",
+      "size_bytes": 26006
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.006,
-        "mb_per_sec": 184.34,
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 164.831,
         "read_bytes": 1251
       },
       "kind": "python-code",
@@ -204,13 +204,13 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.016,
-        "mb_per_sec": 4111.212,
-        "read_bytes": 68147
+        "elapsed_ms": 0.026,
+        "mb_per_sec": 2455.382,
+        "read_bytes": 68182
       },
       "kind": "tar-archive",
       "layer": "archive",
-      "mtime": "2026-04-28T21:53:54+00:00",
+      "mtime": "2026-04-28T21:55:04+00:00",
       "path": "dist/hum-copy-layer-accompaniment.tar.gz",
       "probe": {
         "archive_reader": "tarfile",
@@ -229,13 +229,13 @@
           "hum-copy-layer/README.md"
         ]
       },
-      "sha256_prefix": "fd7b6995f178a4bd",
-      "size_bytes": 68147
+      "sha256_prefix": "c25ca9a606fc3d54",
+      "size_bytes": 68182
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.119,
-        "mb_per_sec": 8431.419,
+        "elapsed_ms": 0.206,
+        "mb_per_sec": 4863.624,
         "read_bytes": 1048576
       },
       "kind": "iso-image",
@@ -250,42 +250,76 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.008,
-        "mb_per_sec": 995.243,
-        "read_bytes": 8260
+        "elapsed_ms": 0.011,
+        "mb_per_sec": 716.387,
+        "read_bytes": 8390
       },
       "kind": "markdown-document",
       "layer": "document",
-      "mtime": "2026-04-28T21:53:54+00:00",
+      "mtime": "2026-04-28T21:55:04+00:00",
       "path": "docs/HUM_ARTIFACT_LAYERS.generated.md",
       "probe": {
-        "lines": 106,
-        "non_empty_lines": 101
+        "lines": 108,
+        "non_empty_lines": 103
       },
-      "sha256_prefix": "706af0f67eec59ae",
-      "size_bytes": 8260
+      "sha256_prefix": "89a97c1289e18853",
+      "size_bytes": 8390
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.007,
-        "mb_per_sec": 623.146,
-        "read_bytes": 4619
+        "elapsed_ms": 0.008,
+        "mb_per_sec": 605.769,
+        "read_bytes": 4891
       },
       "kind": "markdown-document",
       "layer": "document",
-      "mtime": "2026-04-28T21:53:47+00:00",
-      "path": "docs/HUM_MAIN_RUNBOOK.md",
+      "mtime": "2026-04-28T22:24:27+00:00",
+      "path": "docs/HUM_CACHE_ASSEMBLY.generated.md",
       "probe": {
-        "lines": 133,
-        "non_empty_lines": 99
+        "lines": 63,
+        "non_empty_lines": 58
       },
-      "sha256_prefix": "4fe924ca57ddeb6d",
-      "size_bytes": 4619
+      "sha256_prefix": "525f61ff1f62c71c",
+      "size_bytes": 4891
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.007,
-        "mb_per_sec": 145.569,
+        "elapsed_ms": 0.008,
+        "mb_per_sec": 664.029,
+        "read_bytes": 5360
+      },
+      "kind": "markdown-document",
+      "layer": "document",
+      "mtime": "2026-04-28T22:24:08+00:00",
+      "path": "docs/HUM_MAIN_RUNBOOK.md",
+      "probe": {
+        "lines": 156,
+        "non_empty_lines": 118
+      },
+      "sha256_prefix": "c81931950a4cc738",
+      "size_bytes": 5360
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.018,
+        "mb_per_sec": 1397.613,
+        "read_bytes": 26807
+      },
+      "kind": "svg-vector",
+      "layer": "media",
+      "mtime": "2026-04-28T22:24:27+00:00",
+      "path": "docs/hum-cache-interval-plot.svg",
+      "probe": {
+        "lines": 168,
+        "non_empty_lines": 168
+      },
+      "sha256_prefix": "a7af020efb776813",
+      "size_bytes": 26807
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.008,
+        "mb_per_sec": 123.538,
         "read_bytes": 1081
       },
       "kind": "markdown-document",
@@ -301,8 +335,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.007,
-        "mb_per_sec": 275.221,
+        "elapsed_ms": 0.008,
+        "mb_per_sec": 238.419,
         "read_bytes": 1950
       },
       "kind": "shell-code",
@@ -318,8 +352,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.006,
-        "mb_per_sec": 771.137,
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 726.342,
         "read_bytes": 5061
       },
       "kind": "shell-code",
@@ -335,8 +369,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.006,
-        "mb_per_sec": 633.864,
+        "elapsed_ms": 0.009,
+        "mb_per_sec": 464.35,
         "read_bytes": 4295
       },
       "kind": "shell-code",
@@ -353,7 +387,7 @@
     {
       "benchmark": {
         "elapsed_ms": 0.008,
-        "mb_per_sec": 764.897,
+        "mb_per_sec": 732.501,
         "read_bytes": 6329
       },
       "kind": "shell-code",
@@ -369,8 +403,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.007,
-        "mb_per_sec": 1004.393,
+        "elapsed_ms": 0.008,
+        "mb_per_sec": 863.037,
         "read_bytes": 6951
       },
       "kind": "shell-code",
@@ -386,8 +420,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.007,
-        "mb_per_sec": 1698.442,
+        "elapsed_ms": 0.008,
+        "mb_per_sec": 1429.879,
         "read_bytes": 12431
       },
       "kind": "shell-code",
@@ -403,8 +437,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.007,
-        "mb_per_sec": 663.782,
+        "elapsed_ms": 0.008,
+        "mb_per_sec": 613.8,
         "read_bytes": 5026
       },
       "kind": "shell-code",
@@ -420,8 +454,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.006,
-        "mb_per_sec": 211.742,
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 191.147,
         "read_bytes": 1391
       },
       "kind": "shell-code",
@@ -437,8 +471,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.01,
-        "mb_per_sec": 274.332,
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 401.886,
         "read_bytes": 2748
       },
       "kind": "python-code",
@@ -454,8 +488,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.008,
-        "mb_per_sec": 1930.676,
+        "elapsed_ms": 0.009,
+        "mb_per_sec": 1730.288,
         "read_bytes": 16222
       },
       "kind": "python-code",
@@ -471,8 +505,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.006,
-        "mb_per_sec": 922.614,
+        "elapsed_ms": 0.008,
+        "mb_per_sec": 687.711,
         "read_bytes": 5911
       },
       "kind": "shell-code",
@@ -488,8 +522,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.007,
-        "mb_per_sec": 1451.856,
+        "elapsed_ms": 0.008,
+        "mb_per_sec": 1324.174,
         "read_bytes": 10815
       },
       "kind": "shell-code",
@@ -505,8 +539,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.006,
-        "mb_per_sec": 655.338,
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 555.183,
         "read_bytes": 4312
       },
       "kind": "shell-code",
@@ -523,7 +557,7 @@
     {
       "benchmark": {
         "elapsed_ms": 0.007,
-        "mb_per_sec": 443.133,
+        "mb_per_sec": 463.052,
         "read_bytes": 3208
       },
       "kind": "python-code",
@@ -539,8 +573,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.006,
-        "mb_per_sec": 876.071,
+        "elapsed_ms": 0.008,
+        "mb_per_sec": 699.168,
         "read_bytes": 5780
       },
       "kind": "shell-code",
@@ -556,8 +590,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.006,
-        "mb_per_sec": 2651.003,
+        "elapsed_ms": 0.01,
+        "mb_per_sec": 1777.548,
         "read_bytes": 18063
       },
       "kind": "shell-code",
@@ -573,8 +607,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.008,
-        "mb_per_sec": 1167.925,
+        "elapsed_ms": 0.009,
+        "mb_per_sec": 1032.151,
         "read_bytes": 9496
       },
       "kind": "shell-code",
@@ -590,8 +624,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.007,
-        "mb_per_sec": 1984.925,
+        "elapsed_ms": 0.008,
+        "mb_per_sec": 1630.972,
         "read_bytes": 13868
       },
       "kind": "shell-code",
@@ -607,8 +641,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.008,
-        "mb_per_sec": 1520.471,
+        "elapsed_ms": 0.015,
+        "mb_per_sec": 833.09,
         "read_bytes": 13327
       },
       "kind": "shell-code",
@@ -624,8 +658,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.008,
-        "mb_per_sec": 1811.425,
+        "elapsed_ms": 0.012,
+        "mb_per_sec": 1193.587,
         "read_bytes": 14975
       },
       "kind": "python-code",
@@ -641,8 +675,25 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.006,
-        "mb_per_sec": 347.005,
+        "elapsed_ms": 0.008,
+        "mb_per_sec": 1381.175,
+        "read_bytes": 11534
+      },
+      "kind": "python-code",
+      "layer": "code",
+      "mtime": "2026-04-28T22:23:11+00:00",
+      "path": "scripts/hum_cache_assembly.py",
+      "probe": {
+        "lines": 322,
+        "non_empty_lines": 284
+      },
+      "sha256_prefix": "594e676ca72b9442",
+      "size_bytes": 11534
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 335.202,
         "read_bytes": 2356
       },
       "kind": "shell-code",
@@ -659,7 +710,7 @@
     {
       "benchmark": {
         "elapsed_ms": 0.007,
-        "mb_per_sec": 884.092,
+        "mb_per_sec": 921.913,
         "read_bytes": 6734
       },
       "kind": "shell-code",
@@ -675,8 +726,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.007,
-        "mb_per_sec": 1566.167,
+        "elapsed_ms": 0.009,
+        "mb_per_sec": 1331.334,
         "read_bytes": 11880
       },
       "kind": "shell-code",
@@ -693,7 +744,7 @@
     {
       "benchmark": {
         "elapsed_ms": 0.007,
-        "mb_per_sec": 769.419,
+        "mb_per_sec": 827.368,
         "read_bytes": 5771
       },
       "kind": "shell-code",
@@ -709,8 +760,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.007,
-        "mb_per_sec": 591.071,
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 704.877,
         "read_bytes": 4618
       },
       "kind": "python-code",
@@ -726,8 +777,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.007,
-        "mb_per_sec": 446.386,
+        "elapsed_ms": 0.01,
+        "mb_per_sec": 315.259,
         "read_bytes": 3313
       },
       "kind": "text-document",
@@ -743,8 +794,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.008,
-        "mb_per_sec": 5038.954,
+        "elapsed_ms": 0.01,
+        "mb_per_sec": 4036.26,
         "read_bytes": 41007
       },
       "kind": "python-code",
@@ -761,7 +812,7 @@
     {
       "benchmark": {
         "elapsed_ms": 0.006,
-        "mb_per_sec": 373.99,
+        "mb_per_sec": 365.578,
         "read_bytes": 2420
       },
       "kind": "javascript-code",
@@ -777,8 +828,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.006,
-        "mb_per_sec": 0.154,
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 0.135,
         "read_bytes": 1
       },
       "kind": "python-code",
@@ -794,8 +845,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.006,
-        "mb_per_sec": 248.321,
+        "elapsed_ms": 0.008,
+        "mb_per_sec": 202.413,
         "read_bytes": 1605
       },
       "kind": "python-code",
@@ -811,8 +862,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.007,
-        "mb_per_sec": 986.107,
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 1016.213,
         "read_bytes": 6841
       },
       "kind": "python-code",
@@ -828,8 +879,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.006,
-        "mb_per_sec": 816.784,
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 695.274,
         "read_bytes": 5376
       },
       "kind": "shell-code",
@@ -845,25 +896,25 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.007,
-        "mb_per_sec": 1452.337,
-        "read_bytes": 10281
+        "elapsed_ms": 0.008,
+        "mb_per_sec": 1444.293,
+        "read_bytes": 12314
       },
       "kind": "javascript-code",
       "layer": "code",
-      "mtime": "2026-04-28T21:32:26+00:00",
+      "mtime": "2026-04-28T22:23:48+00:00",
       "path": "site/assets/app.js",
       "probe": {
-        "lines": 284,
-        "non_empty_lines": 250
+        "lines": 339,
+        "non_empty_lines": 299
       },
-      "sha256_prefix": "ccc84d8366efe832",
-      "size_bytes": 10281
+      "sha256_prefix": "be8d0c5eef7dfe4c",
+      "size_bytes": 12314
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.006,
-        "mb_per_sec": 592.098,
+        "elapsed_ms": 0.008,
+        "mb_per_sec": 451.044,
         "read_bytes": 3786
       },
       "kind": "php-code",
@@ -879,8 +930,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.008,
-        "mb_per_sec": 507.119,
+        "elapsed_ms": 0.01,
+        "mb_per_sec": 413.107,
         "read_bytes": 4262
       },
       "kind": "config-json",
@@ -902,8 +953,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.009,
-        "mb_per_sec": 2229.452,
+        "elapsed_ms": 0.012,
+        "mb_per_sec": 1804.257,
         "read_bytes": 22052
       },
       "kind": "config-json",
@@ -920,8 +971,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.008,
-        "mb_per_sec": 383.99,
+        "elapsed_ms": 0.009,
+        "mb_per_sec": 362.59,
         "read_bytes": 3261
       },
       "kind": "config-json",
@@ -938,8 +989,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.007,
-        "mb_per_sec": 84.611,
+        "elapsed_ms": 0.008,
+        "mb_per_sec": 73.212,
         "read_bytes": 612
       },
       "kind": "config-json",
@@ -964,18 +1015,18 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.011,
-        "mb_per_sec": 4272.785,
-        "read_bytes": 48083
+        "elapsed_ms": 0.014,
+        "mb_per_sec": 3511.438,
+        "read_bytes": 49917
       },
       "kind": "config-json",
       "layer": "config",
-      "mtime": "2026-04-28T21:53:54+00:00",
+      "mtime": "2026-04-28T21:55:04+00:00",
       "path": "site/data/artifact-layers.json",
       "probe": {
         "json_type": "object",
-        "lines": 1917,
-        "non_empty_lines": 1917,
+        "lines": 1973,
+        "non_empty_lines": 1973,
         "top_level_keys": [
           "archives",
           "artifact_count",
@@ -988,13 +1039,39 @@
           "summary"
         ]
       },
-      "sha256_prefix": "8db116fd7dcc075b",
-      "size_bytes": 48083
+      "sha256_prefix": "0dae41a2087b4d5b",
+      "size_bytes": 49917
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.007,
-        "mb_per_sec": 725.296,
+        "elapsed_ms": 0.113,
+        "mb_per_sec": 6880.122,
+        "read_bytes": 816316
+      },
+      "kind": "config-json",
+      "layer": "config",
+      "mtime": "2026-04-28T22:24:27+00:00",
+      "path": "site/data/cache-assembly.json",
+      "probe": {
+        "json_type": "object",
+        "lines": 26884,
+        "non_empty_lines": 26884,
+        "top_level_keys": [
+          "categories",
+          "generated_at",
+          "interval_plot",
+          "piece_count",
+          "pieces",
+          "roots"
+        ]
+      },
+      "sha256_prefix": "41e6dec2fcfbaf2d",
+      "size_bytes": 816316
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.008,
+        "mb_per_sec": 634.844,
         "read_bytes": 5183
       },
       "kind": "python-code",
@@ -1011,7 +1088,7 @@
     {
       "benchmark": {
         "elapsed_ms": 0.007,
-        "mb_per_sec": 617.962,
+        "mb_per_sec": 607.055,
         "read_bytes": 4508
       },
       "kind": "python-code",
@@ -1027,8 +1104,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.008,
-        "mb_per_sec": 2544.791,
+        "elapsed_ms": 0.009,
+        "mb_per_sec": 2197.037,
         "read_bytes": 20955
       },
       "kind": "config-json",
@@ -1054,8 +1131,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.007,
-        "mb_per_sec": 2040.915,
+        "elapsed_ms": 0.011,
+        "mb_per_sec": 1389.898,
         "read_bytes": 15708
       },
       "kind": "python-code",
@@ -1071,8 +1148,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.007,
-        "mb_per_sec": 1242.466,
+        "elapsed_ms": 0.008,
+        "mb_per_sec": 1154.549,
         "read_bytes": 9564
       },
       "kind": "config-json",
@@ -1097,8 +1174,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.007,
-        "mb_per_sec": 161.642,
+        "elapsed_ms": 0.008,
+        "mb_per_sec": 141.202,
         "read_bytes": 1199
       },
       "kind": "config-json",
@@ -1124,8 +1201,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.007,
-        "mb_per_sec": 782.964,
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 806.099,
         "read_bytes": 5435
       },
       "kind": "php-code",
@@ -1142,7 +1219,7 @@
     {
       "benchmark": {
         "elapsed_ms": 0.006,
-        "mb_per_sec": 991.413,
+        "mb_per_sec": 971.57,
         "read_bytes": 6515
       },
       "kind": "php-code",
@@ -1159,7 +1236,7 @@
     {
       "benchmark": {
         "elapsed_ms": 0.007,
-        "mb_per_sec": 1363.496,
+        "mb_per_sec": 1456.484,
         "read_bytes": 10234
       },
       "kind": "php-code",
@@ -1176,7 +1253,7 @@
     {
       "benchmark": {
         "elapsed_ms": 0.009,
-        "mb_per_sec": 1618.112,
+        "mb_per_sec": 1647.295,
         "read_bytes": 15228
       },
       "kind": "php-code",
@@ -1192,8 +1269,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.006,
-        "mb_per_sec": 1321.334,
+        "elapsed_ms": 0.026,
+        "mb_per_sec": 326.957,
         "read_bytes": 8956
       },
       "kind": "php-code",
@@ -1209,8 +1286,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.007,
-        "mb_per_sec": 1541.273,
+        "elapsed_ms": 0.008,
+        "mb_per_sec": 1265.519,
         "read_bytes": 10673
       },
       "kind": "php-code",
@@ -1226,8 +1303,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.006,
-        "mb_per_sec": 473.141,
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 394.208,
         "read_bytes": 3008
       },
       "kind": "python-code",
@@ -1243,8 +1320,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.008,
-        "mb_per_sec": 551.378,
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 667.209,
         "read_bytes": 4416
       },
       "kind": "python-code",
@@ -1260,8 +1337,25 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.006,
-        "mb_per_sec": 718.35,
+        "elapsed_ms": 0.008,
+        "mb_per_sec": 282.167,
+        "read_bytes": 2309
+      },
+      "kind": "python-code",
+      "layer": "code",
+      "mtime": "2026-04-28T22:22:25+00:00",
+      "path": "tests/test_hum_cache_assembly.py",
+      "probe": {
+        "lines": 66,
+        "non_empty_lines": 56
+      },
+      "sha256_prefix": "dd19f76a51cd0720",
+      "size_bytes": 2309
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 604.033,
         "read_bytes": 4585
       },
       "kind": "python-code",
@@ -1277,8 +1371,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.006,
-        "mb_per_sec": 114.248,
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 103.412,
         "read_bytes": 734
       },
       "kind": "markdown-document",
@@ -1294,8 +1388,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.006,
-        "mb_per_sec": 654.953,
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 608.349,
         "read_bytes": 4339
       },
       "kind": "markdown-document",
@@ -1311,8 +1405,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.006,
-        "mb_per_sec": 286.042,
+        "elapsed_ms": 0.008,
+        "mb_per_sec": 229.739,
         "read_bytes": 1886
       },
       "kind": "shell-code",
@@ -1328,8 +1422,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.006,
-        "mb_per_sec": 7.558,
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 6.711,
         "read_bytes": 49
       },
       "kind": "python-code",
@@ -1345,8 +1439,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.006,
-        "mb_per_sec": 272.584,
+        "elapsed_ms": 0.008,
+        "mb_per_sec": 225.751,
         "read_bytes": 1849
       },
       "kind": "python-code",
@@ -1362,8 +1456,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.006,
-        "mb_per_sec": 218.281,
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 199.531,
         "read_bytes": 1420
       },
       "kind": "python-code",
@@ -1380,7 +1474,7 @@
     {
       "benchmark": {
         "elapsed_ms": 0.007,
-        "mb_per_sec": 242.537,
+        "mb_per_sec": 241.993,
         "read_bytes": 1811
       },
       "kind": "python-code",
@@ -1397,7 +1491,7 @@
     {
       "benchmark": {
         "elapsed_ms": 0.007,
-        "mb_per_sec": 159.903,
+        "mb_per_sec": 156.185,
         "read_bytes": 1141
       },
       "kind": "config-json",
@@ -1421,8 +1515,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.006,
-        "mb_per_sec": 394.706,
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 347.606,
         "read_bytes": 2636
       },
       "kind": "python-code",
@@ -1438,8 +1532,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.006,
-        "mb_per_sec": 244.604,
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 222.166,
         "read_bytes": 1572
       },
       "kind": "python-code",
@@ -1456,7 +1550,7 @@
     {
       "benchmark": {
         "elapsed_ms": 0.007,
-        "mb_per_sec": 249.556,
+        "mb_per_sec": 244.564,
         "read_bytes": 1731
       },
       "kind": "config-json",
@@ -1480,7 +1574,7 @@
     {
       "benchmark": {
         "elapsed_ms": 0.007,
-        "mb_per_sec": 146.18,
+        "mb_per_sec": 135.459,
         "read_bytes": 1042
       },
       "kind": "config-json",
@@ -1503,8 +1597,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.007,
-        "mb_per_sec": 74.984,
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 75.969,
         "read_bytes": 515
       },
       "kind": "config-json",
@@ -1528,8 +1622,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.006,
-        "mb_per_sec": 351.566,
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 311.309,
         "read_bytes": 2349
       },
       "kind": "config-csv",
@@ -1546,7 +1640,7 @@
     {
       "benchmark": {
         "elapsed_ms": 0.007,
-        "mb_per_sec": 795.856,
+        "mb_per_sec": 796.42,
         "read_bytes": 5885
       },
       "kind": "config-json",
@@ -1573,8 +1667,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.006,
-        "mb_per_sec": 123.768,
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 114.16,
         "read_bytes": 828
       },
       "kind": "config-json",
@@ -1601,7 +1695,7 @@
     {
       "benchmark": {
         "elapsed_ms": 0.007,
-        "mb_per_sec": 94.938,
+        "mb_per_sec": 87.23,
         "read_bytes": 685
       },
       "kind": "config-json",
@@ -1628,7 +1722,7 @@
     {
       "benchmark": {
         "elapsed_ms": 0.007,
-        "mb_per_sec": 322.76,
+        "mb_per_sec": 339.422,
         "read_bytes": 2475
       },
       "kind": "config-json",
@@ -1655,8 +1749,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.006,
-        "mb_per_sec": 397.04,
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 385.012,
         "read_bytes": 2652
       },
       "kind": "config-yaml",
@@ -1673,17 +1767,17 @@
   ],
   "benchmark": {
     "enabled": true,
-    "sampled_bytes": 1694050,
-    "sampled_files": 88
+    "sampled_bytes": 2560914,
+    "sampled_files": 93
   },
   "copy_layer": {
     "archive": {
       "archive": "dist/hum-copy-layer-accompaniment.tar.gz",
-      "sha256": "c25ca9a606fc3d54614cb3f4c5788e51ab5b470fe55ff54a0c41aa7198fc2a13",
-      "size_bytes": 68182
+      "sha256": "a151daa1058538bc96bffeb3b673d34667e5444ec44fd0a03460d534100b7632",
+      "size_bytes": 74786
     },
-    "copied_count": 35,
-    "copied_size_bytes": 232299,
+    "copied_count": 37,
+    "copied_size_bytes": 265102,
     "copy_layer_dir": "dist/hum-copy-layer",
     "files": [
       {
@@ -1732,22 +1826,36 @@
         "kind": "markdown-document",
         "layer": "document",
         "path": "README.md",
-        "sha256_prefix": "21c4c452999ae27e",
-        "size_bytes": 25772
+        "sha256_prefix": "2b8f3407c4cb449d",
+        "size_bytes": 26006
       },
       {
         "kind": "markdown-document",
         "layer": "document",
         "path": "docs/HUM_ARTIFACT_LAYERS.generated.md",
-        "sha256_prefix": "706af0f67eec59ae",
-        "size_bytes": 8260
+        "sha256_prefix": "89a97c1289e18853",
+        "size_bytes": 8390
+      },
+      {
+        "kind": "markdown-document",
+        "layer": "document",
+        "path": "docs/HUM_CACHE_ASSEMBLY.generated.md",
+        "sha256_prefix": "525f61ff1f62c71c",
+        "size_bytes": 4891
       },
       {
         "kind": "markdown-document",
         "layer": "document",
         "path": "docs/HUM_MAIN_RUNBOOK.md",
-        "sha256_prefix": "4fe924ca57ddeb6d",
-        "size_bytes": 4619
+        "sha256_prefix": "c81931950a4cc738",
+        "size_bytes": 5360
+      },
+      {
+        "kind": "svg-vector",
+        "layer": "media",
+        "path": "docs/hum-cache-interval-plot.svg",
+        "sha256_prefix": "a7af020efb776813",
+        "size_bytes": 26807
       },
       {
         "kind": "markdown-document",
@@ -1932,7 +2040,7 @@
         "size_bytes": 1886
       }
     ],
-    "generated_at": "2026-04-28T21:55:04+00:00",
+    "generated_at": "2026-04-28T22:24:28+00:00",
     "included_kinds": [
       "bitmap-image",
       "markdown-document",
@@ -1942,32 +2050,36 @@
     ],
     "root": "/workspace"
   },
-  "generated_at": "2026-04-28T21:55:04+00:00",
+  "generated_at": "2026-04-28T22:24:28+00:00",
   "layers": {
     "archive": {
       "count": 1,
-      "size_bytes": 68147
+      "size_bytes": 68182
     },
     "code": {
-      "count": 58,
-      "size_bytes": 394241
+      "count": 60,
+      "size_bytes": 410117
     },
     "config": {
-      "count": 20,
-      "size_bytes": 132279
+      "count": 21,
+      "size_bytes": 950429
     },
     "document": {
-      "count": 8,
-      "size_bytes": 50807
+      "count": 9,
+      "size_bytes": 56803
     },
     "iso": {
       "count": 1,
       "size_bytes": 1048576
+    },
+    "media": {
+      "count": 1,
+      "size_bytes": 26807
     }
   },
   "root": "/workspace",
   "summary": {
-    "artifact_count": 88,
-    "total_size_bytes": 1694050
+    "artifact_count": 93,
+    "total_size_bytes": 2560914
   }
 }
