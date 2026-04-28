@@ -166,15 +166,21 @@ const HUM = (() => {
   }
 
   function formatBytes(bytes) {
-    if (!Number.isFinite(bytes)) return "";
-    if (bytes < 1024) return `${bytes} B`;
+    const safeBytes = Math.max(0, Number(bytes) || 0);
+    if (safeBytes < 1024) return `${safeBytes} B`;
     const units = ["KB", "MB", "GB"];
-    let value = bytes / 1024;
+    let value = safeBytes / 1024;
     for (const unit of units) {
       if (value < 1024) return `${value.toFixed(1)} ${unit}`;
       value /= 1024;
     }
     return `${value.toFixed(1)} TB`;
+  }
+
+  function formatSpeed(benchmark) {
+    if (!benchmark) return "not sampled";
+    const speed = Math.max(0, Number(benchmark.mb_per_sec) || 0);
+    return `${speed.toFixed(3)} MB/s`;
   }
 
   function renderLayerSummary(payload) {
@@ -196,8 +202,11 @@ const HUM = (() => {
     const search = document.getElementById("search-filter");
     if (!tbody || !select || !search) return;
 
-    const layerValue = select.value || "all";
     const query = (search.value || "").toLowerCase();
+    if (query && select.value !== "all") {
+      select.value = "all";
+    }
+    const layerValue = select.value || "all";
     const rows = (payload.artifacts || []).filter(item => {
       const haystack = `${item.layer} ${item.kind} ${item.path} ${item.sha256_prefix || ""}`.toLowerCase();
       return (layerValue === "all" || item.layer === layerValue) && haystack.includes(query);
@@ -209,7 +218,7 @@ const HUM = (() => {
     }
 
     tbody.innerHTML = rows.map(item => {
-      const speed = item.benchmark ? `${item.benchmark.mb_per_sec} MB/s` : "not sampled";
+      const speed = formatSpeed(item.benchmark);
       return `
         <tr>
           <td><span class="badge badge-unknown">${item.layer}</span><br><small>${item.kind}</small></td>

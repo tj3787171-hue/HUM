@@ -40,7 +40,8 @@ python3 scripts/hum_artifact_layers.py \
   --output-json site/data/artifact-layers.json \
   --output-markdown docs/HUM_ARTIFACT_LAYERS.generated.md \
   --benchmark \
-  --max-bytes 1048576
+  --max-bytes 1048576 \
+  --copy-layer
 ```
 
 Then serve the interactive lab and open `layers.html`:

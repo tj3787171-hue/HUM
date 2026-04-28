@@ -1,6 +1,27 @@
 {
   "archives": [
     {
+      "kind": "tar-archive",
+      "path": "dist/hum-copy-layer-accompaniment.tar.gz",
+      "probe": {
+        "archive_reader": "tarfile",
+        "members": 47,
+        "readable": true,
+        "sample": [
+          "hum-copy-layer",
+          "hum-copy-layer/.devcontainer",
+          "hum-copy-layer/.devcontainer/import-environment.sh",
+          "hum-copy-layer/.devcontainer/net-driver-recover-auto.sh",
+          "hum-copy-layer/.devcontainer/post-create.sh",
+          "hum-copy-layer/.devcontainer/post-start.sh",
+          "hum-copy-layer/.devcontainer/recup-setup.sh",
+          "hum-copy-layer/AGENTS.md",
+          "hum-copy-layer/COPY_LAYER_MANIFEST.json",
+          "hum-copy-layer/README.md"
+        ]
+      }
+    },
+    {
       "kind": "iso-image",
       "path": "dist/hum-toolkit.iso",
       "probe": {
@@ -8,12 +29,12 @@
       }
     }
   ],
-  "artifact_count": 79,
+  "artifact_count": 88,
   "artifacts": [
     {
       "benchmark": {
-        "elapsed_ms": 0.028,
-        "mb_per_sec": 93.523,
+        "elapsed_ms": 0.026,
+        "mb_per_sec": 99.754,
         "read_bytes": 2697
       },
       "kind": "config-json",
@@ -30,8 +51,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.007,
-        "mb_per_sec": 39.126,
+        "elapsed_ms": 0.008,
+        "mb_per_sec": 36.439,
         "read_bytes": 291
       },
       "kind": "config-yaml",
@@ -47,8 +68,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.006,
-        "mb_per_sec": 283.847,
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 251.132,
         "read_bytes": 1926
       },
       "kind": "shell-code",
@@ -65,7 +86,7 @@
     {
       "benchmark": {
         "elapsed_ms": 0.008,
-        "mb_per_sec": 1348.986,
+        "mb_per_sec": 1263.339,
         "read_bytes": 10954
       },
       "kind": "shell-code",
@@ -81,8 +102,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.008,
-        "mb_per_sec": 221.568,
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 276.596,
         "read_bytes": 1900
       },
       "kind": "shell-code",
@@ -98,8 +119,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.009,
-        "mb_per_sec": 102.168,
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 132.94,
         "read_bytes": 921
       },
       "kind": "shell-code",
@@ -115,8 +136,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.008,
-        "mb_per_sec": 775.239,
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 918.203,
         "read_bytes": 6782
       },
       "kind": "shell-code",
@@ -133,7 +154,41 @@
     {
       "benchmark": {
         "elapsed_ms": 0.006,
-        "mb_per_sec": 184.084,
+        "mb_per_sec": 399.32,
+        "read_bytes": 2689
+      },
+      "kind": "markdown-document",
+      "layer": "document",
+      "mtime": "2026-04-28T21:26:02+00:00",
+      "path": "AGENTS.md",
+      "probe": {
+        "lines": 47,
+        "non_empty_lines": 31
+      },
+      "sha256_prefix": "ca06c3c0afac898d",
+      "size_bytes": 2689
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.015,
+        "mb_per_sec": 1594.22,
+        "read_bytes": 25772
+      },
+      "kind": "markdown-document",
+      "layer": "document",
+      "mtime": "2026-04-28T21:53:39+00:00",
+      "path": "README.md",
+      "probe": {
+        "lines": 790,
+        "non_empty_lines": 592
+      },
+      "sha256_prefix": "21c4c452999ae27e",
+      "size_bytes": 25772
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 184.34,
         "read_bytes": 1251
       },
       "kind": "python-code",
@@ -149,8 +204,38 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.161,
-        "mb_per_sec": 6222.117,
+        "elapsed_ms": 0.016,
+        "mb_per_sec": 4111.212,
+        "read_bytes": 68147
+      },
+      "kind": "tar-archive",
+      "layer": "archive",
+      "mtime": "2026-04-28T21:53:54+00:00",
+      "path": "dist/hum-copy-layer-accompaniment.tar.gz",
+      "probe": {
+        "archive_reader": "tarfile",
+        "members": 47,
+        "readable": true,
+        "sample": [
+          "hum-copy-layer",
+          "hum-copy-layer/.devcontainer",
+          "hum-copy-layer/.devcontainer/import-environment.sh",
+          "hum-copy-layer/.devcontainer/net-driver-recover-auto.sh",
+          "hum-copy-layer/.devcontainer/post-create.sh",
+          "hum-copy-layer/.devcontainer/post-start.sh",
+          "hum-copy-layer/.devcontainer/recup-setup.sh",
+          "hum-copy-layer/AGENTS.md",
+          "hum-copy-layer/COPY_LAYER_MANIFEST.json",
+          "hum-copy-layer/README.md"
+        ]
+      },
+      "sha256_prefix": "fd7b6995f178a4bd",
+      "size_bytes": 68147
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.119,
+        "mb_per_sec": 8431.419,
         "read_bytes": 1048576
       },
       "kind": "iso-image",
@@ -165,8 +250,59 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.01,
-        "mb_per_sec": 185.614,
+        "elapsed_ms": 0.008,
+        "mb_per_sec": 995.243,
+        "read_bytes": 8260
+      },
+      "kind": "markdown-document",
+      "layer": "document",
+      "mtime": "2026-04-28T21:53:54+00:00",
+      "path": "docs/HUM_ARTIFACT_LAYERS.generated.md",
+      "probe": {
+        "lines": 106,
+        "non_empty_lines": 101
+      },
+      "sha256_prefix": "706af0f67eec59ae",
+      "size_bytes": 8260
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 623.146,
+        "read_bytes": 4619
+      },
+      "kind": "markdown-document",
+      "layer": "document",
+      "mtime": "2026-04-28T21:53:47+00:00",
+      "path": "docs/HUM_MAIN_RUNBOOK.md",
+      "probe": {
+        "lines": 133,
+        "non_empty_lines": 99
+      },
+      "sha256_prefix": "4fe924ca57ddeb6d",
+      "size_bytes": 4619
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 145.569,
+        "read_bytes": 1081
+      },
+      "kind": "markdown-document",
+      "layer": "document",
+      "mtime": "2026-04-28T21:26:02+00:00",
+      "path": "iso-build/README.md",
+      "probe": {
+        "lines": 42,
+        "non_empty_lines": 29
+      },
+      "sha256_prefix": "68b6314ff9f2f9a0",
+      "size_bytes": 1081
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 275.221,
         "read_bytes": 1950
       },
       "kind": "shell-code",
@@ -182,8 +318,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.007,
-        "mb_per_sec": 650.303,
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 771.137,
         "read_bytes": 5061
       },
       "kind": "shell-code",
@@ -199,8 +335,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.007,
-        "mb_per_sec": 579.108,
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 633.864,
         "read_bytes": 4295
       },
       "kind": "shell-code",
@@ -216,8 +352,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.007,
-        "mb_per_sec": 898.854,
+        "elapsed_ms": 0.008,
+        "mb_per_sec": 764.897,
         "read_bytes": 6329
       },
       "kind": "shell-code",
@@ -233,8 +369,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.008,
-        "mb_per_sec": 805.075,
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 1004.393,
         "read_bytes": 6951
       },
       "kind": "shell-code",
@@ -250,8 +386,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.009,
-        "mb_per_sec": 1315.92,
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 1698.442,
         "read_bytes": 12431
       },
       "kind": "shell-code",
@@ -267,8 +403,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.006,
-        "mb_per_sec": 763.486,
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 663.782,
         "read_bytes": 5026
       },
       "kind": "shell-code",
@@ -285,7 +421,7 @@
     {
       "benchmark": {
         "elapsed_ms": 0.006,
-        "mb_per_sec": 204.527,
+        "mb_per_sec": 211.742,
         "read_bytes": 1391
       },
       "kind": "shell-code",
@@ -301,8 +437,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.009,
-        "mb_per_sec": 300.608,
+        "elapsed_ms": 0.01,
+        "mb_per_sec": 274.332,
         "read_bytes": 2748
       },
       "kind": "python-code",
@@ -318,8 +454,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.007,
-        "mb_per_sec": 2238.21,
+        "elapsed_ms": 0.008,
+        "mb_per_sec": 1930.676,
         "read_bytes": 16222
       },
       "kind": "python-code",
@@ -335,8 +471,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.007,
-        "mb_per_sec": 846.549,
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 922.614,
         "read_bytes": 5911
       },
       "kind": "shell-code",
@@ -353,7 +489,7 @@
     {
       "benchmark": {
         "elapsed_ms": 0.007,
-        "mb_per_sec": 1566.999,
+        "mb_per_sec": 1451.856,
         "read_bytes": 10815
       },
       "kind": "shell-code",
@@ -369,8 +505,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.008,
-        "mb_per_sec": 508.312,
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 655.338,
         "read_bytes": 4312
       },
       "kind": "shell-code",
@@ -387,7 +523,7 @@
     {
       "benchmark": {
         "elapsed_ms": 0.007,
-        "mb_per_sec": 464.247,
+        "mb_per_sec": 443.133,
         "read_bytes": 3208
       },
       "kind": "python-code",
@@ -404,7 +540,7 @@
     {
       "benchmark": {
         "elapsed_ms": 0.006,
-        "mb_per_sec": 897.028,
+        "mb_per_sec": 876.071,
         "read_bytes": 5780
       },
       "kind": "shell-code",
@@ -420,8 +556,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.009,
-        "mb_per_sec": 1989.631,
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 2651.003,
         "read_bytes": 18063
       },
       "kind": "shell-code",
@@ -437,8 +573,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.011,
-        "mb_per_sec": 792.586,
+        "elapsed_ms": 0.008,
+        "mb_per_sec": 1167.925,
         "read_bytes": 9496
       },
       "kind": "shell-code",
@@ -455,7 +591,7 @@
     {
       "benchmark": {
         "elapsed_ms": 0.007,
-        "mb_per_sec": 1780.26,
+        "mb_per_sec": 1984.925,
         "read_bytes": 13868
       },
       "kind": "shell-code",
@@ -472,7 +608,7 @@
     {
       "benchmark": {
         "elapsed_ms": 0.008,
-        "mb_per_sec": 1678.946,
+        "mb_per_sec": 1520.471,
         "read_bytes": 13327
       },
       "kind": "shell-code",
@@ -488,25 +624,25 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.007,
-        "mb_per_sec": 1632.632,
-        "read_bytes": 11256
+        "elapsed_ms": 0.008,
+        "mb_per_sec": 1811.425,
+        "read_bytes": 14975
       },
       "kind": "python-code",
       "layer": "code",
-      "mtime": "2026-04-28T21:34:22+00:00",
+      "mtime": "2026-04-28T21:53:21+00:00",
       "path": "scripts/hum_artifact_layers.py",
       "probe": {
-        "lines": 344,
-        "non_empty_lines": 293
+        "lines": 442,
+        "non_empty_lines": 381
       },
-      "sha256_prefix": "4ece7ef15ff56640",
-      "size_bytes": 11256
+      "sha256_prefix": "6a4b983329ee7890",
+      "size_bytes": 14975
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.007,
-        "mb_per_sec": 315.614,
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 347.005,
         "read_bytes": 2356
       },
       "kind": "shell-code",
@@ -522,8 +658,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.006,
-        "mb_per_sec": 1017.273,
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 884.092,
         "read_bytes": 6734
       },
       "kind": "shell-code",
@@ -540,7 +676,7 @@
     {
       "benchmark": {
         "elapsed_ms": 0.007,
-        "mb_per_sec": 1666.125,
+        "mb_per_sec": 1566.167,
         "read_bytes": 11880
       },
       "kind": "shell-code",
@@ -556,8 +692,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.006,
-        "mb_per_sec": 874.707,
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 769.419,
         "read_bytes": 5771
       },
       "kind": "shell-code",
@@ -573,8 +709,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.006,
-        "mb_per_sec": 694.1,
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 591.071,
         "read_bytes": 4618
       },
       "kind": "python-code",
@@ -590,8 +726,25 @@
     },
     {
       "benchmark": {
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 446.386,
+        "read_bytes": 3313
+      },
+      "kind": "text-document",
+      "layer": "document",
+      "mtime": "2026-04-28T21:26:02+00:00",
+      "path": "scripts/lab-www.txt",
+      "probe": {
+        "lines": 102,
+        "non_empty_lines": 72
+      },
+      "sha256_prefix": "1164bfcb1d782367",
+      "size_bytes": 3313
+    },
+    {
+      "benchmark": {
         "elapsed_ms": 0.008,
-        "mb_per_sec": 4969.796,
+        "mb_per_sec": 5038.954,
         "read_bytes": 41007
       },
       "kind": "python-code",
@@ -607,8 +760,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.008,
-        "mb_per_sec": 290.923,
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 373.99,
         "read_bytes": 2420
       },
       "kind": "javascript-code",
@@ -625,7 +778,7 @@
     {
       "benchmark": {
         "elapsed_ms": 0.006,
-        "mb_per_sec": 0.147,
+        "mb_per_sec": 0.154,
         "read_bytes": 1
       },
       "kind": "python-code",
@@ -642,7 +795,7 @@
     {
       "benchmark": {
         "elapsed_ms": 0.006,
-        "mb_per_sec": 236.942,
+        "mb_per_sec": 248.321,
         "read_bytes": 1605
       },
       "kind": "python-code",
@@ -659,7 +812,7 @@
     {
       "benchmark": {
         "elapsed_ms": 0.007,
-        "mb_per_sec": 929.225,
+        "mb_per_sec": 986.107,
         "read_bytes": 6841
       },
       "kind": "python-code",
@@ -675,8 +828,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.007,
-        "mb_per_sec": 732.527,
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 816.784,
         "read_bytes": 5376
       },
       "kind": "shell-code",
@@ -692,8 +845,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.008,
-        "mb_per_sec": 1292.476,
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 1452.337,
         "read_bytes": 10281
       },
       "kind": "javascript-code",
@@ -709,8 +862,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.007,
-        "mb_per_sec": 546.483,
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 592.098,
         "read_bytes": 3786
       },
       "kind": "php-code",
@@ -726,8 +879,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.01,
-        "mb_per_sec": 419.936,
+        "elapsed_ms": 0.008,
+        "mb_per_sec": 507.119,
         "read_bytes": 4262
       },
       "kind": "config-json",
@@ -749,8 +902,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.01,
-        "mb_per_sec": 2133.552,
+        "elapsed_ms": 0.009,
+        "mb_per_sec": 2229.452,
         "read_bytes": 22052
       },
       "kind": "config-json",
@@ -768,7 +921,7 @@
     {
       "benchmark": {
         "elapsed_ms": 0.008,
-        "mb_per_sec": 373.476,
+        "mb_per_sec": 383.99,
         "read_bytes": 3261
       },
       "kind": "config-json",
@@ -786,7 +939,7 @@
     {
       "benchmark": {
         "elapsed_ms": 0.007,
-        "mb_per_sec": 84.882,
+        "mb_per_sec": 84.611,
         "read_bytes": 612
       },
       "kind": "config-json",
@@ -811,36 +964,37 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.01,
-        "mb_per_sec": 3378.649,
-        "read_bytes": 37068
+        "elapsed_ms": 0.011,
+        "mb_per_sec": 4272.785,
+        "read_bytes": 48083
       },
       "kind": "config-json",
       "layer": "config",
-      "mtime": "2026-04-28T21:34:51+00:00",
+      "mtime": "2026-04-28T21:53:54+00:00",
       "path": "site/data/artifact-layers.json",
       "probe": {
         "json_type": "object",
-        "lines": 1511,
-        "non_empty_lines": 1511,
+        "lines": 1917,
+        "non_empty_lines": 1917,
         "top_level_keys": [
           "archives",
           "artifact_count",
           "artifacts",
           "benchmark",
+          "copy_layer",
           "generated_at",
           "layers",
           "root",
           "summary"
         ]
       },
-      "sha256_prefix": "28a7af20060d6ee3",
-      "size_bytes": 37068
+      "sha256_prefix": "8db116fd7dcc075b",
+      "size_bytes": 48083
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.006,
-        "mb_per_sec": 762.087,
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 725.296,
         "read_bytes": 5183
       },
       "kind": "python-code",
@@ -857,7 +1011,7 @@
     {
       "benchmark": {
         "elapsed_ms": 0.007,
-        "mb_per_sec": 617.341,
+        "mb_per_sec": 617.962,
         "read_bytes": 4508
       },
       "kind": "python-code",
@@ -873,8 +1027,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.015,
-        "mb_per_sec": 1370.192,
+        "elapsed_ms": 0.008,
+        "mb_per_sec": 2544.791,
         "read_bytes": 20955
       },
       "kind": "config-json",
@@ -901,7 +1055,7 @@
     {
       "benchmark": {
         "elapsed_ms": 0.007,
-        "mb_per_sec": 2013.213,
+        "mb_per_sec": 2040.915,
         "read_bytes": 15708
       },
       "kind": "python-code",
@@ -918,7 +1072,7 @@
     {
       "benchmark": {
         "elapsed_ms": 0.007,
-        "mb_per_sec": 1261.89,
+        "mb_per_sec": 1242.466,
         "read_bytes": 9564
       },
       "kind": "config-json",
@@ -943,8 +1097,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.008,
-        "mb_per_sec": 151.151,
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 161.642,
         "read_bytes": 1199
       },
       "kind": "config-json",
@@ -970,8 +1124,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.006,
-        "mb_per_sec": 824.828,
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 782.964,
         "read_bytes": 5435
       },
       "kind": "php-code",
@@ -988,7 +1142,7 @@
     {
       "benchmark": {
         "elapsed_ms": 0.006,
-        "mb_per_sec": 983.722,
+        "mb_per_sec": 991.413,
         "read_bytes": 6515
       },
       "kind": "php-code",
@@ -1005,7 +1159,7 @@
     {
       "benchmark": {
         "elapsed_ms": 0.007,
-        "mb_per_sec": 1345.08,
+        "mb_per_sec": 1363.496,
         "read_bytes": 10234
       },
       "kind": "php-code",
@@ -1021,8 +1175,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.012,
-        "mb_per_sec": 1219.973,
+        "elapsed_ms": 0.009,
+        "mb_per_sec": 1618.112,
         "read_bytes": 15228
       },
       "kind": "php-code",
@@ -1038,8 +1192,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.007,
-        "mb_per_sec": 1236.945,
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 1321.334,
         "read_bytes": 8956
       },
       "kind": "php-code",
@@ -1056,7 +1210,7 @@
     {
       "benchmark": {
         "elapsed_ms": 0.007,
-        "mb_per_sec": 1454.496,
+        "mb_per_sec": 1541.273,
         "read_bytes": 10673
       },
       "kind": "php-code",
@@ -1072,8 +1226,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.007,
-        "mb_per_sec": 436.828,
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 473.141,
         "read_bytes": 3008
       },
       "kind": "python-code",
@@ -1089,25 +1243,25 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.006,
-        "mb_per_sec": 412.299,
-        "read_bytes": 2763
+        "elapsed_ms": 0.008,
+        "mb_per_sec": 551.378,
+        "read_bytes": 4416
       },
       "kind": "python-code",
       "layer": "code",
-      "mtime": "2026-04-28T21:30:03+00:00",
+      "mtime": "2026-04-28T21:53:33+00:00",
       "path": "tests/test_hum_artifact_layers.py",
       "probe": {
-        "lines": 70,
-        "non_empty_lines": 58
+        "lines": 101,
+        "non_empty_lines": 86
       },
-      "sha256_prefix": "7c56c8fd7c47b012",
-      "size_bytes": 2763
+      "sha256_prefix": "2006cea9c4507c3f",
+      "size_bytes": 4416
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.007,
-        "mb_per_sec": 645.592,
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 718.35,
         "read_bytes": 4585
       },
       "kind": "python-code",
@@ -1124,7 +1278,41 @@
     {
       "benchmark": {
         "elapsed_ms": 0.006,
-        "mb_per_sec": 290.946,
+        "mb_per_sec": 114.248,
+        "read_bytes": 734
+      },
+      "kind": "markdown-document",
+      "layer": "document",
+      "mtime": "2026-04-28T21:26:02+00:00",
+      "path": "websetup/INDEX.md",
+      "probe": {
+        "lines": 15,
+        "non_empty_lines": 12
+      },
+      "sha256_prefix": "04d3c60ecdb36596",
+      "size_bytes": 734
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 654.953,
+        "read_bytes": 4339
+      },
+      "kind": "markdown-document",
+      "layer": "document",
+      "mtime": "2026-04-28T21:26:02+00:00",
+      "path": "websetup/README.md",
+      "probe": {
+        "lines": 125,
+        "non_empty_lines": 102
+      },
+      "sha256_prefix": "a133f46c9b4268ad",
+      "size_bytes": 4339
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 286.042,
         "read_bytes": 1886
       },
       "kind": "shell-code",
@@ -1141,7 +1329,7 @@
     {
       "benchmark": {
         "elapsed_ms": 0.006,
-        "mb_per_sec": 7.4,
+        "mb_per_sec": 7.558,
         "read_bytes": 49
       },
       "kind": "python-code",
@@ -1158,7 +1346,7 @@
     {
       "benchmark": {
         "elapsed_ms": 0.006,
-        "mb_per_sec": 274.493,
+        "mb_per_sec": 272.584,
         "read_bytes": 1849
       },
       "kind": "python-code",
@@ -1174,8 +1362,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.007,
-        "mb_per_sec": 183.374,
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 218.281,
         "read_bytes": 1420
       },
       "kind": "python-code",
@@ -1191,8 +1379,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.006,
-        "mb_per_sec": 274.973,
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 242.537,
         "read_bytes": 1811
       },
       "kind": "python-code",
@@ -1209,7 +1397,7 @@
     {
       "benchmark": {
         "elapsed_ms": 0.007,
-        "mb_per_sec": 162.167,
+        "mb_per_sec": 159.903,
         "read_bytes": 1141
       },
       "kind": "config-json",
@@ -1234,7 +1422,7 @@
     {
       "benchmark": {
         "elapsed_ms": 0.006,
-        "mb_per_sec": 403.125,
+        "mb_per_sec": 394.706,
         "read_bytes": 2636
       },
       "kind": "python-code",
@@ -1251,7 +1439,7 @@
     {
       "benchmark": {
         "elapsed_ms": 0.006,
-        "mb_per_sec": 251.329,
+        "mb_per_sec": 244.604,
         "read_bytes": 1572
       },
       "kind": "python-code",
@@ -1268,7 +1456,7 @@
     {
       "benchmark": {
         "elapsed_ms": 0.007,
-        "mb_per_sec": 234.59,
+        "mb_per_sec": 249.556,
         "read_bytes": 1731
       },
       "kind": "config-json",
@@ -1292,7 +1480,7 @@
     {
       "benchmark": {
         "elapsed_ms": 0.007,
-        "mb_per_sec": 149.007,
+        "mb_per_sec": 146.18,
         "read_bytes": 1042
       },
       "kind": "config-json",
@@ -1315,8 +1503,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.011,
-        "mb_per_sec": 44.878,
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 74.984,
         "read_bytes": 515
       },
       "kind": "config-json",
@@ -1341,7 +1529,7 @@
     {
       "benchmark": {
         "elapsed_ms": 0.006,
-        "mb_per_sec": 358.888,
+        "mb_per_sec": 351.566,
         "read_bytes": 2349
       },
       "kind": "config-csv",
@@ -1358,7 +1546,7 @@
     {
       "benchmark": {
         "elapsed_ms": 0.007,
-        "mb_per_sec": 766.718,
+        "mb_per_sec": 795.856,
         "read_bytes": 5885
       },
       "kind": "config-json",
@@ -1385,8 +1573,8 @@
     },
     {
       "benchmark": {
-        "elapsed_ms": 0.007,
-        "mb_per_sec": 115.075,
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 123.768,
         "read_bytes": 828
       },
       "kind": "config-json",
@@ -1413,7 +1601,7 @@
     {
       "benchmark": {
         "elapsed_ms": 0.007,
-        "mb_per_sec": 98.8,
+        "mb_per_sec": 94.938,
         "read_bytes": 685
       },
       "kind": "config-json",
@@ -1440,7 +1628,7 @@
     {
       "benchmark": {
         "elapsed_ms": 0.007,
-        "mb_per_sec": 324.803,
+        "mb_per_sec": 322.76,
         "read_bytes": 2475
       },
       "kind": "config-json",
@@ -1468,7 +1656,7 @@
     {
       "benchmark": {
         "elapsed_ms": 0.006,
-        "mb_per_sec": 404.469,
+        "mb_per_sec": 397.04,
         "read_bytes": 2652
       },
       "kind": "config-yaml",
@@ -1485,18 +1673,292 @@
   ],
   "benchmark": {
     "enabled": true,
-    "sampled_bytes": 1558709,
-    "sampled_files": 79
+    "sampled_bytes": 1694050,
+    "sampled_files": 88
   },
-  "generated_at": "2026-04-28T21:50:27+00:00",
+  "copy_layer": {
+    "archive": {
+      "archive": "dist/hum-copy-layer-accompaniment.tar.gz",
+      "sha256": "c25ca9a606fc3d54614cb3f4c5788e51ab5b470fe55ff54a0c41aa7198fc2a13",
+      "size_bytes": 68182
+    },
+    "copied_count": 35,
+    "copied_size_bytes": 232299,
+    "copy_layer_dir": "dist/hum-copy-layer",
+    "files": [
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": ".devcontainer/import-environment.sh",
+        "sha256_prefix": "15a2b3185a8c8f43",
+        "size_bytes": 1926
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": ".devcontainer/net-driver-recover-auto.sh",
+        "sha256_prefix": "b4be09805b405ec2",
+        "size_bytes": 10954
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": ".devcontainer/post-create.sh",
+        "sha256_prefix": "e565e6b081951694",
+        "size_bytes": 1900
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": ".devcontainer/post-start.sh",
+        "sha256_prefix": "1ec1f60fdce48345",
+        "size_bytes": 921
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": ".devcontainer/recup-setup.sh",
+        "sha256_prefix": "73d958befd3c476d",
+        "size_bytes": 6782
+      },
+      {
+        "kind": "markdown-document",
+        "layer": "document",
+        "path": "AGENTS.md",
+        "sha256_prefix": "ca06c3c0afac898d",
+        "size_bytes": 2689
+      },
+      {
+        "kind": "markdown-document",
+        "layer": "document",
+        "path": "README.md",
+        "sha256_prefix": "21c4c452999ae27e",
+        "size_bytes": 25772
+      },
+      {
+        "kind": "markdown-document",
+        "layer": "document",
+        "path": "docs/HUM_ARTIFACT_LAYERS.generated.md",
+        "sha256_prefix": "706af0f67eec59ae",
+        "size_bytes": 8260
+      },
+      {
+        "kind": "markdown-document",
+        "layer": "document",
+        "path": "docs/HUM_MAIN_RUNBOOK.md",
+        "sha256_prefix": "4fe924ca57ddeb6d",
+        "size_bytes": 4619
+      },
+      {
+        "kind": "markdown-document",
+        "layer": "document",
+        "path": "iso-build/README.md",
+        "sha256_prefix": "68b6314ff9f2f9a0",
+        "size_bytes": 1081
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": "iso-build/build.sh",
+        "sha256_prefix": "4d61e561996ccba2",
+        "size_bytes": 1950
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": "kali-iso-server/hostile-env-defense/apt-persistence.sh",
+        "sha256_prefix": "c5b6f0ba4d32e87f",
+        "size_bytes": 5061
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": "kali-iso-server/hostile-env-defense/deploy-all-defenses.sh",
+        "sha256_prefix": "9a49771d86cace7b",
+        "size_bytes": 4295
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": "kali-iso-server/hostile-env-defense/etc-structure-protect.sh",
+        "sha256_prefix": "18041df882833bc6",
+        "size_bytes": 6329
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": "kali-iso-server/hostile-env-defense/iso-verify-sanitize.sh",
+        "sha256_prefix": "4257d31e329469ba",
+        "size_bytes": 6951
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": "kali-iso-server/hostile-env-defense/tool-mirror-defense.sh",
+        "sha256_prefix": "a42a5efb13e3f600",
+        "size_bytes": 12431
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": "kali-iso-server/hostile-env-defense/x11-isolation.sh",
+        "sha256_prefix": "74bac2235593db14",
+        "size_bytes": 5026
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": "scripts/backup_project_bundle.sh",
+        "sha256_prefix": "ff2dd2444690e3d1",
+        "size_bytes": 1391
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": "scripts/host-readiness-check.sh",
+        "sha256_prefix": "b1a0bb61ea3d05f3",
+        "size_bytes": 5911
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": "scripts/hp-slimline-recovery/restore-filesystems.sh",
+        "sha256_prefix": "56f324af57009ccf",
+        "size_bytes": 10815
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": "scripts/hp-slimline-recovery/scan-system.sh",
+        "sha256_prefix": "feda080e8c2c0afb",
+        "size_bytes": 4312
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": "scripts/hum-build-iso.sh",
+        "sha256_prefix": "1926c218e4114c4b",
+        "size_bytes": 5780
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": "scripts/hum-dev-netns.sh",
+        "sha256_prefix": "47c293cb148310cc",
+        "size_bytes": 18063
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": "scripts/hum-snap-bypass.sh",
+        "sha256_prefix": "9079f045698d8938",
+        "size_bytes": 9496
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": "scripts/hum-snap-server.sh",
+        "sha256_prefix": "296b025c3a410fcb",
+        "size_bytes": 13868
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": "scripts/hum-veth-chain.sh",
+        "sha256_prefix": "39603a525dbbf903",
+        "size_bytes": 13327
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": "scripts/installer-agent/fix-cdrom-corruption.sh",
+        "sha256_prefix": "899f0bdebcce358e",
+        "size_bytes": 2356
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": "scripts/installer-agent/setup-penguin-proxy.sh",
+        "sha256_prefix": "1dc55575a6c6de5e",
+        "size_bytes": 6734
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": "scripts/installer-agent/ssh-installer-agent.sh",
+        "sha256_prefix": "6e6867fe50220570",
+        "size_bytes": 11880
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": "scripts/installer-agent/ssh-key-manager.sh",
+        "sha256_prefix": "fd1b42f9e969cf25",
+        "size_bytes": 5771
+      },
+      {
+        "kind": "text-document",
+        "layer": "document",
+        "path": "scripts/lab-www.txt",
+        "sha256_prefix": "1164bfcb1d782367",
+        "size_bytes": 3313
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": "scripts/virtual-drive-access.sh",
+        "sha256_prefix": "64109e0f684cc0ba",
+        "size_bytes": 5376
+      },
+      {
+        "kind": "markdown-document",
+        "layer": "document",
+        "path": "websetup/INDEX.md",
+        "sha256_prefix": "04d3c60ecdb36596",
+        "size_bytes": 734
+      },
+      {
+        "kind": "markdown-document",
+        "layer": "document",
+        "path": "websetup/README.md",
+        "sha256_prefix": "a133f46c9b4268ad",
+        "size_bytes": 4339
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": "websetup/scripts/kali-headless-bootstrap.sh",
+        "sha256_prefix": "adf1d507eeac4022",
+        "size_bytes": 1886
+      }
+    ],
+    "generated_at": "2026-04-28T21:55:04+00:00",
+    "included_kinds": [
+      "bitmap-image",
+      "markdown-document",
+      "shell-code",
+      "svg-vector",
+      "text-document"
+    ],
+    "root": "/workspace"
+  },
+  "generated_at": "2026-04-28T21:55:04+00:00",
   "layers": {
+    "archive": {
+      "count": 1,
+      "size_bytes": 68147
+    },
     "code": {
       "count": 58,
-      "size_bytes": 388869
+      "size_bytes": 394241
     },
     "config": {
       "count": 20,
-      "size_bytes": 121264
+      "size_bytes": 132279
+    },
+    "document": {
+      "count": 8,
+      "size_bytes": 50807
     },
     "iso": {
       "count": 1,
@@ -1505,7 +1967,7 @@
   },
   "root": "/workspace",
   "summary": {
-    "artifact_count": 79,
-    "total_size_bytes": 1558709
+    "artifact_count": 88,
+    "total_size_bytes": 1694050
   }
 }

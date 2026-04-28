@@ -65,7 +65,8 @@ python3 scripts/hum_artifact_layers.py \
   --root . \
   --output-json site/data/artifact-layers.json \
   --output-markdown docs/HUM_ARTIFACT_LAYERS.generated.md \
-  --benchmark
+  --benchmark \
+  --copy-layer
 ```
 
 The scanner classifies:
@@ -79,6 +80,12 @@ The scanner classifies:
 
 It records size, mtime, SHA-256, source path, and optional read throughput. Use
 the Markdown output for reviews and the JSON output for browser filtering.
+
+When `--copy-layer` is set, the scanner also stages the lightweight source
+surface into `dist/hum-copy-layer/` and compresses it to
+`dist/hum-copy-layer-accompaniment.tar.gz`. The copy layer includes Markdown,
+shell scripts, SVG/vector files, `.txt` files, and bitmap-style assets with a
+`COPY_LAYER_MANIFEST.json` that records copied paths and hashes.
 
 ## Debian and `.deb` path
 
@@ -122,3 +129,5 @@ Expected live outputs:
 5. Build the toolkit ISO or live ISO.
 6. Re-run the artifact scan over `dist/` or `data/iso-output/` to capture ISO
    hashes and benchmark evidence from actual disk reads.
+7. Keep `dist/hum-copy-layer-accompaniment.tar.gz` beside the ISO as the
+   compressed documentation/script/media accompaniment.

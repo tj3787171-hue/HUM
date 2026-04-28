@@ -7,6 +7,7 @@ import argparse
 import hashlib
 import json
 import os
+import shutil
 import tarfile
 import time
 import zipfile
@@ -18,12 +19,16 @@ from typing import Any, Iterable
 
 DEFAULT_OUTPUT_JSON = Path("site/data/artifact-layers.json")
 DEFAULT_OUTPUT_MARKDOWN = Path("docs/HUM_ARTIFACT_LAYERS.generated.md")
+DEFAULT_COPY_LAYER_DIR = Path("dist/hum-copy-layer")
+DEFAULT_COPY_LAYER_ARCHIVE = Path("dist/hum-copy-layer-accompaniment.tar.gz")
 DEFAULT_MAX_BYTES = 16 * 1024 * 1024
 READ_CHUNK_SIZE = 1024 * 1024
 
 LAYER_EXTENSIONS = {
     "config": {".yml", ".yaml", ".json", ".csv"},
     "code": {".py", ".js", ".php", ".sh"},
+    "document": {".md", ".txt"},
+    "media": {".svg", ".png", ".jpg", ".jpeg", ".bmp", ".gif", ".webp"},
     "java": {".jar"},
     "archive": {
         ".tar",
@@ -51,6 +56,15 @@ KIND_BY_SUFFIX = {
     ".js": "javascript-code",
     ".php": "php-code",
     ".sh": "shell-code",
+    ".md": "markdown-document",
+    ".txt": "text-document",
+    ".svg": "svg-vector",
+    ".png": "bitmap-image",
+    ".jpg": "bitmap-image",
+    ".jpeg": "bitmap-image",
+    ".bmp": "bitmap-image",
+    ".gif": "bitmap-image",
+    ".webp": "bitmap-image",
     ".jar": "java-archive",
     ".tar": "tar-archive",
     ".tar.gz": "tar-archive",
@@ -67,11 +81,20 @@ KIND_BY_SUFFIX = {
     ".iso": "iso-image",
 }
 
+COPY_LAYER_KINDS = {
+    "markdown-document",
+    "shell-code",
+    "svg-vector",
+    "text-document",
+    "bitmap-image",
+}
+
 SKIP_DIRS = {
     ".git",
     ".mypy_cache",
     ".pytest_cache",
     "__pycache__",
+    "hum-copy-layer",
     "node_modules",
     ".venv",
     "venv",
@@ -208,7 +231,7 @@ def probe_zip(path: Path) -> dict[str, Any]:
 
 def probe_artifact(path: Path, layer: str, kind: str) -> dict[str, Any]:
     try:
-        if layer in {"config", "code"}:
+        if layer in {"config", "code", "document"} or kind == "svg-vector":
             return probe_text(path)
         if kind == "jar" or normalized_suffix(path) == ".zip":
             return probe_zip(path)
@@ -316,6 +339,69 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
+def copy_layer_artifacts(root: Path, payload: dict[str, Any], output_dir: Path) -> dict[str, Any]:
+    copied: list[dict[str, Any]] = []
+    if output_dir.exists():
+        shutil.rmtree(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    for artifact in payload["artifacts"]:
+        if artifact["kind"] not in COPY_LAYER_KINDS:
+            continue
+        source = root / artifact["path"]
+        target = output_dir / artifact["path"]
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source, target)
+        copied.append(
+            {
+                "path": artifact["path"],
+                "kind": artifact["kind"],
+                "layer": artifact["layer"],
+                "size_bytes": artifact["size_bytes"],
+                "sha256_prefix": artifact["sha256_prefix"],
+            }
+        )
+
+    manifest = {
+        "generated_at": utc_iso(),
+        "root": str(root),
+        "copy_layer_dir": str(output_dir),
+        "copied_count": len(copied),
+        "copied_size_bytes": sum(int(item["size_bytes"]) for item in copied),
+        "included_kinds": sorted(COPY_LAYER_KINDS),
+        "files": copied,
+    }
+    write_json(output_dir / "COPY_LAYER_MANIFEST.json", manifest)
+    return manifest
+
+
+def compress_copy_layer(output_dir: Path, archive_path: Path) -> dict[str, Any]:
+    archive_path.parent.mkdir(parents=True, exist_ok=True)
+    if archive_path.exists():
+        archive_path.unlink()
+    with tarfile.open(archive_path, "w:gz") as tar:
+        tar.add(output_dir, arcname=output_dir.name)
+
+    stat = archive_path.stat()
+    digest = hashlib.sha256()
+    with archive_path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(READ_CHUNK_SIZE), b""):
+            digest.update(chunk)
+    return {
+        "archive": str(archive_path),
+        "size_bytes": stat.st_size,
+        "sha256": digest.hexdigest(),
+    }
+
+
+def build_copy_layer(root: Path, payload: dict[str, Any], output_dir: Path, archive_path: Path) -> dict[str, Any]:
+    manifest = copy_layer_artifacts(root, payload, output_dir)
+    archive = compress_copy_layer(output_dir, archive_path)
+    manifest["archive"] = archive
+    write_json(output_dir / "COPY_LAYER_MANIFEST.json", manifest)
+    return manifest
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=Path("."), help="Directory to scan")
@@ -323,20 +409,32 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--output-markdown", type=Path, default=DEFAULT_OUTPUT_MARKDOWN)
     parser.add_argument("--benchmark", action="store_true", help="Measure sequential read speed")
     parser.add_argument("--max-bytes", type=int, default=DEFAULT_MAX_BYTES, help="Per-file hash/read byte cap")
+    parser.add_argument("--copy-layer", action="store_true", help="Copy md/sh/svg/txt/bitmap files into a staged layer")
+    parser.add_argument("--copy-output-dir", type=Path, default=DEFAULT_COPY_LAYER_DIR)
+    parser.add_argument("--copy-archive", type=Path, default=DEFAULT_COPY_LAYER_ARCHIVE)
     parser.add_argument("--stdout", action="store_true", help="Print JSON payload to stdout")
     return parser.parse_args()
 
 
 def main() -> int:
     args = parse_args()
+    root = args.root.resolve()
     benchmark_bytes = args.max_bytes if args.benchmark else 0
-    payload = write_inventory(args.root, args.output_json, args.output_markdown, benchmark_bytes=benchmark_bytes)
+    payload = write_inventory(root, args.output_json, args.output_markdown, benchmark_bytes=benchmark_bytes)
+    copy_layer = None
+    if args.copy_layer:
+        copy_layer = build_copy_layer(root, payload, args.copy_output_dir, args.copy_archive)
+        payload["copy_layer"] = copy_layer
+        write_json(args.output_json, payload)
     if args.stdout:
         print(json.dumps(payload, indent=2, sort_keys=True))
     else:
         print(f"[hum-artifact-layers] wrote {args.output_json}")
         print(f"[hum-artifact-layers] wrote {args.output_markdown}")
         print(f"[hum-artifact-layers] artifacts: {payload['artifact_count']}")
+        if copy_layer:
+            print(f"[hum-artifact-layers] copy layer files: {copy_layer['copied_count']}")
+            print(f"[hum-artifact-layers] copy archive: {copy_layer['archive']['archive']}")
     return 0
 
 

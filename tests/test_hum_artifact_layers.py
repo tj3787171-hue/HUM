@@ -7,6 +7,7 @@ import unittest
 from pathlib import Path
 
 from scripts.hum_artifact_layers import (
+    build_copy_layer,
     classify_path,
     inventory,
     write_inventory,
@@ -24,6 +25,10 @@ class TestArtifactLayerClassification(unittest.TestCase):
             "package.deb": "debian-package",
             "system.iso": "iso-image",
             "trace.td.zz": "compressed-layer",
+            "README.md": "markdown-document",
+            "notes.txt": "text-document",
+            "diagram.svg": "svg-vector",
+            "future.PNG": "bitmap-image",
         }
         for name, expected in cases.items():
             with self.subTest(name=name):
@@ -64,6 +69,32 @@ class TestArtifactLayerInventory(unittest.TestCase):
             loaded = json.loads(json_path.read_text(encoding="utf-8"))
             self.assertEqual(loaded["summary"]["artifact_count"], report["summary"]["artifact_count"])
             self.assertIn("# HUM artifact layer inventory", md_path.read_text(encoding="utf-8"))
+
+    def test_build_copy_layer_copies_requested_files_and_compresses(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            (root / "README.md").write_text("# hum\n", encoding="utf-8")
+            (root / "run.sh").write_text("#!/usr/bin/env bash\n", encoding="utf-8")
+            (root / "notes.txt").write_text("notes\n", encoding="utf-8")
+            (root / "image.svg").write_text("<svg></svg>\n", encoding="utf-8")
+            (root / "ignored.py").write_text("print('not copied')\n", encoding="utf-8")
+
+            report = inventory(root, benchmark_bytes=0)
+            output_dir = root / "copy-layer"
+            archive_path = root / "copy-layer.tar.gz"
+            manifest = build_copy_layer(root, report, output_dir, archive_path)
+
+            self.assertEqual(manifest["copied_count"], 4)
+            self.assertTrue((output_dir / "README.md").exists())
+            self.assertTrue((output_dir / "run.sh").exists())
+            self.assertTrue((output_dir / "notes.txt").exists())
+            self.assertTrue((output_dir / "image.svg").exists())
+            self.assertFalse((output_dir / "ignored.py").exists())
+            self.assertTrue(archive_path.exists())
+            with tarfile.open(archive_path, "r:gz") as tf:
+                names = set(tf.getnames())
+            self.assertIn("copy-layer/COPY_LAYER_MANIFEST.json", names)
+            self.assertIn("copy-layer/README.md", names)
 
 
 if __name__ == "__main__":

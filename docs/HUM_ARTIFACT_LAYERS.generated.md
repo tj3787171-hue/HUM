@@ -1,15 +1,17 @@
 # HUM artifact layer inventory
 
-Generated: `2026-04-28T21:50:27+00:00`
+Generated: `2026-04-28T21:55:04+00:00`
 Root: `/workspace`
-Artifacts: `79`
+Artifacts: `88`
 
 ## Layer summary
 
 | Layer | Count | Size bytes |
 |---|---:|---:|
-| `code` | 58 | 388869 |
-| `config` | 20 | 121264 |
+| `archive` | 1 | 68147 |
+| `code` | 58 | 394241 |
+| `config` | 20 | 132279 |
+| `document` | 8 | 50807 |
 | `iso` | 1 | 1048576 |
 
 ## Artifacts
@@ -23,8 +25,14 @@ Artifacts: `79`
 | `code` | `shell-code` | `.devcontainer/post-create.sh` | 1900 | `e565e6b081951694` |
 | `code` | `shell-code` | `.devcontainer/post-start.sh` | 921 | `1ec1f60fdce48345` |
 | `code` | `shell-code` | `.devcontainer/recup-setup.sh` | 6782 | `73d958befd3c476d` |
+| `document` | `markdown-document` | `AGENTS.md` | 2689 | `ca06c3c0afac898d` |
+| `document` | `markdown-document` | `README.md` | 25772 | `21c4c452999ae27e` |
 | `code` | `python-code` | `check.py` | 1251 | `ed3885d88217543e` |
+| `archive` | `tar-archive` | `dist/hum-copy-layer-accompaniment.tar.gz` | 68147 | `fd7b6995f178a4bd` |
 | `iso` | `iso-image` | `dist/hum-toolkit.iso` | 1048576 | `1be13c5b410ee775` |
+| `document` | `markdown-document` | `docs/HUM_ARTIFACT_LAYERS.generated.md` | 8260 | `706af0f67eec59ae` |
+| `document` | `markdown-document` | `docs/HUM_MAIN_RUNBOOK.md` | 4619 | `4fe924ca57ddeb6d` |
+| `document` | `markdown-document` | `iso-build/README.md` | 1081 | `68b6314ff9f2f9a0` |
 | `code` | `shell-code` | `iso-build/build.sh` | 1950 | `4d61e561996ccba2` |
 | `code` | `shell-code` | `kali-iso-server/hostile-env-defense/apt-persistence.sh` | 5061 | `c5b6f0ba4d32e87f` |
 | `code` | `shell-code` | `kali-iso-server/hostile-env-defense/deploy-all-defenses.sh` | 4295 | `9a49771d86cace7b` |
@@ -44,12 +52,13 @@ Artifacts: `79`
 | `code` | `shell-code` | `scripts/hum-snap-bypass.sh` | 9496 | `9079f045698d8938` |
 | `code` | `shell-code` | `scripts/hum-snap-server.sh` | 13868 | `296b025c3a410fcb` |
 | `code` | `shell-code` | `scripts/hum-veth-chain.sh` | 13327 | `39603a525dbbf903` |
-| `code` | `python-code` | `scripts/hum_artifact_layers.py` | 11256 | `4ece7ef15ff56640` |
+| `code` | `python-code` | `scripts/hum_artifact_layers.py` | 14975 | `6a4b983329ee7890` |
 | `code` | `shell-code` | `scripts/installer-agent/fix-cdrom-corruption.sh` | 2356 | `899f0bdebcce358e` |
 | `code` | `shell-code` | `scripts/installer-agent/setup-penguin-proxy.sh` | 6734 | `1dc55575a6c6de5e` |
 | `code` | `shell-code` | `scripts/installer-agent/ssh-installer-agent.sh` | 11880 | `6e6867fe50220570` |
 | `code` | `shell-code` | `scripts/installer-agent/ssh-key-manager.sh` | 5771 | `fd1b42f9e969cf25` |
 | `code` | `python-code` | `scripts/lab-www-reverse-proxy.py` | 4618 | `19a3b8d8b37f0956` |
+| `document` | `text-document` | `scripts/lab-www.txt` | 3313 | `1164bfcb1d782367` |
 | `code` | `python-code` | `scripts/project_evidence_db.py` | 41007 | `57ed4c0aa3d860c4` |
 | `code` | `javascript-code` | `scripts/scanTelemetry.js` | 2420 | `31a3233373ab51e7` |
 | `code` | `python-code` | `scripts/tests/__init__.py` | 1 | `01ba4719c80b6fe9` |
@@ -62,7 +71,7 @@ Artifacts: `79`
 | `config` | `config-json` | `site/data/FINAL-PRODUCT/corps_full.json` | 22052 | `893a7f896c36cc35` |
 | `config` | `config-json` | `site/data/FINAL-PRODUCT/gram.json` | 3261 | `c8b61d1f37cd848d` |
 | `config` | `config-json` | `site/data/FINAL-PRODUCT/palace.json` | 612 | `ac04bc2ed820f181` |
-| `config` | `config-json` | `site/data/artifact-layers.json` | 37068 | `28a7af20060d6ee3` |
+| `config` | `config-json` | `site/data/artifact-layers.json` | 48083 | `8db116fd7dcc075b` |
 | `code` | `python-code` | `site/data/collect_netns.py` | 5183 | `ac2ba67416f86f54` |
 | `code` | `python-code` | `site/data/collect_systemd.py` | 4508 | `fef6db4d95714c6a` |
 | `config` | `config-json` | `site/data/corps.json` | 20955 | `6a4583225fb703fe` |
@@ -76,8 +85,10 @@ Artifacts: `79`
 | `code` | `php-code` | `site/recover.php` | 8956 | `18855d3583f570d4` |
 | `code` | `php-code` | `site/recup.php` | 10673 | `adb180880f3688f6` |
 | `code` | `python-code` | `test_check.py` | 3008 | `778536d05102b9f7` |
-| `code` | `python-code` | `tests/test_hum_artifact_layers.py` | 2763 | `7c56c8fd7c47b012` |
+| `code` | `python-code` | `tests/test_hum_artifact_layers.py` | 4416 | `2006cea9c4507c3f` |
 | `code` | `python-code` | `tests/test_sdv.py` | 4585 | `c27fde73ecb88a44` |
+| `document` | `markdown-document` | `websetup/INDEX.md` | 734 | `04d3c60ecdb36596` |
+| `document` | `markdown-document` | `websetup/README.md` | 4339 | `a133f46c9b4268ad` |
 | `code` | `shell-code` | `websetup/scripts/kali-headless-bootstrap.sh` | 1886 | `adf1d507eeac4022` |
 | `code` | `python-code` | `websetup/sdv/__init__.py` | 49 | `c6fd1057830a9932` |
 | `code` | `python-code` | `websetup/sdv/__main__.py` | 1849 | `98fed620e786184f` |

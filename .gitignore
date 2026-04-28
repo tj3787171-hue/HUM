@@ -10,3 +10,4 @@ iso-build/.build/
 
 # Built artifacts
 dist/*.iso
+dist/hum-copy-layer/
