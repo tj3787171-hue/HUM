@@ -158,6 +158,103 @@ const HUM = (() => {
     }
   }
 
+  /* ---- Artifact layer viewer ---- */
+  async function loadArtifactLayers() {
+    const res = await fetch("data/artifact-layers.json?t=" + Date.now());
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  }
+
+  function formatBytes(bytes) {
+    if (!Number.isFinite(bytes)) return "";
+    if (bytes < 1024) return `${bytes} B`;
+    const units = ["KB", "MB", "GB"];
+    let value = bytes / 1024;
+    for (const unit of units) {
+      if (value < 1024) return `${value.toFixed(1)} ${unit}`;
+      value /= 1024;
+    }
+    return `${value.toFixed(1)} TB`;
+  }
+
+  function renderLayerSummary(payload) {
+    const wrap = document.getElementById("layer-summary");
+    if (!wrap) return;
+    const layers = payload.layers || {};
+    wrap.innerHTML = Object.entries(layers).sort().map(([layer, data]) => `
+      <article class="panel layer-card">
+        <strong>${layer}</strong>
+        <span>${data.count || 0} files</span>
+        <small>${formatBytes(data.size_bytes || 0)}</small>
+      </article>
+    `).join("");
+  }
+
+  function renderLayerTable(payload) {
+    const tbody = document.getElementById("layer-table-body");
+    const select = document.getElementById("layer-filter");
+    const search = document.getElementById("search-filter");
+    if (!tbody || !select || !search) return;
+
+    const layerValue = select.value || "all";
+    const query = (search.value || "").toLowerCase();
+    const rows = (payload.artifacts || []).filter(item => {
+      const haystack = `${item.layer} ${item.kind} ${item.path} ${item.sha256_prefix || ""}`.toLowerCase();
+      return (layerValue === "all" || item.layer === layerValue) && haystack.includes(query);
+    });
+
+    if (!rows.length) {
+      tbody.innerHTML = '<tr><td colspan="5">No matching artifact layers.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = rows.map(item => {
+      const speed = item.benchmark ? `${item.benchmark.mb_per_sec} MB/s` : "not sampled";
+      return `
+        <tr>
+          <td><span class="badge badge-unknown">${item.layer}</span><br><small>${item.kind}</small></td>
+          <td>${item.path}</td>
+          <td>${formatBytes(item.size_bytes || 0)}</td>
+          <td><code>${item.sha256_prefix || ""}</code></td>
+          <td>${speed}</td>
+        </tr>
+      `;
+    }).join("");
+  }
+
+  function populateLayerFilter(payload) {
+    const select = document.getElementById("layer-filter");
+    if (!select) return;
+    const current = select.value || "all";
+    const layers = Object.keys(payload.layers || {}).sort();
+    select.innerHTML = '<option value="all">All layers</option>' +
+      layers.map(layer => `<option value="${layer}">${layer}</option>`).join("");
+    select.value = layers.includes(current) ? current : "all";
+  }
+
+  async function refreshLayers() {
+    const logId = "layer-log";
+    appendLog(logId, "Fetching artifact-layer JSON...");
+    try {
+      const payload = await loadArtifactLayers();
+      window.HUM_LAYER_PAYLOAD = payload;
+      populateLayerFilter(payload);
+      renderLayerSummary(payload);
+      renderLayerTable(payload);
+      appendLog(logId, `Loaded ${payload.artifact_count || 0} artifacts from ${payload.generated_at || "unknown time"}.`);
+    } catch (e) {
+      appendLog(logId, `ERROR: ${e.message}`);
+    }
+  }
+
+  function initLayerViewer() {
+    if (!document.getElementById("layer-table-body")) return;
+    document.getElementById("refresh-layers")?.addEventListener("click", refreshLayers);
+    document.getElementById("layer-filter")?.addEventListener("change", () => renderLayerTable(window.HUM_LAYER_PAYLOAD || {}));
+    document.getElementById("search-filter")?.addEventListener("input", () => renderLayerTable(window.HUM_LAYER_PAYLOAD || {}));
+    refreshLayers();
+  }
+
   /* ---- Navigation active state ---- */
   function highlightNav() {
     const path = window.location.pathname;
@@ -178,9 +275,10 @@ const HUM = (() => {
       refreshMap("svg-map", "feedback-log");
       setInterval(() => refreshMap("svg-map", "feedback-log"), 15000);
     }
+    initLayerViewer();
   }
 
   document.addEventListener("DOMContentLoaded", init);
 
-  return { renderSvgMap, refreshMap, appendLog, loadTopology, init };
+  return { renderSvgMap, refreshMap, appendLog, loadTopology, loadArtifactLayers, refreshLayers, init };
 })();
