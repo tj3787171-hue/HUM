@@ -671,44 +671,6 @@ Linux environment). The script creates:
 
 `<target>/hum-backups/hum-backup-YYYYmmdd-HHMMSS/`
 
-## Encrypted cloud directory pack (chunked + compressed)
-
-Use this utility when you want an online/cloud-friendly directory layout with:
-
-- aggregate SHA-256 manifest checksum
-- encrypted chunks
-- zlib compression per chunk
-- default chunk size **4096 bytes** (minimum **1024 bytes**)
-
-Pack:
-
-```bash
-python3 scripts/hum_cloud_pack.py pack \
-  --source ./data \
-  --cloud-dir ./dist/cloud-data \
-  --passphrase "choose-a-strong-passphrase" \
-  --chunk-size 4096 \
-  --expected-aggregate-sha256 c058fd133d909759028353fea46d228c2fd8bcf945cf27680bb751fe1066fc3e
-```
-
-Notes:
-
-- if the expected aggregate checksum does not match, the command fails
-- `--chunk-size` must be >= `1024`
-- output includes:
-  - `index.json` (manifest with per-file/per-chunk hashes and aggregate SHA-256)
-  - `chunks/*.bin` (compressed + encrypted chunk blobs)
-  - `online-index.html` (simple browser-viewable directory listing)
-
-Restore:
-
-```bash
-python3 scripts/hum_cloud_pack.py restore \
-  --cloud-dir ./dist/cloud-data \
-  --target-dir ./dist/restored-data \
-  --passphrase "choose-a-strong-passphrase"
-```
-
 ## Virtual drive helper (`cdd 0|1`)
 
 For convenient mount/unmount inside the devcontainer:
