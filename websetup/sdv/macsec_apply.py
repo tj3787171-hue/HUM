@@ -16,13 +16,8 @@ def _read_key_hex(path: str) -> str:
 
 
 def apply_rx(material: Mapping[str, Any]) -> int:
+    """Apply MACsec RX SAs. Returns count of SAs applied (0 when all disabled)."""
     applied = 0
-    if len(key) != 32 or any(c not in "0123456789abcdefABCDEF" for c in key):
-        raise ValueError(f"MACsec key in {path} must be 32 hex chars")
-    return key.lower()
-
-
-def apply_rx(material: Mapping[str, Any]) -> None:
     links = material.get("links", [])
     for link in links:
         if not isinstance(link, Mapping):

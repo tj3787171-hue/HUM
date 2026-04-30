@@ -13,7 +13,6 @@ $origin     = getenv('HUM_ORIGIN') ?: 'hum.org';
 
 $refresh = isset($_GET['refresh']);
 
-// Collect all source and destination files with checksums
 function checksum_entry(string $label, string $path, string $stage): array {
     $exists = file_exists($path);
     return [
@@ -27,80 +26,41 @@ function checksum_entry(string $label, string $path, string $stage): array {
     ];
 }
 
-// Source stage
-$sources = [
-    checksum_entry('topology.json',     "$data_dir/topology.json",     'source'),
-    checksum_entry('topology.xml',      "$data_dir/topology.xml",      'source'),
-    checksum_entry('collect_netns.py',   "$data_dir/collect_netns.py", 'source'),
-    checksum_entry('name_factory.py',    "$data_dir/name_factory.py",  'source'),
-];
-
-// Pipeline stage (intermediate)
-$pipeline = [
-    checksum_entry('corps.json',    "$data_dir/corps.json",    'pipeline'),
-    checksum_entry('sources.list',  "$data_dir/sources.list",  'pipeline'),
-];
-
-// Destination stage (FINAL-PRODUCT)
-$destinations = [
-    checksum_entry('corps_full.json', "$fp_dir/corps_full.json", 'destination'),
-    checksum_entry('gram.json',       "$fp_dir/gram.json",       'destination'),
-    checksum_entry('comb.json',       "$fp_dir/comb.json",       'destination'),
-    checksum_entry('palace.json',     "$fp_dir/palace.json",     'destination'),
-];
-
-// Infrastructure checksums
-$infra = [
-    checksum_entry('app.js',   __DIR__ . '/assets/app.js',   'infra'),
-    checksum_entry('info.css', __DIR__ . '/assets/info.css',  'infra'),
-];
-
-$all_entries = array_merge($sources, $pipeline, $destinations, $infra);
-
-// Re-run pipeline if requested
 $rebuild_output = '';
 $rebuild_rc = -1;
 if ($refresh) {
     $factory = "$data_dir/name_factory.py";
     exec("python3 " . escapeshellarg($factory) . " 2>&1", $lines, $rebuild_rc);
     $rebuild_output = implode("\n", $lines);
-    // Refresh checksums after rebuild
-    $pipeline = [
-        checksum_entry('corps.json',   "$data_dir/corps.json",   'pipeline'),
-        checksum_entry('sources.list', "$data_dir/sources.list",  'pipeline'),
-    ];
-    $destinations = [
-        checksum_entry('corps_full.json', "$fp_dir/corps_full.json", 'destination'),
-        checksum_entry('gram.json',       "$fp_dir/gram.json",       'destination'),
-        checksum_entry('comb.json',       "$fp_dir/comb.json",       'destination'),
-        checksum_entry('palace.json',     "$fp_dir/palace.json",     'destination'),
-    ];
-    $all_entries = array_merge($sources, $pipeline, $destinations, $infra);
 }
 
-// Compute aggregate checksum of all FINAL-PRODUCT files
-$fp_concat = '';
-foreach ($destinations as $d) {
-    $fp_concat .= ($d['sha256'] ?? '');
-}
-$aggregate_checksum = hash('sha256', $fp_concat);
+$sources = [
+    checksum_entry('topology.json',     "$data_dir/topology.json",     'source'),
+    checksum_entry('topology.xml',      "$data_dir/topology.xml",      'source'),
+    checksum_entry('collect_netns.py',   "$data_dir/collect_netns.py", 'source'),
+    checksum_entry('name_factory.py',    "$data_dir/name_factory.py",  'source'),
+];
+$pipeline = [
+    checksum_entry('corps.json',    "$data_dir/corps.json",    'pipeline'),
+    checksum_entry('sources.list',  "$data_dir/sources.list",  'pipeline'),
+];
+$destinations = [
+    checksum_entry('corps_full.json', "$fp_dir/corps_full.json", 'destination'),
+    checksum_entry('gram.json',       "$fp_dir/gram.json",       'destination'),
+    checksum_entry('comb.json',       "$fp_dir/comb.json",       'destination'),
+    checksum_entry('palace.json',     "$fp_dir/palace.json",     'destination'),
+];
+$infra = [
+    checksum_entry('app.js',   __DIR__ . '/assets/app.js',   'infra'),
+    checksum_entry('info.css', __DIR__ . '/assets/info.css',  'infra'),
+];
 
-// Stage counts
-$total_ok   = count(array_filter($all_entries, fn($e) => $e['exists']));
-$total_all  = count($all_entries);
+$all_entries = array_merge($sources, $pipeline, $destinations, $infra);
+$aggregate_checksum = hash('sha256', implode('', array_column($destinations, 'sha256')));
+
 $source_ok  = count(array_filter($sources, fn($e) => $e['exists']));
 $pipe_ok    = count(array_filter($pipeline, fn($e) => $e['exists']));
 $dest_ok    = count(array_filter($destinations, fn($e) => $e['exists']));
-
-function stage_color(string $stage): string {
-    return match ($stage) {
-        'source'      => 'var(--accent)',
-        'pipeline'    => 'var(--orange)',
-        'destination' => 'var(--green)',
-        'infra'       => 'var(--text-dim)',
-        default       => 'var(--text)',
-    };
-}
 
 function stage_badge(string $stage): string {
     $cls = match ($stage) {
@@ -243,6 +203,7 @@ function stage_badge(string $stage): string {
     <a href="index.php">Map</a>
     <a href="navigate.php">Navigate</a>
     <a href="recup.php">Recup</a>
+    <a href="recover.php">Recover</a>
     <a href="palace.php">Palace</a>
     <a href="playbook.php" class="active">Playbook</a>
     <a href="convo.php?source=list" target="_blank">API</a>

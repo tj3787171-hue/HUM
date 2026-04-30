@@ -22,9 +22,6 @@ if ($rebuild_requested) {
 }
 
 $corps   = file_exists("$data_dir/corps.json")   ? json_decode(file_get_contents("$data_dir/corps.json"), true)   : null;
-$gram    = file_exists("$fp_dir/gram.json")       ? json_decode(file_get_contents("$fp_dir/gram.json"), true)     : null;
-$comb    = file_exists("$fp_dir/comb.json")       ? json_decode(file_get_contents("$fp_dir/comb.json"), true)     : null;
-$palace  = file_exists("$fp_dir/palace.json")     ? json_decode(file_get_contents("$fp_dir/palace.json"), true)   : null;
 $sources = file_exists("$data_dir/sources.list")  ? file_get_contents("$data_dir/sources.list")                   : '';
 
 $hoc     = $corps['house_of_corps'] ?? [];
@@ -69,6 +66,7 @@ function palace_badge(string $cls): string {
     <a href="recup.php">Recup</a>
     <a href="recover.php">Recover</a>
     <a href="palace.php" class="active">Palace</a>
+    <a href="playbook.php">Playbook</a>
     <a href="convo.php?source=list" target="_blank">API</a>
   </nav>
   <span style="margin-left:auto; font-size:.75rem; color:var(--text-dim);">

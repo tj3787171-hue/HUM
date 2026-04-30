@@ -8,10 +8,8 @@
  */
 
 $json_path = __DIR__ . '/data/topology.json';
-$xml_path  = __DIR__ . '/data/topology.xml';
 
 $topo = file_exists($json_path) ? json_decode(file_get_contents($json_path), true) : null;
-$xml_raw = file_exists($xml_path) ? file_get_contents($xml_path) : '';
 
 $hostname  = $topo['hostname']  ?? 'hum-lab';
 $timestamp = $topo['timestamp'] ?? date('c');
@@ -48,6 +46,7 @@ function badge(string $state): string {
     <a href="recup.php">Recup</a>
     <a href="recover.php">Recover</a>
     <a href="palace.php">Palace</a>
+    <a href="playbook.php">Playbook</a>
     <a href="convo.php?source=list" target="_blank">API</a>
   </nav>
   <span style="margin-left:auto; font-size:.75rem; color:var(--text-dim);">
