@@ -639,7 +639,7 @@ def cmd_watch(args: argparse.Namespace) -> int:
     return 0
 
 
-def parse_args() -> argparse.Namespace:
+def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="HUM network telemetry database.")
     subcommands = parser.add_subparsers(dest="command")
 
@@ -666,11 +666,16 @@ def parse_args() -> argparse.Namespace:
     watch.add_argument("--interval", type=int, default=5)
     watch.add_argument("--collect-cmd", default="bash scripts/hum-dev-netns.sh collect")
 
-    return parser.parse_args()
+    return parser
+
+
+def parse_args() -> argparse.Namespace:
+    return build_parser().parse_args()
 
 
 def main() -> int:
-    args = parse_args()
+    parser = build_parser()
+    args = parser.parse_args()
     if args.command == "ingest":
         return cmd_ingest(args)
     if args.command == "query":
@@ -681,7 +686,7 @@ def main() -> int:
         return cmd_alerts(args)
     if args.command == "watch":
         return cmd_watch(args)
-    parse_args().print_help()
+    parser.print_help()
     return 1
 
 
