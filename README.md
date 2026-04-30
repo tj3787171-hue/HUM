@@ -553,6 +553,35 @@ To run checks and then launch the download site in one command:
 bash scripts/chromebook-lab-download-site.sh all
 ```
 
+## Host static IPv4 for proxy/docker/bridge/VNC/TTY flows (no DNS changes)
+
+When you need host-process networking to hit a fixed LAN IPv4 (for example
+`192.168.68.100`) while keeping DNS out of scope, use:
+
+```bash
+# Preview what would be applied (auto-detected interface)
+bash scripts/hum-host-static-ip.sh plan
+
+# Apply static host IP (requires root)
+sudo HUM_HOST_STATIC_CIDR=192.168.68.100/22 \
+  HUM_HOST_GATEWAY=192.168.68.51 \
+  bash scripts/hum-host-static-ip.sh apply
+
+# Show host/process status (proxy, docker0, bridges, VNC/noVNC, TTY listeners)
+bash scripts/hum-host-static-ip.sh status
+```
+
+The script only touches host interface address/route state and does **not**
+modify DNS configuration files.
+
+To remove the static host IP later:
+
+```bash
+sudo HUM_HOST_STATIC_CIDR=192.168.68.100/22 \
+  HUM_HOST_GATEWAY=192.168.68.51 \
+  bash scripts/hum-host-static-ip.sh remove
+```
+
 ## Dev container status indicator (`<>`)
 
 If you see the `<>` style status indicator in the bottom-right status area in
