@@ -7,7 +7,6 @@ import argparse
 import base64
 import hashlib
 import hmac
-import html
 import json
 import os
 import shutil
@@ -30,7 +29,9 @@ def _utc_now_iso() -> str:
 
 def _validate_chunk_size(chunk_size: int) -> int:
     if chunk_size < MIN_CHUNK_SIZE:
-        raise ValueError(f"chunk size must be >= {MIN_CHUNK_SIZE}, got {chunk_size}")
+        raise ValueError(
+            f"chunk size must be >= {MIN_CHUNK_SIZE}, got {chunk_size}"
+        )
     return chunk_size
 
 
@@ -48,7 +49,9 @@ def _stream_keystream(key: bytes, nonce: bytes, length: int) -> bytes:
     out = bytearray()
     counter = 0
     while len(out) < length:
-        block = hashlib.sha256(key + nonce + counter.to_bytes(8, byteorder="big")).digest()
+        block = hashlib.sha256(
+            key + nonce + counter.to_bytes(8, byteorder="big")
+        ).digest()
         out.extend(block)
         counter += 1
     return bytes(out[:length])
@@ -95,12 +98,17 @@ def _load_passphrase(raw_passphrase: str | None, env_name: str) -> str:
     from_env = os.environ.get(env_name)
     if from_env:
         return from_env
-    raise ValueError(f"missing passphrase: set --passphrase or export {env_name}")
+    raise ValueError(
+        f"missing passphrase: set --passphrase or export {env_name}"
+    )
 
 
 def _reset_output_dir(path: Path, force: bool) -> None:
     if path.exists():
         if not force:
+            raise FileExistsError(
+                f"{path} already exists (use --force to overwrite)"
+            )
             raise FileExistsError(f"{path} already exists (use --force to overwrite)")
         shutil.rmtree(path)
     path.mkdir(parents=True, exist_ok=True)
@@ -108,6 +116,39 @@ def _reset_output_dir(path: Path, force: bool) -> None:
 
 def _write_online_index(cloud_dir: Path, manifest: dict[str, Any]) -> None:
     summary = manifest["summary"]
+    html = [
+        "<!doctype html>",
+        '<html lang="en"><head><meta charset="utf-8">',
+        "<title>HUM Cloud Directory</title>",
+        "<style>body{font-family:system-ui,sans-serif;margin:2rem;}"
+        "code{background:#f5f5f5;padding:.1rem .3rem;border-radius:4px;}"
+        "table{border-collapse:collapse;margin-top:1rem;}"
+        "td,th{border:1px solid #ddd;padding:.4rem .6rem;text-align:left;}"
+        "</style></head><body>",
+        "<h1>HUM cloud directory</h1>",
+        f"<p><strong>Aggregate SHA-256:</strong> "
+        f"<code>{summary['aggregate_sha256']}</code></p>",
+        "<table><thead><tr><th>File</th><th>Bytes</th><th>SHA-256</th></tr>"
+        "</thead><tbody>",
+    ]
+    for item in manifest["files"]:
+        html.append(
+            "<tr>"
+            f"<td>{item['path']}</td>"
+            f"<td>{item['size']}</td>"
+            f"<td><code>{item['sha256']}</code></td>"
+            "</tr>"
+        )
+    html.extend(
+        [
+            "</tbody></table>",
+            '<p>Manifest: <a href="./index.json">index.json</a></p>',
+            "</body></html>",
+        ]
+    )
+    (cloud_dir / "online-index.html").write_text(
+        "\n".join(html), encoding="utf-8"
+    )
     html_rows = []
     for item in manifest["files"]:
         html_rows.append(
@@ -199,7 +240,8 @@ def pack_directory(
                 compressed = zlib.compress(block, level=compression_level)
                 encrypted = _encrypt_chunk(compressed, key)
                 chunk_name = f"f{file_idx:05d}-c{chunk_idx:05d}.bin"
-                (chunk_dir / chunk_name).write_bytes(encrypted)
+                chunk_path = chunk_dir / chunk_name
+                chunk_path.write_bytes(encrypted)
 
                 file_chunks.append(
                     {
@@ -241,7 +283,10 @@ def pack_directory(
             f"expected {expected_aggregate_sha256}, got {aggregate_sha}"
         )
 
-    compression_ratio = compressed_bytes / plain_bytes if plain_bytes else 0.0
+    compression_ratio = 0.0
+    if plain_bytes:
+        compression_ratio = compressed_bytes / plain_bytes
+
     manifest = {
         "format": "hum-cloud-pack-v1",
         "created_at_utc": _utc_now_iso(),
@@ -266,7 +311,10 @@ def pack_directory(
         },
     }
     manifest_path = cloud_dir / "index.json"
-    manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    manifest_path.write_text(
+        json.dumps(manifest, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
     if write_online_index:
         _write_online_index(cloud_dir, manifest)
 
@@ -289,7 +337,9 @@ def restore_directory(
         raise ValueError("unsupported manifest format")
 
     if target_dir.exists() and any(target_dir.iterdir()) and not overwrite:
-        raise FileExistsError(f"{target_dir} is not empty (use --overwrite to allow writes)")
+        raise FileExistsError(
+            f"{target_dir} is not empty (use --overwrite to allow writes)"
+        )
     target_dir.mkdir(parents=True, exist_ok=True)
 
     salt = base64.b64decode(manifest["encryption"]["kdf_salt_base64"])
@@ -303,26 +353,38 @@ def restore_directory(
         file_hasher = hashlib.sha256()
         with out_path.open("wb") as out:
             for chunk in file_entry["chunks"]:
-                encrypted = (cloud_dir / "chunks" / chunk["name"]).read_bytes()
+                enc_path = cloud_dir / "chunks" / chunk["name"]
+                encrypted = enc_path.read_bytes()
                 if _sha256_hex(encrypted) != chunk["sha256_encrypted"]:
-                    raise ValueError(f"encrypted checksum mismatch for {chunk['name']}")
+                    raise ValueError(
+                        f"encrypted checksum mismatch for {chunk['name']}"
+                    )
                 compressed = _decrypt_chunk(encrypted, key)
                 if _sha256_hex(compressed) != chunk["sha256_compressed"]:
-                    raise ValueError(f"compressed checksum mismatch for {chunk['name']}")
+                    raise ValueError(
+                        f"compressed checksum mismatch for {chunk['name']}"
+                    )
                 block = zlib.decompress(compressed)
                 if _sha256_hex(block) != chunk["sha256_plain"]:
-                    raise ValueError(f"plain checksum mismatch for {chunk['name']}")
+                    raise ValueError(
+                        f"plain checksum mismatch for {chunk['name']}"
+                    )
                 out.write(block)
                 file_hasher.update(block)
         if file_hasher.hexdigest() != file_entry["sha256"]:
-            raise ValueError(f"file checksum mismatch after restore: {file_entry['path']}")
+            raise ValueError(
+                f"file checksum mismatch after restore: {file_entry['path']}"
+            )
 
     return target_dir
 
 
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Create and restore encrypted cloud directories with chunk-based compression."
+        description=(
+            "Create and restore encrypted cloud directories with "
+            "chunk-based compression."
+        )
     )
     sub = parser.add_subparsers(dest="command", required=True)
 
@@ -341,10 +403,26 @@ def _build_parser() -> argparse.ArgumentParser:
         default=DEFAULT_CHUNK_SIZE,
         help=f"chunk size in bytes (default: {DEFAULT_CHUNK_SIZE})",
     )
-    pack.add_argument("--compression-level", type=int, default=DEFAULT_COMPRESSION_LEVEL)
-    pack.add_argument("--expected-aggregate-sha256", help="optional aggregate checksum expected value")
-    pack.add_argument("--force", action="store_true", help="remove cloud dir before writing")
-    pack.add_argument("--no-online-index", action="store_true", help="skip online-index.html generation")
+    pack.add_argument(
+        "--compression-level",
+        type=int,
+        default=DEFAULT_COMPRESSION_LEVEL,
+        help="zlib compression level (0-9)",
+    )
+    pack.add_argument(
+        "--expected-aggregate-sha256",
+        help="optional aggregate checksum expected value",
+    )
+    pack.add_argument(
+        "--force",
+        action="store_true",
+        help="remove cloud dir before writing",
+    )
+    pack.add_argument(
+        "--no-online-index",
+        action="store_true",
+        help="skip online-index.html generation",
+    )
 
     restore = sub.add_parser("restore", help="restore cloud directory")
     restore.add_argument("--cloud-dir", required=True, help="cloud directory")
@@ -355,7 +433,11 @@ def _build_parser() -> argparse.ArgumentParser:
         default="HUM_CLOUD_PASSPHRASE",
         help="fallback env var for passphrase",
     )
-    restore.add_argument("--overwrite", action="store_true", help="allow writing into a non-empty target")
+    restore.add_argument(
+        "--overwrite",
+        action="store_true",
+        help="allow writing into a non-empty target",
+    )
 
     return parser
 
@@ -377,6 +459,10 @@ def main(argv: list[str] | None = None) -> int:
                 force=args.force,
                 write_online_index=not args.no_online_index,
             )
+            aggregate = result.manifest["summary"]["aggregate_sha256"]
+            print(f"cloud_dir={args.cloud_dir}")
+            print(f"manifest={result.manifest_path}")
+            print(f"aggregate_sha256={aggregate}")
             print(f"cloud_dir={args.cloud_dir}")
             print(f"manifest={result.manifest_path}")
             print(f"aggregate_sha256={result.manifest['summary']['aggregate_sha256']}")
