@@ -572,6 +572,58 @@ ls /mnt/hum/scripts/
 A download page is available at `docs/download.html`—host it on any static
 server and point the download link to wherever you publish the ISO.
 
+## Chromebook lab download-site + Stripe visibility
+
+Use the Chromebook lab helper to verify MAGMA/KALI startup visibility and host
+the toolkit download page from one command:
+
+```bash
+MAGMA_CHECK_URL="http://<magma-startup>/stripe" \
+KALI_CHECK_URL="http://<kali-startup>/stripe" \
+LAB_PORT=8088 \
+bash scripts/chromebook-lab-download-site.sh all
+```
+
+Useful modes:
+
+```bash
+bash scripts/chromebook-lab-download-site.sh check-stripe
+bash scripts/chromebook-lab-download-site.sh serve
+bash scripts/chromebook-lab-download-site.sh all
+```
+
+Local test override:
+
+```bash
+STRIPE_EXPECT_TEXT="HUM Toolkit" \
+MAGMA_CHECK_URL="http://127.0.0.1:8088/download.html" \
+KALI_CHECK_URL="http://127.0.0.1:8088/download.html" \
+bash scripts/chromebook-lab-download-site.sh check-stripe
+```
+
+## Host static IPv4 for proxy / Docker / VNC / TTY
+
+Use `scripts/hum-host-static-ip.sh` when the host process should own a LAN
+address such as `192.168.68.100/22`, while DNS remains untouched:
+
+```bash
+sudo HUM_HOST_STATIC_IF=eth0 \
+  HUM_HOST_STATIC_CIDR=192.168.68.100/22 \
+  HUM_HOST_GATEWAY=192.168.68.51 \
+  bash scripts/hum-host-static-ip.sh apply
+```
+
+Inspect and remove:
+
+```bash
+bash scripts/hum-host-static-ip.sh status
+bash scripts/hum-host-static-ip.sh env
+sudo bash scripts/hum-host-static-ip.sh remove
+```
+
+The script reports proxy (`3128`), VNC (`5901`), noVNC (`6080`), and TTY/SSH
+(`22`) listener state. It never edits `/etc/resolv.conf` or resolver settings.
+
 ## Dev container status indicator (`<>`)
 
 If you see the `<>` style status indicator in the bottom-right status area in
