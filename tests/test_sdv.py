@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import json
+import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -105,6 +107,61 @@ class TestVirtualSetupValidator(unittest.TestCase):
             self.assertFalse(ok)
             joined = "\n".join(errors)
             self.assertIn("outside SDV subnet", joined)
+
+
+class TestLvmLocationCloudPlan(unittest.TestCase):
+    def test_lvm_cloud_plan_writes_non_destructive_action_report(self) -> None:
+        repo = Path(__file__).resolve().parent.parent
+        script = repo / "scripts" / "hum-lvm-cloud-plan.py"
+        with tempfile.TemporaryDirectory() as td:
+            output = Path(td) / "plan.json"
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(script),
+                    "--source",
+                    str(repo),
+                    "--cloud-root",
+                    str(repo),
+                    "--output",
+                    str(output),
+                ],
+                check=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+            )
+            self.assertIn("LVM/cloud plan written", completed.stdout)
+            payload = json.loads(output.read_text(encoding="utf-8"))
+
+        self.assertEqual(payload["sources"][0]["path"], str(repo))
+        self.assertTrue(payload["sources"][0]["exists"])
+        self.assertTrue(payload["cloud_roots"][0]["exists"])
+        self.assertIn("automatic_actions", payload)
+        self.assertIn("recommended_actions", payload)
+        self.assertEqual(payload["privacy_bindings"]["virtual_desktop_bind"], "127.0.0.1")
+
+    def test_network_matrix_links_lvm_location_and_encrypted_cloud_services(self) -> None:
+        repo = Path(__file__).resolve().parent.parent
+        matrix = json.loads(
+            (repo / "websetup" / "virtual" / "network-matrix.json").read_text(encoding="utf-8")
+        )
+        nodes = {node["id"]: node for node in matrix["nodes"]}
+        edges = {(edge["from"], edge["to"], edge["type"]) for edge in matrix["edges"]}
+
+        self.assertIn("location-services", nodes)
+        self.assertIn("encrypted-cloud-services", nodes)
+        self.assertIn("lvm-secure-cloud", nodes)
+        self.assertIn(
+            ("location-services", "lvm-secure-cloud", "metadata_feed"),
+            edges,
+        )
+        self.assertIn(
+            ("encrypted-cloud-services", "lvm-secure-cloud", "encrypted_storage_backend"),
+            edges,
+        )
+        self.assertTrue(nodes["location-services"]["metadata"]["interactive_results"])
+        self.assertTrue(nodes["lvm-secure-cloud"]["metadata"]["automatic_actions"])
 
 
 if __name__ == "__main__":
