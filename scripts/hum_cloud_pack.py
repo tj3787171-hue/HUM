@@ -109,6 +109,7 @@ def _reset_output_dir(path: Path, force: bool) -> None:
             raise FileExistsError(
                 f"{path} already exists (use --force to overwrite)"
             )
+            raise FileExistsError(f"{path} already exists (use --force to overwrite)")
         shutil.rmtree(path)
     path.mkdir(parents=True, exist_ok=True)
 
@@ -148,6 +149,42 @@ def _write_online_index(cloud_dir: Path, manifest: dict[str, Any]) -> None:
     (cloud_dir / "online-index.html").write_text(
         "\n".join(html), encoding="utf-8"
     )
+    html_rows = []
+    for item in manifest["files"]:
+        html_rows.append(
+            "<tr>"
+            f"<td>{html.escape(item['path'])}</td>"
+            f"<td>{item['size']}</td>"
+            f"<td><code>{html.escape(item['sha256'])}</code></td>"
+            "</tr>"
+        )
+
+    page = f"""<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>HUM Cloud Directory</title>
+  <style>
+    body{{font-family:system-ui,sans-serif;margin:2rem;line-height:1.5;}}
+    code{{background:#f5f5f5;padding:.1rem .3rem;border-radius:4px;}}
+    table{{border-collapse:collapse;margin-top:1rem;}}
+    td,th{{border:1px solid #ddd;padding:.4rem .6rem;text-align:left;}}
+  </style>
+</head>
+<body>
+  <h1>HUM cloud directory</h1>
+  <p><strong>Aggregate SHA-256:</strong> <code>{summary['aggregate_sha256']}</code></p>
+  <table>
+    <thead><tr><th>File</th><th>Bytes</th><th>SHA-256</th></tr></thead>
+    <tbody>
+      {''.join(html_rows)}
+    </tbody>
+  </table>
+  <p>Manifest: <a href="./index.json">index.json</a></p>
+</body>
+</html>
+"""
+    (cloud_dir / "online-index.html").write_text(page, encoding="utf-8")
 
 
 @dataclass
@@ -426,6 +463,9 @@ def main(argv: list[str] | None = None) -> int:
             print(f"cloud_dir={args.cloud_dir}")
             print(f"manifest={result.manifest_path}")
             print(f"aggregate_sha256={aggregate}")
+            print(f"cloud_dir={args.cloud_dir}")
+            print(f"manifest={result.manifest_path}")
+            print(f"aggregate_sha256={result.manifest['summary']['aggregate_sha256']}")
             return 0
 
         restore_directory(

@@ -1,0 +1,2349 @@
+{
+  "archives": [
+    {
+      "kind": "iso-image",
+      "path": "dist/hum-toolkit.iso",
+      "probe": {
+        "probe": "metadata-only"
+      }
+    }
+  ],
+  "artifact_count": 113,
+  "artifacts": [
+    {
+      "benchmark": {
+        "elapsed_ms": 0.021,
+        "mb_per_sec": 90.965,
+        "read_bytes": 2031
+      },
+      "kind": "binary-or-other",
+      "layer": "other",
+      "mtime": "2026-04-30T15:35:45.054940+00:00",
+      "path": ".devcontainer/Dockerfile",
+      "probe": {},
+      "sha256_prefix": "3a62e219e57b2942",
+      "size_bytes": 2031
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.026,
+        "mb_per_sec": 20.345,
+        "read_bytes": 551
+      },
+      "kind": "binary-or-other",
+      "layer": "other",
+      "mtime": "2026-04-25T20:56:27+00:00",
+      "path": ".devcontainer/dev.env",
+      "probe": {},
+      "sha256_prefix": "fc3f3ef0adc9c986",
+      "size_bytes": 551
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.012,
+        "mb_per_sec": 43.267,
+        "read_bytes": 551
+      },
+      "kind": "binary-or-other",
+      "layer": "other",
+      "mtime": "2026-04-30T12:44:41.922997+00:00",
+      "path": ".devcontainer/dev.env.example",
+      "probe": {},
+      "sha256_prefix": "fc3f3ef0adc9c986",
+      "size_bytes": 551
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.008,
+        "mb_per_sec": 254.767,
+        "read_bytes": 2248
+      },
+      "kind": "config-json",
+      "layer": "config",
+      "mtime": "2026-04-30T12:52:22.181058+00:00",
+      "path": ".devcontainer/devcontainer.json",
+      "probe": {
+        "json_type": "object",
+        "lines": 80,
+        "non_empty_lines": 80,
+        "top_level_keys": [
+          "build",
+          "containerEnv",
+          "customizations",
+          "forwardPorts",
+          "mounts",
+          "name",
+          "portsAttributes",
+          "postCreateCommand",
+          "postStartCommand",
+          "remoteEnv",
+          "remoteUser",
+          "runArgs"
+        ]
+      },
+      "sha256_prefix": "9dfde75d232504b6",
+      "size_bytes": 2248
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.008,
+        "mb_per_sec": 33.316,
+        "read_bytes": 291
+      },
+      "kind": "config-yaml",
+      "layer": "config",
+      "mtime": "2026-04-30T12:44:41.922997+00:00",
+      "path": ".devcontainer/docker-compose.lan.yml",
+      "probe": {
+        "lines": 12,
+        "non_empty_lines": 12
+      },
+      "sha256_prefix": "f3cc0c8876c219a3",
+      "size_bytes": 291
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 385.974,
+        "read_bytes": 2863
+      },
+      "kind": "shell-code",
+      "layer": "code",
+      "mtime": "2026-04-30T12:56:16.508251+00:00",
+      "path": ".devcontainer/import-environment.sh",
+      "probe": {
+        "lines": 87,
+        "non_empty_lines": 78
+      },
+      "sha256_prefix": "c94ee52c2d174803",
+      "size_bytes": 2863
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 1427.517,
+        "read_bytes": 10954
+      },
+      "kind": "shell-code",
+      "layer": "code",
+      "mtime": "2026-04-30T12:44:41.922997+00:00",
+      "path": ".devcontainer/net-driver-recover-auto.sh",
+      "probe": {
+        "lines": 349,
+        "non_empty_lines": 311
+      },
+      "sha256_prefix": "b4be09805b405ec2",
+      "size_bytes": 10954
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.011,
+        "mb_per_sec": 165.932,
+        "read_bytes": 1900
+      },
+      "kind": "shell-code",
+      "layer": "code",
+      "mtime": "2026-04-30T12:44:41.922997+00:00",
+      "path": ".devcontainer/post-create.sh",
+      "probe": {
+        "lines": 67,
+        "non_empty_lines": 62
+      },
+      "sha256_prefix": "e565e6b081951694",
+      "size_bytes": 1900
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 147.793,
+        "read_bytes": 921
+      },
+      "kind": "shell-code",
+      "layer": "code",
+      "mtime": "2026-04-30T12:44:41.922997+00:00",
+      "path": ".devcontainer/post-start.sh",
+      "probe": {
+        "lines": 23,
+        "non_empty_lines": 20
+      },
+      "sha256_prefix": "1ec1f60fdce48345",
+      "size_bytes": 921
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 939.542,
+        "read_bytes": 6782
+      },
+      "kind": "shell-code",
+      "layer": "code",
+      "mtime": "2026-04-30T12:44:41.922997+00:00",
+      "path": ".devcontainer/recup-setup.sh",
+      "probe": {
+        "lines": 201,
+        "non_empty_lines": 174
+      },
+      "sha256_prefix": "73d958befd3c476d",
+      "size_bytes": 6782
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 35.651,
+        "read_bytes": 244
+      },
+      "kind": "binary-or-other",
+      "layer": "other",
+      "mtime": "2026-04-30T12:57:05.516116+00:00",
+      "path": ".gitignore",
+      "probe": {},
+      "sha256_prefix": "e0785e6b030c250a",
+      "size_bytes": 244
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 444.52,
+        "read_bytes": 2689
+      },
+      "kind": "markdown-document",
+      "layer": "document",
+      "mtime": "2026-04-30T12:44:41.922997+00:00",
+      "path": "AGENTS.md",
+      "probe": {
+        "lines": 47,
+        "non_empty_lines": 31
+      },
+      "sha256_prefix": "ca06c3c0afac898d",
+      "size_bytes": 2689
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.008,
+        "mb_per_sec": 3494.152,
+        "read_bytes": 29813
+      },
+      "kind": "markdown-document",
+      "layer": "document",
+      "mtime": "2026-04-30T15:24:13.362970+00:00",
+      "path": "README.md",
+      "probe": {
+        "lines": 918,
+        "non_empty_lines": 687
+      },
+      "sha256_prefix": "190d982e5c5c5f25",
+      "size_bytes": 29813
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 221.061,
+        "read_bytes": 1315
+      },
+      "kind": "python-code",
+      "layer": "code",
+      "mtime": "2026-04-30T12:55:42.616348+00:00",
+      "path": "check.py",
+      "probe": {
+        "lines": 46,
+        "non_empty_lines": 36
+      },
+      "sha256_prefix": "12e4c1dce5b7eea5",
+      "size_bytes": 1315
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 19.399,
+        "read_bytes": 143
+      },
+      "kind": "binary-or-other",
+      "layer": "other",
+      "mtime": "2026-04-30T15:27:44.478998+00:00",
+      "path": "diagnostics/connectivity-index.csv",
+      "probe": {},
+      "sha256_prefix": "b45d3e2af1ff8e6a",
+      "size_bytes": 143
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.008,
+        "mb_per_sec": 343.106,
+        "read_bytes": 2835
+      },
+      "kind": "config-json",
+      "layer": "config",
+      "mtime": "2026-04-30T12:57:12.540097+00:00",
+      "path": "diagnostics/lvm-cloud-plan.json",
+      "probe": {
+        "json_type": "object",
+        "lines": 120,
+        "non_empty_lines": 120,
+        "top_level_keys": [
+          "automatic_actions",
+          "block_devices",
+          "cloud_roots",
+          "cwd",
+          "encrypted_candidates",
+          "hostname",
+          "lvm",
+          "mounted_large_devices",
+          "privacy_bindings",
+          "recommended_actions",
+          "sources",
+          "timestamp_utc"
+        ]
+      },
+      "sha256_prefix": "8491852c1c9fc7f2",
+      "size_bytes": 2835
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.019,
+        "mb_per_sec": 0.0,
+        "read_bytes": 0
+      },
+      "kind": "binary-or-other",
+      "layer": "other",
+      "mtime": "2026-04-30T12:44:41.922997+00:00",
+      "path": "dist/.gitkeep",
+      "probe": {},
+      "sha256_prefix": "e3b0c44298fc1c14",
+      "size_bytes": 0
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 1.47,
+        "mb_per_sec": 170.066,
+        "read_bytes": 262144
+      },
+      "kind": "iso-image",
+      "layer": "iso",
+      "mtime": "2026-04-28T21:34:45+00:00",
+      "path": "dist/hum-toolkit.iso",
+      "probe": {
+        "probe": "metadata-only"
+      },
+      "sha256_prefix": "1be13c5b410ee775",
+      "size_bytes": 1048576
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.027,
+        "mb_per_sec": 358.701,
+        "read_bytes": 10026
+      },
+      "kind": "binary-or-other",
+      "layer": "other",
+      "mtime": "2026-04-30T12:44:41.922997+00:00",
+      "path": "docs/download.html",
+      "probe": {},
+      "sha256_prefix": "24d8222acb2fc173",
+      "size_bytes": 10026
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.028,
+        "mb_per_sec": 535.858,
+        "read_bytes": 15598
+      },
+      "kind": "binary-or-other",
+      "layer": "other",
+      "mtime": "2026-04-30T12:44:41.922997+00:00",
+      "path": "ff0000.html",
+      "probe": {},
+      "sha256_prefix": "ba5c908f0f96912e",
+      "size_bytes": 15598
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 147.085,
+        "read_bytes": 1081
+      },
+      "kind": "markdown-document",
+      "layer": "document",
+      "mtime": "2026-04-30T12:44:41.922997+00:00",
+      "path": "iso-build/README.md",
+      "probe": {
+        "lines": 42,
+        "non_empty_lines": 29
+      },
+      "sha256_prefix": "68b6314ff9f2f9a0",
+      "size_bytes": 1081
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.01,
+        "mb_per_sec": 11.374,
+        "read_bytes": 115
+      },
+      "kind": "binary-or-other",
+      "layer": "other",
+      "mtime": "2026-04-30T12:44:41.922997+00:00",
+      "path": "iso-build/auto/build",
+      "probe": {},
+      "sha256_prefix": "47a251efb9952d1a",
+      "size_bytes": 115
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.009,
+        "mb_per_sec": 83.548,
+        "read_bytes": 791
+      },
+      "kind": "binary-or-other",
+      "layer": "other",
+      "mtime": "2026-04-30T12:44:41.922997+00:00",
+      "path": "iso-build/auto/config",
+      "probe": {},
+      "sha256_prefix": "ecdec7c7457df939",
+      "size_bytes": 791
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 285.4,
+        "read_bytes": 1950
+      },
+      "kind": "shell-code",
+      "layer": "code",
+      "mtime": "2026-04-30T12:44:41.922997+00:00",
+      "path": "iso-build/build.sh",
+      "probe": {
+        "lines": 57,
+        "non_empty_lines": 49
+      },
+      "sha256_prefix": "4d61e561996ccba2",
+      "size_bytes": 1950
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.009,
+        "mb_per_sec": 21.703,
+        "read_bytes": 211
+      },
+      "kind": "binary-or-other",
+      "layer": "other",
+      "mtime": "2026-04-30T12:44:41.922997+00:00",
+      "path": "iso-build/config/hooks/live/0100-branding.hook.chroot",
+      "probe": {},
+      "sha256_prefix": "2950e5aa0b375273",
+      "size_bytes": 211
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.01,
+        "mb_per_sec": 14.884,
+        "read_bytes": 151
+      },
+      "kind": "binary-or-other",
+      "layer": "other",
+      "mtime": "2026-04-30T12:44:41.922997+00:00",
+      "path": "iso-build/config/package-lists/hum.list.chroot",
+      "probe": {},
+      "sha256_prefix": "6df3593ebae44a55",
+      "size_bytes": 151
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.008,
+        "mb_per_sec": 634.486,
+        "read_bytes": 5061
+      },
+      "kind": "shell-code",
+      "layer": "code",
+      "mtime": "2026-04-30T12:44:41.922997+00:00",
+      "path": "kali-iso-server/hostile-env-defense/apt-persistence.sh",
+      "probe": {
+        "lines": 184,
+        "non_empty_lines": 156
+      },
+      "sha256_prefix": "c5b6f0ba4d32e87f",
+      "size_bytes": 5061
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 616.223,
+        "read_bytes": 4295
+      },
+      "kind": "shell-code",
+      "layer": "code",
+      "mtime": "2026-04-30T12:44:41.922997+00:00",
+      "path": "kali-iso-server/hostile-env-defense/deploy-all-defenses.sh",
+      "probe": {
+        "lines": 156,
+        "non_empty_lines": 134
+      },
+      "sha256_prefix": "9a49771d86cace7b",
+      "size_bytes": 4295
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 901.404,
+        "read_bytes": 6329
+      },
+      "kind": "shell-code",
+      "layer": "code",
+      "mtime": "2026-04-30T12:44:41.922997+00:00",
+      "path": "kali-iso-server/hostile-env-defense/etc-structure-protect.sh",
+      "probe": {
+        "lines": 260,
+        "non_empty_lines": 222
+      },
+      "sha256_prefix": "18041df882833bc6",
+      "size_bytes": 6329
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 960.444,
+        "read_bytes": 6951
+      },
+      "kind": "shell-code",
+      "layer": "code",
+      "mtime": "2026-04-30T12:44:41.922997+00:00",
+      "path": "kali-iso-server/hostile-env-defense/iso-verify-sanitize.sh",
+      "probe": {
+        "lines": 248,
+        "non_empty_lines": 213
+      },
+      "sha256_prefix": "4257d31e329469ba",
+      "size_bytes": 6951
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 1631.81,
+        "read_bytes": 12431
+      },
+      "kind": "shell-code",
+      "layer": "code",
+      "mtime": "2026-04-30T12:44:41.922997+00:00",
+      "path": "kali-iso-server/hostile-env-defense/tool-mirror-defense.sh",
+      "probe": {
+        "lines": 397,
+        "non_empty_lines": 345
+      },
+      "sha256_prefix": "a42a5efb13e3f600",
+      "size_bytes": 12431
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.008,
+        "mb_per_sec": 617.835,
+        "read_bytes": 5026
+      },
+      "kind": "shell-code",
+      "layer": "code",
+      "mtime": "2026-04-30T12:44:41.926997+00:00",
+      "path": "kali-iso-server/hostile-env-defense/x11-isolation.sh",
+      "probe": {
+        "lines": 185,
+        "non_empty_lines": 158
+      },
+      "sha256_prefix": "74bac2235593db14",
+      "size_bytes": 5026
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 211.911,
+        "read_bytes": 1391
+      },
+      "kind": "shell-code",
+      "layer": "code",
+      "mtime": "2026-04-30T12:44:41.926997+00:00",
+      "path": "scripts/backup_project_bundle.sh",
+      "probe": {
+        "lines": 50,
+        "non_empty_lines": 41
+      },
+      "sha256_prefix": "ff2dd2444690e3d1",
+      "size_bytes": 1391
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 735.297,
+        "read_bytes": 4889
+      },
+      "kind": "shell-code",
+      "layer": "code",
+      "mtime": "2026-04-30T15:23:22.274785+00:00",
+      "path": "scripts/chromebook-lab-download-site.sh",
+      "probe": {
+        "lines": 197,
+        "non_empty_lines": 167
+      },
+      "sha256_prefix": "f60c669f991c200f",
+      "size_bytes": 4889
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 464.25,
+        "read_bytes": 2748
+      },
+      "kind": "python-code",
+      "layer": "code",
+      "mtime": "2026-04-30T12:44:41.926997+00:00",
+      "path": "scripts/connect_again.py",
+      "probe": {
+        "lines": 81,
+        "non_empty_lines": 64
+      },
+      "sha256_prefix": "261394fc30631e77",
+      "size_bytes": 2748
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 2229.175,
+        "read_bytes": 16222
+      },
+      "kind": "python-code",
+      "layer": "code",
+      "mtime": "2026-04-30T12:44:41.926997+00:00",
+      "path": "scripts/deepseek_db_link.py",
+      "probe": {
+        "lines": 485,
+        "non_empty_lines": 422
+      },
+      "sha256_prefix": "8bba97aa3b91b028",
+      "size_bytes": 16222
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 875.474,
+        "read_bytes": 5911
+      },
+      "kind": "shell-code",
+      "layer": "code",
+      "mtime": "2026-04-30T12:44:41.926997+00:00",
+      "path": "scripts/host-readiness-check.sh",
+      "probe": {
+        "lines": 218,
+        "non_empty_lines": 192
+      },
+      "sha256_prefix": "b1a0bb61ea3d05f3",
+      "size_bytes": 5911
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.008,
+        "mb_per_sec": 1345.771,
+        "read_bytes": 10815
+      },
+      "kind": "shell-code",
+      "layer": "code",
+      "mtime": "2026-04-30T12:44:41.926997+00:00",
+      "path": "scripts/hp-slimline-recovery/restore-filesystems.sh",
+      "probe": {
+        "lines": 287,
+        "non_empty_lines": 247
+      },
+      "sha256_prefix": "56f324af57009ccf",
+      "size_bytes": 10815
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 606.078,
+        "read_bytes": 4312
+      },
+      "kind": "shell-code",
+      "layer": "code",
+      "mtime": "2026-04-30T12:44:41.926997+00:00",
+      "path": "scripts/hp-slimline-recovery/scan-system.sh",
+      "probe": {
+        "lines": 137,
+        "non_empty_lines": 122
+      },
+      "sha256_prefix": "feda080e8c2c0afb",
+      "size_bytes": 4312
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 414.662,
+        "read_bytes": 3208
+      },
+      "kind": "python-code",
+      "layer": "code",
+      "mtime": "2026-04-30T12:44:41.926997+00:00",
+      "path": "scripts/https-file-server.py",
+      "probe": {
+        "lines": 106,
+        "non_empty_lines": 88
+      },
+      "sha256_prefix": "ce9a96baa9693537",
+      "size_bytes": 3208
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 909.309,
+        "read_bytes": 5780
+      },
+      "kind": "shell-code",
+      "layer": "code",
+      "mtime": "2026-04-30T12:44:41.926997+00:00",
+      "path": "scripts/hum-build-iso.sh",
+      "probe": {
+        "lines": 209,
+        "non_empty_lines": 172
+      },
+      "sha256_prefix": "1926c218e4114c4b",
+      "size_bytes": 5780
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.008,
+        "mb_per_sec": 2946.885,
+        "read_bytes": 24093
+      },
+      "kind": "shell-code",
+      "layer": "code",
+      "mtime": "2026-04-30T15:07:17.237049+00:00",
+      "path": "scripts/hum-dev-netns.sh",
+      "probe": {
+        "lines": 805,
+        "non_empty_lines": 702
+      },
+      "sha256_prefix": "8aeafae4fef795d4",
+      "size_bytes": 24093
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 755.69,
+        "read_bytes": 5317
+      },
+      "kind": "shell-code",
+      "layer": "code",
+      "mtime": "2026-04-30T15:23:50.618889+00:00",
+      "path": "scripts/hum-host-static-ip.sh",
+      "probe": {
+        "lines": 197,
+        "non_empty_lines": 178
+      },
+      "sha256_prefix": "c0dc88b0e8056fc3",
+      "size_bytes": 5317
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 1163.967,
+        "read_bytes": 7987
+      },
+      "kind": "python-code",
+      "layer": "code",
+      "mtime": "2026-04-30T12:53:24.952798+00:00",
+      "path": "scripts/hum-lvm-cloud-plan.py",
+      "probe": {
+        "lines": 232,
+        "non_empty_lines": 200
+      },
+      "sha256_prefix": "5242a8bd413f8380",
+      "size_bytes": 7987
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 1309.628,
+        "read_bytes": 9496
+      },
+      "kind": "shell-code",
+      "layer": "code",
+      "mtime": "2026-04-30T12:44:41.926997+00:00",
+      "path": "scripts/hum-snap-bypass.sh",
+      "probe": {
+        "lines": 326,
+        "non_empty_lines": 283
+      },
+      "sha256_prefix": "9079f045698d8938",
+      "size_bytes": 9496
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 2162.453,
+        "read_bytes": 13868
+      },
+      "kind": "shell-code",
+      "layer": "code",
+      "mtime": "2026-04-30T12:44:41.926997+00:00",
+      "path": "scripts/hum-snap-server.sh",
+      "probe": {
+        "lines": 492,
+        "non_empty_lines": 420
+      },
+      "sha256_prefix": "296b025c3a410fcb",
+      "size_bytes": 13868
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.008,
+        "mb_per_sec": 3126.28,
+        "read_bytes": 25009
+      },
+      "kind": "python-code",
+      "layer": "code",
+      "mtime": "2026-04-30T15:32:54.357022+00:00",
+      "path": "scripts/hum-telemetry-db.py",
+      "probe": {
+        "lines": 694,
+        "non_empty_lines": 617
+      },
+      "sha256_prefix": "84adcd0b249b4080",
+      "size_bytes": 25009
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 1815.14,
+        "read_bytes": 13327
+      },
+      "kind": "shell-code",
+      "layer": "code",
+      "mtime": "2026-04-30T12:44:41.926997+00:00",
+      "path": "scripts/hum-veth-chain.sh",
+      "probe": {
+        "lines": 426,
+        "non_empty_lines": 360
+      },
+      "sha256_prefix": "39603a525dbbf903",
+      "size_bytes": 13327
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 1777.515,
+        "read_bytes": 11651
+      },
+      "kind": "python-code",
+      "layer": "code",
+      "mtime": "2026-04-30T15:38:36.917406+00:00",
+      "path": "scripts/hum_artifact_layers.py",
+      "probe": {
+        "lines": 327,
+        "non_empty_lines": 284
+      },
+      "sha256_prefix": "95e8a1ccb43bca27",
+      "size_bytes": 11651
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 1174.485,
+        "read_bytes": 7122
+      },
+      "kind": "python-code",
+      "layer": "code",
+      "mtime": "2026-04-30T15:39:11.241153+00:00",
+      "path": "scripts/hum_cache_assembly.py",
+      "probe": {
+        "lines": 190,
+        "non_empty_lines": 164
+      },
+      "sha256_prefix": "f778aef083bdbd95",
+      "size_bytes": 7122
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 1937.94,
+        "read_bytes": 14125
+      },
+      "kind": "python-code",
+      "layer": "code",
+      "mtime": "2026-04-30T15:11:39.627268+00:00",
+      "path": "scripts/hum_cloud_pack.py",
+      "probe": {
+        "lines": 400,
+        "non_empty_lines": 340
+      },
+      "sha256_prefix": "e819f0e32689b19c",
+      "size_bytes": 14125
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 308.676,
+        "read_bytes": 2356
+      },
+      "kind": "shell-code",
+      "layer": "code",
+      "mtime": "2026-04-30T12:44:41.926997+00:00",
+      "path": "scripts/installer-agent/fix-cdrom-corruption.sh",
+      "probe": {
+        "lines": 69,
+        "non_empty_lines": 57
+      },
+      "sha256_prefix": "899f0bdebcce358e",
+      "size_bytes": 2356
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.014,
+        "mb_per_sec": 272.688,
+        "read_bytes": 4080
+      },
+      "kind": "binary-or-other",
+      "layer": "other",
+      "mtime": "2026-04-30T12:44:41.926997+00:00",
+      "path": "scripts/installer-agent/hum-auto-install.preseed",
+      "probe": {},
+      "sha256_prefix": "17eb68c3e3ce1de7",
+      "size_bytes": 4080
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 894.311,
+        "read_bytes": 6734
+      },
+      "kind": "shell-code",
+      "layer": "code",
+      "mtime": "2026-04-30T12:44:41.926997+00:00",
+      "path": "scripts/installer-agent/setup-penguin-proxy.sh",
+      "probe": {
+        "lines": 217,
+        "non_empty_lines": 190
+      },
+      "sha256_prefix": "1dc55575a6c6de5e",
+      "size_bytes": 6734
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 1665.635,
+        "read_bytes": 11880
+      },
+      "kind": "shell-code",
+      "layer": "code",
+      "mtime": "2026-04-30T12:44:41.926997+00:00",
+      "path": "scripts/installer-agent/ssh-installer-agent.sh",
+      "probe": {
+        "lines": 409,
+        "non_empty_lines": 349
+      },
+      "sha256_prefix": "6e6867fe50220570",
+      "size_bytes": 11880
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 821.563,
+        "read_bytes": 5771
+      },
+      "kind": "shell-code",
+      "layer": "code",
+      "mtime": "2026-04-30T12:44:41.926997+00:00",
+      "path": "scripts/installer-agent/ssh-key-manager.sh",
+      "probe": {
+        "lines": 222,
+        "non_empty_lines": 195
+      },
+      "sha256_prefix": "fd1b42f9e969cf25",
+      "size_bytes": 5771
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 672.378,
+        "read_bytes": 4618
+      },
+      "kind": "python-code",
+      "layer": "code",
+      "mtime": "2026-04-30T12:44:41.926997+00:00",
+      "path": "scripts/lab-www-reverse-proxy.py",
+      "probe": {
+        "lines": 150,
+        "non_empty_lines": 115
+      },
+      "sha256_prefix": "19a3b8d8b37f0956",
+      "size_bytes": 4618
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 448.478,
+        "read_bytes": 3313
+      },
+      "kind": "text-document",
+      "layer": "document",
+      "mtime": "2026-04-30T12:44:41.926997+00:00",
+      "path": "scripts/lab-www.txt",
+      "probe": {
+        "lines": 102,
+        "non_empty_lines": 72
+      },
+      "sha256_prefix": "1164bfcb1d782367",
+      "size_bytes": 3313
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.009,
+        "mb_per_sec": 4309.825,
+        "read_bytes": 41007
+      },
+      "kind": "python-code",
+      "layer": "code",
+      "mtime": "2026-04-30T12:44:41.926997+00:00",
+      "path": "scripts/project_evidence_db.py",
+      "probe": {
+        "lines": 1045,
+        "non_empty_lines": 929
+      },
+      "sha256_prefix": "57ed4c0aa3d860c4",
+      "size_bytes": 41007
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 357.038,
+        "read_bytes": 2420
+      },
+      "kind": "javascript-code",
+      "layer": "code",
+      "mtime": "2026-04-30T12:44:41.926997+00:00",
+      "path": "scripts/scanTelemetry.js",
+      "probe": {
+        "lines": 78,
+        "non_empty_lines": 66
+      },
+      "sha256_prefix": "31a3233373ab51e7",
+      "size_bytes": 2420
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 0.152,
+        "read_bytes": 1
+      },
+      "kind": "python-code",
+      "layer": "code",
+      "mtime": "2026-04-30T12:44:41.926997+00:00",
+      "path": "scripts/tests/__init__.py",
+      "probe": {
+        "lines": 1,
+        "non_empty_lines": 0
+      },
+      "sha256_prefix": "01ba4719c80b6fe9",
+      "size_bytes": 1
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 275.396,
+        "read_bytes": 1605
+      },
+      "kind": "python-code",
+      "layer": "code",
+      "mtime": "2026-04-30T12:44:41.926997+00:00",
+      "path": "scripts/tests/test_connect_again.py",
+      "probe": {
+        "lines": 43,
+        "non_empty_lines": 34
+      },
+      "sha256_prefix": "98e50017191b2c25",
+      "size_bytes": 1605
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 1060.824,
+        "read_bytes": 6841
+      },
+      "kind": "python-code",
+      "layer": "code",
+      "mtime": "2026-04-30T12:44:41.926997+00:00",
+      "path": "scripts/validate_virtual_setup.py",
+      "probe": {
+        "lines": 201,
+        "non_empty_lines": 168
+      },
+      "sha256_prefix": "f220c79986887fc4",
+      "size_bytes": 6841
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 689.386,
+        "read_bytes": 5376
+      },
+      "kind": "shell-code",
+      "layer": "code",
+      "mtime": "2026-04-30T12:44:41.926997+00:00",
+      "path": "scripts/virtual-drive-access.sh",
+      "probe": {
+        "lines": 258,
+        "non_empty_lines": 230
+      },
+      "sha256_prefix": "64109e0f684cc0ba",
+      "size_bytes": 5376
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.008,
+        "mb_per_sec": 1419.577,
+        "read_bytes": 11685
+      },
+      "kind": "javascript-code",
+      "layer": "code",
+      "mtime": "2026-04-30T15:40:35.708590+00:00",
+      "path": "site/assets/app.js",
+      "probe": {
+        "lines": 324,
+        "non_empty_lines": 287
+      },
+      "sha256_prefix": "437bede76ded11bf",
+      "size_bytes": 11685
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.01,
+        "mb_per_sec": 562.25,
+        "read_bytes": 5773
+      },
+      "kind": "binary-or-other",
+      "layer": "other",
+      "mtime": "2026-04-30T15:40:15.332718+00:00",
+      "path": "site/assets/info.css",
+      "probe": {},
+      "sha256_prefix": "5f49ff4d3b52fa97",
+      "size_bytes": 5773
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.008,
+        "mb_per_sec": 439.675,
+        "read_bytes": 3786
+      },
+      "kind": "php-code",
+      "layer": "code",
+      "mtime": "2026-04-30T12:44:41.926997+00:00",
+      "path": "site/convo.php",
+      "probe": {
+        "lines": 94,
+        "non_empty_lines": 85
+      },
+      "sha256_prefix": "3d292e299b0f51ec",
+      "size_bytes": 3786
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 554.457,
+        "read_bytes": 4211
+      },
+      "kind": "config-json",
+      "layer": "config",
+      "mtime": "2026-04-30T15:16:38.489053+00:00",
+      "path": "site/data/FINAL-PRODUCT/comb.json",
+      "probe": {
+        "json_type": "object",
+        "lines": 181,
+        "non_empty_lines": 181,
+        "top_level_keys": [
+          "comb_hierarchy",
+          "origin",
+          "timestamp"
+        ]
+      },
+      "sha256_prefix": "c3a44f6ad472fdc1",
+      "size_bytes": 4211
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.01,
+        "mb_per_sec": 2052.616,
+        "read_bytes": 20955
+      },
+      "kind": "config-json",
+      "layer": "config",
+      "mtime": "2026-04-30T15:16:38.489053+00:00",
+      "path": "site/data/FINAL-PRODUCT/corps_full.json",
+      "probe": {
+        "json_type": "object",
+        "lines": 888,
+        "non_empty_lines": 888,
+        "top_level_keys": [
+          "gram_comb_totals",
+          "house_of_corps",
+          "recovery",
+          "recup",
+          "systemd",
+          "topology",
+          "wanted_comb"
+        ]
+      },
+      "sha256_prefix": "b369c2dda95063f1",
+      "size_bytes": 20955
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 302.976,
+        "read_bytes": 1984
+      },
+      "kind": "config-json",
+      "layer": "config",
+      "mtime": "2026-04-30T15:16:38.489053+00:00",
+      "path": "site/data/FINAL-PRODUCT/gram.json",
+      "probe": {
+        "json_type": "object",
+        "lines": 76,
+        "non_empty_lines": 76,
+        "top_level_keys": [
+          "origin",
+          "timestamp",
+          "top_scored",
+          "totals"
+        ]
+      },
+      "sha256_prefix": "68a869fb58f4b332",
+      "size_bytes": 1984
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 87.582,
+        "read_bytes": 612
+      },
+      "kind": "config-json",
+      "layer": "config",
+      "mtime": "2026-04-30T15:16:38.489053+00:00",
+      "path": "site/data/FINAL-PRODUCT/palace.json",
+      "probe": {
+        "json_type": "object",
+        "lines": 34,
+        "non_empty_lines": 34,
+        "top_level_keys": [
+          "name_factory",
+          "origin",
+          "palace_of_web",
+          "sections",
+          "timestamp",
+          "total_data_points"
+        ]
+      },
+      "sha256_prefix": "f3f01933d2f33b41",
+      "size_bytes": 612
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 768.964,
+        "read_bytes": 5183
+      },
+      "kind": "python-code",
+      "layer": "code",
+      "mtime": "2026-04-30T12:44:41.926997+00:00",
+      "path": "site/data/collect_netns.py",
+      "probe": {
+        "lines": 171,
+        "non_empty_lines": 137
+      },
+      "sha256_prefix": "ac2ba67416f86f54",
+      "size_bytes": 5183
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 682.191,
+        "read_bytes": 4508
+      },
+      "kind": "python-code",
+      "layer": "code",
+      "mtime": "2026-04-30T12:44:41.926997+00:00",
+      "path": "site/data/collect_systemd.py",
+      "probe": {
+        "lines": 116,
+        "non_empty_lines": 96
+      },
+      "sha256_prefix": "fef6db4d95714c6a",
+      "size_bytes": 4508
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.008,
+        "mb_per_sec": 2646.216,
+        "read_bytes": 20955
+      },
+      "kind": "config-json",
+      "layer": "config",
+      "mtime": "2026-04-30T15:16:38.485053+00:00",
+      "path": "site/data/corps.json",
+      "probe": {
+        "json_type": "object",
+        "lines": 888,
+        "non_empty_lines": 888,
+        "top_level_keys": [
+          "gram_comb_totals",
+          "house_of_corps",
+          "recovery",
+          "recup",
+          "systemd",
+          "topology",
+          "wanted_comb"
+        ]
+      },
+      "sha256_prefix": "b369c2dda95063f1",
+      "size_bytes": 20955
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.008,
+        "mb_per_sec": 1836.271,
+        "read_bytes": 15708
+      },
+      "kind": "python-code",
+      "layer": "code",
+      "mtime": "2026-04-30T12:44:41.926997+00:00",
+      "path": "site/data/name_factory.py",
+      "probe": {
+        "lines": 374,
+        "non_empty_lines": 321
+      },
+      "sha256_prefix": "1b0a9877fac5741e",
+      "size_bytes": 15708
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 197.629,
+        "read_bytes": 1462
+      },
+      "kind": "text-document",
+      "layer": "document",
+      "mtime": "2026-04-30T15:16:38.485053+00:00",
+      "path": "site/data/sources.list",
+      "probe": {
+        "lines": 40,
+        "non_empty_lines": 33
+      },
+      "sha256_prefix": "bbe3b6a01f037aa6",
+      "size_bytes": 1462
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 1222.649,
+        "read_bytes": 9564
+      },
+      "kind": "config-json",
+      "layer": "config",
+      "mtime": "2026-04-30T12:44:41.926997+00:00",
+      "path": "site/data/systemd_tree.json",
+      "probe": {
+        "json_type": "object",
+        "lines": 455,
+        "non_empty_lines": 455,
+        "top_level_keys": [
+          "default_target",
+          "summary",
+          "targets",
+          "timestamp",
+          "tree_raw",
+          "units"
+        ]
+      },
+      "sha256_prefix": "55a8af1ba505250f",
+      "size_bytes": 9564
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.008,
+        "mb_per_sec": 134.985,
+        "read_bytes": 1199
+      },
+      "kind": "config-json",
+      "layer": "config",
+      "mtime": "2026-04-30T12:44:41.926997+00:00",
+      "path": "site/data/topology.json",
+      "probe": {
+        "json_type": "object",
+        "lines": 66,
+        "non_empty_lines": 66,
+        "top_level_keys": [
+          "docker_networks",
+          "hostname",
+          "interfaces",
+          "namespaces",
+          "routes",
+          "timestamp",
+          "veth_peers"
+        ]
+      },
+      "sha256_prefix": "8005b7b0fc92b341",
+      "size_bytes": 1199
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.009,
+        "mb_per_sec": 104.091,
+        "read_bytes": 1025
+      },
+      "kind": "binary-or-other",
+      "layer": "other",
+      "mtime": "2026-04-30T12:44:41.926997+00:00",
+      "path": "site/data/topology.xml",
+      "probe": {},
+      "sha256_prefix": "d32a3f8e5064b91a",
+      "size_bytes": 1025
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 697.984,
+        "read_bytes": 5435
+      },
+      "kind": "php-code",
+      "layer": "code",
+      "mtime": "2026-04-30T15:40:01.244809+00:00",
+      "path": "site/index.php",
+      "probe": {
+        "lines": 162,
+        "non_empty_lines": 147
+      },
+      "sha256_prefix": "8aabc95ac342d058",
+      "size_bytes": 5435
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.01,
+        "mb_per_sec": 305.642,
+        "read_bytes": 3277
+      },
+      "kind": "binary-or-other",
+      "layer": "other",
+      "mtime": "2026-04-30T15:39:52.440867+00:00",
+      "path": "site/layers.html",
+      "probe": {},
+      "sha256_prefix": "8a97f93f5a666af0",
+      "size_bytes": 3277
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 860.793,
+        "read_bytes": 6515
+      },
+      "kind": "php-code",
+      "layer": "code",
+      "mtime": "2026-04-30T12:44:41.926997+00:00",
+      "path": "site/navigate.php",
+      "probe": {
+        "lines": 186,
+        "non_empty_lines": 168
+      },
+      "sha256_prefix": "27645b3127ab1e54",
+      "size_bytes": 6515
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 1372.699,
+        "read_bytes": 10234
+      },
+      "kind": "php-code",
+      "layer": "code",
+      "mtime": "2026-04-30T12:44:41.926997+00:00",
+      "path": "site/palace.php",
+      "probe": {
+        "lines": 246,
+        "non_empty_lines": 228
+      },
+      "sha256_prefix": "1d920c2e0cc082eb",
+      "size_bytes": 10234
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.008,
+        "mb_per_sec": 1731.141,
+        "read_bytes": 15228
+      },
+      "kind": "php-code",
+      "layer": "code",
+      "mtime": "2026-04-30T12:44:41.926997+00:00",
+      "path": "site/playbook.php",
+      "probe": {
+        "lines": 440,
+        "non_empty_lines": 414
+      },
+      "sha256_prefix": "dead4a84f01d847b",
+      "size_bytes": 15228
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 1173.712,
+        "read_bytes": 8956
+      },
+      "kind": "php-code",
+      "layer": "code",
+      "mtime": "2026-04-30T12:44:41.926997+00:00",
+      "path": "site/recover.php",
+      "probe": {
+        "lines": 219,
+        "non_empty_lines": 199
+      },
+      "sha256_prefix": "18855d3583f570d4",
+      "size_bytes": 8956
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 1464.866,
+        "read_bytes": 10637
+      },
+      "kind": "php-code",
+      "layer": "code",
+      "mtime": "2026-04-30T15:15:01.776538+00:00",
+      "path": "site/recup.php",
+      "probe": {
+        "lines": 266,
+        "non_empty_lines": 249
+      },
+      "sha256_prefix": "e214f670e5552dba",
+      "size_bytes": 10637
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.011,
+        "mb_per_sec": 78.282,
+        "read_bytes": 920
+      },
+      "kind": "binary-or-other",
+      "layer": "other",
+      "mtime": "2026-04-30T12:44:41.926997+00:00",
+      "path": "site/welcome.html",
+      "probe": {},
+      "sha256_prefix": "8eaceb6a35f6f992",
+      "size_bytes": 920
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 424.358,
+        "read_bytes": 3008
+      },
+      "kind": "python-code",
+      "layer": "code",
+      "mtime": "2026-04-30T12:44:41.926997+00:00",
+      "path": "test_check.py",
+      "probe": {
+        "lines": 105,
+        "non_empty_lines": 78
+      },
+      "sha256_prefix": "778536d05102b9f7",
+      "size_bytes": 3008
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 244.3,
+        "read_bytes": 1620
+      },
+      "kind": "python-code",
+      "layer": "code",
+      "mtime": "2026-04-30T15:33:04.412880+00:00",
+      "path": "tests/test_cli_entrypoints.py",
+      "probe": {
+        "lines": 45,
+        "non_empty_lines": 34
+      },
+      "sha256_prefix": "3421dfb8bd1f8381",
+      "size_bytes": 1620
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 642.344,
+        "read_bytes": 4341
+      },
+      "kind": "python-code",
+      "layer": "code",
+      "mtime": "2026-04-30T15:39:24.801056+00:00",
+      "path": "tests/test_hum_artifact_layers.py",
+      "probe": {
+        "lines": 94,
+        "non_empty_lines": 80
+      },
+      "sha256_prefix": "7d140742ba1a8331",
+      "size_bytes": 4341
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 447.912,
+        "read_bytes": 2857
+      },
+      "kind": "python-code",
+      "layer": "code",
+      "mtime": "2026-04-30T15:39:36.824973+00:00",
+      "path": "tests/test_hum_cache_assembly.py",
+      "probe": {
+        "lines": 76,
+        "non_empty_lines": 66
+      },
+      "sha256_prefix": "5c29fefe2eaf9646",
+      "size_bytes": 2857
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 510.866,
+        "read_bytes": 3513
+      },
+      "kind": "python-code",
+      "layer": "code",
+      "mtime": "2026-04-30T15:11:53.635366+00:00",
+      "path": "tests/test_hum_cloud_pack.py",
+      "probe": {
+        "lines": 98,
+        "non_empty_lines": 78
+      },
+      "sha256_prefix": "2359d9d15925abba",
+      "size_bytes": 3513
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 888.864,
+        "read_bytes": 6268
+      },
+      "kind": "python-code",
+      "layer": "code",
+      "mtime": "2026-04-30T15:01:49.608745+00:00",
+      "path": "tests/test_sdv.py",
+      "probe": {
+        "lines": 144,
+        "non_empty_lines": 118
+      },
+      "sha256_prefix": "f0f41799f454445b",
+      "size_bytes": 6268
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 119.356,
+        "read_bytes": 809
+      },
+      "kind": "python-code",
+      "layer": "code",
+      "mtime": "2026-04-30T15:17:18.105250+00:00",
+      "path": "tests/test_site_data.py",
+      "probe": {
+        "lines": 25,
+        "non_empty_lines": 17
+      },
+      "sha256_prefix": "7d6739effdbb436b",
+      "size_bytes": 809
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.009,
+        "mb_per_sec": 80.701,
+        "read_bytes": 734
+      },
+      "kind": "markdown-document",
+      "layer": "document",
+      "mtime": "2026-04-30T12:44:41.926997+00:00",
+      "path": "websetup/INDEX.md",
+      "probe": {
+        "lines": 15,
+        "non_empty_lines": 12
+      },
+      "sha256_prefix": "04d3c60ecdb36596",
+      "size_bytes": 734
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 617.612,
+        "read_bytes": 4339
+      },
+      "kind": "markdown-document",
+      "layer": "document",
+      "mtime": "2026-04-30T12:44:41.926997+00:00",
+      "path": "websetup/README.md",
+      "probe": {
+        "lines": 125,
+        "non_empty_lines": 102
+      },
+      "sha256_prefix": "a133f46c9b4268ad",
+      "size_bytes": 4339
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 267.813,
+        "read_bytes": 1886
+      },
+      "kind": "shell-code",
+      "layer": "code",
+      "mtime": "2026-04-30T12:44:41.926997+00:00",
+      "path": "websetup/scripts/kali-headless-bootstrap.sh",
+      "probe": {
+        "lines": 93,
+        "non_empty_lines": 82
+      },
+      "sha256_prefix": "adf1d507eeac4022",
+      "size_bytes": 1886
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 7.239,
+        "read_bytes": 49
+      },
+      "kind": "python-code",
+      "layer": "code",
+      "mtime": "2026-04-30T12:44:41.926997+00:00",
+      "path": "websetup/sdv/__init__.py",
+      "probe": {
+        "lines": 1,
+        "non_empty_lines": 1
+      },
+      "sha256_prefix": "c6fd1057830a9932",
+      "size_bytes": 49
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 249.589,
+        "read_bytes": 1687
+      },
+      "kind": "python-code",
+      "layer": "code",
+      "mtime": "2026-04-30T15:33:32.668496+00:00",
+      "path": "websetup/sdv/__main__.py",
+      "probe": {
+        "lines": 59,
+        "non_empty_lines": 44
+      },
+      "sha256_prefix": "718b23ea63abe981",
+      "size_bytes": 1687
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 216.294,
+        "read_bytes": 1420
+      },
+      "kind": "python-code",
+      "layer": "code",
+      "mtime": "2026-04-30T12:44:41.926997+00:00",
+      "path": "websetup/sdv/docker_wait.py",
+      "probe": {
+        "lines": 46,
+        "non_empty_lines": 36
+      },
+      "sha256_prefix": "aba7186cf013a432",
+      "size_bytes": 1420
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.005,
+        "mb_per_sec": 317.95,
+        "read_bytes": 1811
+      },
+      "kind": "python-code",
+      "layer": "code",
+      "mtime": "2026-04-30T14:59:23.049937+00:00",
+      "path": "websetup/sdv/macsec_apply.py",
+      "probe": {
+        "lines": 60,
+        "non_empty_lines": 52
+      },
+      "sha256_prefix": "6817fe2d0a83d9c5",
+      "size_bytes": 1811
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 165.045,
+        "read_bytes": 1141
+      },
+      "kind": "config-json",
+      "layer": "config",
+      "mtime": "2026-04-30T12:44:41.926997+00:00",
+      "path": "websetup/sdv/manifest.json",
+      "probe": {
+        "json_type": "object",
+        "lines": 50,
+        "non_empty_lines": 50,
+        "top_level_keys": [
+          "description",
+          "docker",
+          "macsec",
+          "network",
+          "sdv_version"
+        ]
+      },
+      "sha256_prefix": "e80fd93e4e3c1986",
+      "size_bytes": 1141
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 364.912,
+        "read_bytes": 2636
+      },
+      "kind": "python-code",
+      "layer": "code",
+      "mtime": "2026-04-30T14:59:16.077785+00:00",
+      "path": "websetup/sdv/pool.py",
+      "probe": {
+        "lines": 71,
+        "non_empty_lines": 58
+      },
+      "sha256_prefix": "65ceaf24586d3f5d",
+      "size_bytes": 2636
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 224.385,
+        "read_bytes": 1427
+      },
+      "kind": "python-code",
+      "layer": "code",
+      "mtime": "2026-04-30T14:59:30.238092+00:00",
+      "path": "websetup/sdv/runner.py",
+      "probe": {
+        "lines": 42,
+        "non_empty_lines": 32
+      },
+      "sha256_prefix": "4628cd657d22c64a",
+      "size_bytes": 1427
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.009,
+        "mb_per_sec": 243.844,
+        "read_bytes": 2180
+      },
+      "kind": "config-json",
+      "layer": "config",
+      "mtime": "2026-04-30T14:57:27.255160+00:00",
+      "path": "websetup/virtual/bindings.json",
+      "probe": {
+        "json_type": "object",
+        "lines": 67,
+        "non_empty_lines": 67,
+        "top_level_keys": [
+          "$schema",
+          "bindings",
+          "description",
+          "version"
+        ]
+      },
+      "sha256_prefix": "bab722cb15c79942",
+      "size_bytes": 2180
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 164.552,
+        "read_bytes": 1042
+      },
+      "kind": "config-json",
+      "layer": "config",
+      "mtime": "2026-04-30T12:44:41.926997+00:00",
+      "path": "websetup/virtual/catalog.json",
+      "probe": {
+        "json_type": "object",
+        "lines": 47,
+        "non_empty_lines": 47,
+        "top_level_keys": [
+          "artifacts",
+          "description",
+          "phase",
+          "version"
+        ]
+      },
+      "sha256_prefix": "8c544c6597c7f484",
+      "size_bytes": 1042
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.008,
+        "mb_per_sec": 102.249,
+        "read_bytes": 838
+      },
+      "kind": "config-json",
+      "layer": "config",
+      "mtime": "2026-04-30T14:54:24.045415+00:00",
+      "path": "websetup/virtual/features.json",
+      "probe": {
+        "json_type": "object",
+        "lines": 38,
+        "non_empty_lines": 38,
+        "top_level_keys": [
+          "$schema",
+          "description",
+          "features",
+          "phase",
+          "version"
+        ]
+      },
+      "sha256_prefix": "d2e6a80edf2c3e4f",
+      "size_bytes": 838
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.007,
+        "mb_per_sec": 323.772,
+        "read_bytes": 2349
+      },
+      "kind": "binary-or-other",
+      "layer": "other",
+      "mtime": "2026-04-30T12:44:41.926997+00:00",
+      "path": "websetup/virtual/inventory.csv",
+      "probe": {},
+      "sha256_prefix": "0a9f5165f62b6c44",
+      "size_bytes": 2349
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 1316.019,
+        "read_bytes": 8822
+      },
+      "kind": "config-json",
+      "layer": "config",
+      "mtime": "2026-04-30T14:54:48.994313+00:00",
+      "path": "websetup/virtual/network-matrix.json",
+      "probe": {
+        "json_type": "object",
+        "lines": 353,
+        "non_empty_lines": 353,
+        "top_level_keys": [
+          "$schema",
+          "description",
+          "edges",
+          "foreign_assertions",
+          "generated_at",
+          "network_id",
+          "nodes",
+          "version"
+        ]
+      },
+      "sha256_prefix": "204102346576fcea",
+      "size_bytes": 8822
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 129.069,
+        "read_bytes": 828
+      },
+      "kind": "config-json",
+      "layer": "config",
+      "mtime": "2026-04-30T12:44:41.926997+00:00",
+      "path": "websetup/virtual/schemas/bindings.schema.json",
+      "probe": {
+        "json_type": "object",
+        "lines": 37,
+        "non_empty_lines": 37,
+        "top_level_keys": [
+          "$id",
+          "$schema",
+          "additionalProperties",
+          "properties",
+          "required",
+          "title",
+          "type"
+        ]
+      },
+      "sha256_prefix": "2c8e3bd5deb6d46b",
+      "size_bytes": 828
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 110.033,
+        "read_bytes": 685
+      },
+      "kind": "config-json",
+      "layer": "config",
+      "mtime": "2026-04-30T12:44:41.926997+00:00",
+      "path": "websetup/virtual/schemas/features.schema.json",
+      "probe": {
+        "json_type": "object",
+        "lines": 24,
+        "non_empty_lines": 24,
+        "top_level_keys": [
+          "$id",
+          "$schema",
+          "additionalProperties",
+          "properties",
+          "required",
+          "title",
+          "type"
+        ]
+      },
+      "sha256_prefix": "d8dedc28dd53e89d",
+      "size_bytes": 685
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 391.304,
+        "read_bytes": 2475
+      },
+      "kind": "config-json",
+      "layer": "config",
+      "mtime": "2026-04-30T12:44:41.926997+00:00",
+      "path": "websetup/virtual/schemas/network-matrix.schema.json",
+      "probe": {
+        "json_type": "object",
+        "lines": 82,
+        "non_empty_lines": 82,
+        "top_level_keys": [
+          "$defs",
+          "$id",
+          "$schema",
+          "additionalProperties",
+          "properties",
+          "required",
+          "title",
+          "type"
+        ]
+      },
+      "sha256_prefix": "2f28230d94bd0937",
+      "size_bytes": 2475
+    },
+    {
+      "benchmark": {
+        "elapsed_ms": 0.006,
+        "mb_per_sec": 401.133,
+        "read_bytes": 2652
+      },
+      "kind": "config-yaml",
+      "layer": "config",
+      "mtime": "2026-04-30T12:44:41.926997+00:00",
+      "path": "websetup/virtual/virtual-setup.yml",
+      "probe": {
+        "lines": 112,
+        "non_empty_lines": 105
+      },
+      "sha256_prefix": "735a2a245e2035cc",
+      "size_bytes": 2652
+    }
+  ],
+  "benchmark": {
+    "enabled": true,
+    "sampled_bytes": 912793,
+    "sampled_files": 113
+  },
+  "copy_layer": {
+    "archive": {
+      "archive": "dist/hum-copy-layer-accompaniment.tar.gz",
+      "sha256": "f2acf8272205e6e358724d18deb7e43a7ffa4617b003b02ee854fdb01da0f3f6",
+      "size_bytes": 71078
+    },
+    "copied_count": 36,
+    "copied_size_bytes": 242096,
+    "copy_layer_dir": "dist/hum-copy-layer",
+    "files": [
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": ".devcontainer/import-environment.sh",
+        "sha256_prefix": "c94ee52c2d174803",
+        "size_bytes": 2863
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": ".devcontainer/net-driver-recover-auto.sh",
+        "sha256_prefix": "b4be09805b405ec2",
+        "size_bytes": 10954
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": ".devcontainer/post-create.sh",
+        "sha256_prefix": "e565e6b081951694",
+        "size_bytes": 1900
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": ".devcontainer/post-start.sh",
+        "sha256_prefix": "1ec1f60fdce48345",
+        "size_bytes": 921
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": ".devcontainer/recup-setup.sh",
+        "sha256_prefix": "73d958befd3c476d",
+        "size_bytes": 6782
+      },
+      {
+        "kind": "markdown-document",
+        "layer": "document",
+        "path": "AGENTS.md",
+        "sha256_prefix": "ca06c3c0afac898d",
+        "size_bytes": 2689
+      },
+      {
+        "kind": "markdown-document",
+        "layer": "document",
+        "path": "README.md",
+        "sha256_prefix": "190d982e5c5c5f25",
+        "size_bytes": 29813
+      },
+      {
+        "kind": "markdown-document",
+        "layer": "document",
+        "path": "iso-build/README.md",
+        "sha256_prefix": "68b6314ff9f2f9a0",
+        "size_bytes": 1081
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": "iso-build/build.sh",
+        "sha256_prefix": "4d61e561996ccba2",
+        "size_bytes": 1950
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": "kali-iso-server/hostile-env-defense/apt-persistence.sh",
+        "sha256_prefix": "c5b6f0ba4d32e87f",
+        "size_bytes": 5061
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": "kali-iso-server/hostile-env-defense/deploy-all-defenses.sh",
+        "sha256_prefix": "9a49771d86cace7b",
+        "size_bytes": 4295
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": "kali-iso-server/hostile-env-defense/etc-structure-protect.sh",
+        "sha256_prefix": "18041df882833bc6",
+        "size_bytes": 6329
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": "kali-iso-server/hostile-env-defense/iso-verify-sanitize.sh",
+        "sha256_prefix": "4257d31e329469ba",
+        "size_bytes": 6951
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": "kali-iso-server/hostile-env-defense/tool-mirror-defense.sh",
+        "sha256_prefix": "a42a5efb13e3f600",
+        "size_bytes": 12431
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": "kali-iso-server/hostile-env-defense/x11-isolation.sh",
+        "sha256_prefix": "74bac2235593db14",
+        "size_bytes": 5026
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": "scripts/backup_project_bundle.sh",
+        "sha256_prefix": "ff2dd2444690e3d1",
+        "size_bytes": 1391
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": "scripts/chromebook-lab-download-site.sh",
+        "sha256_prefix": "f60c669f991c200f",
+        "size_bytes": 4889
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": "scripts/host-readiness-check.sh",
+        "sha256_prefix": "b1a0bb61ea3d05f3",
+        "size_bytes": 5911
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": "scripts/hp-slimline-recovery/restore-filesystems.sh",
+        "sha256_prefix": "56f324af57009ccf",
+        "size_bytes": 10815
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": "scripts/hp-slimline-recovery/scan-system.sh",
+        "sha256_prefix": "feda080e8c2c0afb",
+        "size_bytes": 4312
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": "scripts/hum-build-iso.sh",
+        "sha256_prefix": "1926c218e4114c4b",
+        "size_bytes": 5780
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": "scripts/hum-dev-netns.sh",
+        "sha256_prefix": "8aeafae4fef795d4",
+        "size_bytes": 24093
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": "scripts/hum-host-static-ip.sh",
+        "sha256_prefix": "c0dc88b0e8056fc3",
+        "size_bytes": 5317
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": "scripts/hum-snap-bypass.sh",
+        "sha256_prefix": "9079f045698d8938",
+        "size_bytes": 9496
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": "scripts/hum-snap-server.sh",
+        "sha256_prefix": "296b025c3a410fcb",
+        "size_bytes": 13868
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": "scripts/hum-veth-chain.sh",
+        "sha256_prefix": "39603a525dbbf903",
+        "size_bytes": 13327
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": "scripts/installer-agent/fix-cdrom-corruption.sh",
+        "sha256_prefix": "899f0bdebcce358e",
+        "size_bytes": 2356
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": "scripts/installer-agent/setup-penguin-proxy.sh",
+        "sha256_prefix": "1dc55575a6c6de5e",
+        "size_bytes": 6734
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": "scripts/installer-agent/ssh-installer-agent.sh",
+        "sha256_prefix": "6e6867fe50220570",
+        "size_bytes": 11880
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": "scripts/installer-agent/ssh-key-manager.sh",
+        "sha256_prefix": "fd1b42f9e969cf25",
+        "size_bytes": 5771
+      },
+      {
+        "kind": "text-document",
+        "layer": "document",
+        "path": "scripts/lab-www.txt",
+        "sha256_prefix": "1164bfcb1d782367",
+        "size_bytes": 3313
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": "scripts/virtual-drive-access.sh",
+        "sha256_prefix": "64109e0f684cc0ba",
+        "size_bytes": 5376
+      },
+      {
+        "kind": "text-document",
+        "layer": "document",
+        "path": "site/data/sources.list",
+        "sha256_prefix": "bbe3b6a01f037aa6",
+        "size_bytes": 1462
+      },
+      {
+        "kind": "markdown-document",
+        "layer": "document",
+        "path": "websetup/INDEX.md",
+        "sha256_prefix": "04d3c60ecdb36596",
+        "size_bytes": 734
+      },
+      {
+        "kind": "markdown-document",
+        "layer": "document",
+        "path": "websetup/README.md",
+        "sha256_prefix": "a133f46c9b4268ad",
+        "size_bytes": 4339
+      },
+      {
+        "kind": "shell-code",
+        "layer": "code",
+        "path": "websetup/scripts/kali-headless-bootstrap.sh",
+        "sha256_prefix": "adf1d507eeac4022",
+        "size_bytes": 1886
+      }
+    ],
+    "generated_at": "2026-04-30T15:41:19.031985+00:00",
+    "included_kinds": [
+      "bitmap-image",
+      "markdown-document",
+      "shell-code",
+      "svg-vector",
+      "text-document"
+    ],
+    "root": "/workspace"
+  },
+  "generated_at": "2026-04-30T15:41:19.025970+00:00",
+  "layers": {
+    "code": {
+      "count": 68,
+      "size_bytes": 473865
+    },
+    "config": {
+      "count": 19,
+      "size_bytes": 85517
+    },
+    "document": {
+      "count": 7,
+      "size_bytes": 43431
+    },
+    "iso": {
+      "count": 1,
+      "size_bytes": 1048576
+    },
+    "other": {
+      "count": 18,
+      "size_bytes": 47836
+    }
+  },
+  "root": "/workspace",
+  "summary": {
+    "artifact_count": 113,
+    "total_size_bytes": 1699225
+  }
+}

@@ -22,6 +22,17 @@
     },
     "require_docker0": {
       "enabled": true
+    },
+    "lvm_location_services": {
+      "enabled": true,
+      "matrix_node": "location-services",
+      "result_mode": "interactive"
+    },
+    "lvm_encrypted_cloud_services": {
+      "enabled": true,
+      "matrix_node": "encrypted-cloud-services",
+      "encryption_required": true,
+      "action_mode": "automatic"
     }
   }
 }

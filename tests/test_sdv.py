@@ -75,6 +75,39 @@ class TestVirtualBindingsConsistency(unittest.TestCase):
 
         joined = json.dumps(payload, sort_keys=True)
         self.assertIn("allocatable_range", joined)
+        self.assertIn("lvm-cloud-services-to-network-matrix", joined)
+
+
+class TestVirtualLvmCloudMetadata(unittest.TestCase):
+    def test_matrix_models_location_and_encrypted_cloud_services(self) -> None:
+        matrix_path = Path(__file__).resolve().parent.parent / "websetup" / "virtual" / "network-matrix.json"
+        payload = json.loads(matrix_path.read_text(encoding="utf-8"))
+        nodes = {node["id"]: node for node in payload["nodes"]}
+
+        self.assertIn("location-services", nodes)
+        self.assertIn("encrypted-cloud-services", nodes)
+        self.assertIn("lvm-secure-cloud", nodes)
+
+        lvm_metadata = nodes["lvm-secure-cloud"]["metadata"]
+        self.assertEqual(lvm_metadata["location_ref"], "location-services")
+        self.assertEqual(lvm_metadata["cloud_ref"], "encrypted-cloud-services")
+        self.assertTrue(lvm_metadata["automatic_actions"])
+        self.assertTrue(lvm_metadata["interactive_results"])
+
+        location_metadata = nodes["location-services"]["metadata"]
+        self.assertTrue(location_metadata["interactive_results"])
+
+        cloud_metadata = nodes["encrypted-cloud-services"]["metadata"]
+        self.assertEqual(cloud_metadata["encryption"], "client-managed")
+        self.assertEqual(cloud_metadata["secret_material"], "external-only")
+        self.assertTrue(cloud_metadata["automatic_actions"])
+
+        edges = {(edge["from"], edge["to"], edge["type"]) for edge in payload["edges"]}
+        self.assertIn(("location-services", "lvm-secure-cloud", "metadata_feed"), edges)
+        self.assertIn(
+            ("encrypted-cloud-services", "lvm-secure-cloud", "encrypted_storage_backend"),
+            edges,
+        )
 
 
 class TestVirtualSetupValidator(unittest.TestCase):

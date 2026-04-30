@@ -148,6 +148,66 @@ th { color: var(--text-dim); font-weight: 600; font-size: .75rem; text-transform
   white-space: pre-wrap;
 }
 
+/* --- Artifact/cache layers --- */
+.layer-hero p {
+  color: var(--text-dim);
+  font-size: .9rem;
+}
+.layer-controls {
+  display: grid;
+  grid-template-columns: minmax(160px, 220px) 1fr auto;
+  gap: .75rem;
+  align-items: end;
+  margin-bottom: 1.5rem;
+}
+.layer-controls label {
+  display: block;
+  color: var(--text-dim);
+  font-family: var(--mono);
+  font-size: .72rem;
+  text-transform: uppercase;
+}
+.layer-controls select,
+.layer-controls input {
+  width: 100%;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: .45rem .55rem;
+}
+.layer-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: .75rem;
+  margin-bottom: 1.5rem;
+}
+.layer-stat {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: .8rem;
+}
+.layer-stat .value {
+  color: var(--accent-hi);
+  font-family: var(--mono);
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+.layer-stat .label {
+  color: var(--text-dim);
+  font-size: .72rem;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+.cache-plot {
+  width: 100%;
+  min-height: 260px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
 /* --- Animations --- */
 @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
 @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .5; } }

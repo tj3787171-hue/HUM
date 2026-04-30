@@ -20,6 +20,8 @@ def check(uri: str) -> tuple[int | None, str]:
         return exc.code, f"{exc.code} {exc.reason}"
     except urllib.error.URLError as exc:
         return None, f"Error: {exc.reason}"
+    except OSError as exc:
+        return None, f"Error: {exc}"
     except ValueError as exc:
         return None, f"Invalid URI: {exc}"
 

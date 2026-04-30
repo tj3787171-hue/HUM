@@ -6,6 +6,7 @@
 __pycache__/
 *.pyc
 data/
+diagnostics/
 iso-build/.build/
 
 # Built artifacts

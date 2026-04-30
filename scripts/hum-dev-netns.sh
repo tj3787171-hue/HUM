@@ -36,6 +36,7 @@ Usage:
   sudo bash scripts/hum-dev-netns.sh status --json
   sudo bash scripts/hum-dev-netns.sh trace
   sudo bash scripts/hum-dev-netns.sh plot
+  sudo bash scripts/hum-dev-netns.sh collect
   bash scripts/hum-dev-netns.sh guide
 
 Optional environment overrides:
@@ -486,6 +487,186 @@ print(
 PY
 }
 
+collect() {
+  python3 - "$PROXY_NS" "$PROXY_HOST_IF" "$PROXY_NS_IF" "$PROXY_HOST_CIDR" "$PROXY_NS_CIDR" \
+    "$PROXY_HOST_LL6" "$PROXY_NS_LL6" "$PEER_NS" "$PROXY_PEER_IF" "$PEER_NS_IF" \
+    "$PROXY_PEER_CIDR" "$PEER_NS_CIDR" "$PROXY_PEER_LL6" "$PEER_NS_LL6" \
+    "$DUMMY_IF" "$DUMMY_CIDR" "$ENABLE_PEER_CHAIN" <<'PY'
+import datetime as dt
+import json
+import re
+import subprocess
+import sys
+
+(
+    proxy_ns,
+    proxy_host_if,
+    proxy_ns_if,
+    proxy_host_cidr,
+    proxy_ns_cidr,
+    proxy_host_ll6,
+    proxy_ns_ll6,
+    peer_ns,
+    proxy_peer_if,
+    peer_ns_if,
+    proxy_peer_cidr,
+    peer_ns_cidr,
+    proxy_peer_ll6,
+    peer_ns_ll6,
+    dummy_if,
+    dummy_cidr,
+    enable_peer_chain,
+) = sys.argv[1:]
+
+
+def run(command: list[str]) -> str:
+    try:
+        return subprocess.run(
+            command,
+            check=False,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            text=True,
+        ).stdout
+    except FileNotFoundError:
+        return ""
+
+
+def netns_exists(namespace: str) -> bool:
+    return any(line.split()[0] == namespace for line in run(["ip", "netns", "list"]).splitlines() if line.strip())
+
+
+def link_output(namespace: str, interface: str) -> str:
+    if namespace == "root":
+        return run(["ip", "-o", "link", "show", "dev", interface])
+    return run(["ip", "-n", namespace, "-o", "link", "show", "dev", interface])
+
+
+def link_brief(namespace: str, interface: str) -> str:
+    if namespace == "root":
+        return run(["ip", "-br", "link", "show", "dev", interface])
+    return run(["ip", "-n", namespace, "-br", "link", "show", "dev", interface])
+
+
+def link_up(namespace: str, interface: str) -> bool:
+    return "UP" in link_brief(namespace, interface).split()
+
+
+def mac(namespace: str, interface: str) -> str:
+    output = link_output(namespace, interface)
+    match = re.search(r"link/ether\s+([0-9a-f:]{17})", output, re.IGNORECASE)
+    return match.group(1).lower() if match else ""
+
+
+def smac64_from_mac(value: str) -> str:
+    if not re.fullmatch(r"(?:[0-9a-f]{2}:){5}[0-9a-f]{2}", value or ""):
+        return "unknown"
+    parts = value.split(":")
+    parts[0] = f"{(int(parts[0], 16) ^ 2):02x}"
+    return f"{parts[0]}{parts[1]}{parts[2]}fffe{parts[3]}{parts[4]}{parts[5]}"
+
+
+def stats(namespace: str, interface: str) -> dict[str, int]:
+    if namespace == "root":
+        output = run(["ip", "-s", "link", "show", "dev", interface])
+    else:
+        output = run(["ip", "-n", namespace, "-s", "link", "show", "dev", interface])
+    rows = [line.split() for line in output.splitlines()]
+    result = {"rx_packets": 0, "tx_packets": 0}
+    for index, row in enumerate(rows):
+        if row and row[0] == "RX:" and index + 1 < len(rows):
+            values = rows[index + 1]
+            if len(values) >= 2:
+                result["rx_packets"] = int(values[1])
+        if row and row[0] == "TX:" and index + 1 < len(rows):
+            values = rows[index + 1]
+            if len(values) >= 2:
+                result["tx_packets"] = int(values[1])
+    return result
+
+
+def route_records(namespace: str) -> list[dict[str, str]]:
+    output = run(["ip", "-n", namespace, "route", "show"])
+    records = []
+    for line in output.splitlines():
+        parts = line.split()
+        if not parts:
+            continue
+        records.append(
+            {
+                "namespace": namespace,
+                "family": "inet",
+                "destination": parts[0],
+                "gateway": parts[parts.index("via") + 1] if "via" in parts and parts.index("via") + 1 < len(parts) else "",
+                "device": parts[parts.index("dev") + 1] if "dev" in parts and parts.index("dev") + 1 < len(parts) else "",
+            }
+        )
+    return records
+
+
+def hop(role: str, namespace: str, interface: str, ipv4_cidr: str, ipv6_cidr: str) -> dict[str, object]:
+    value = mac(namespace, interface)
+    return {
+        "role": role,
+        "namespace": namespace,
+        "interface": interface,
+        "mac": value,
+        "smac64": smac64_from_mac(value),
+        "ipv4_cidr": ipv4_cidr,
+        "ipv6_cidr": ipv6_cidr,
+        "link_up": link_up(namespace, interface),
+    }
+
+
+def truthy(value: str) -> bool:
+    return value.lower() in {"1", "true", "yes", "on"}
+
+
+chain_enabled = truthy(enable_peer_chain)
+proxy_ready = netns_exists(proxy_ns) and link_up("root", proxy_host_if) and link_up(proxy_ns, proxy_ns_if)
+chain_ready = chain_enabled and netns_exists(peer_ns) and link_up(proxy_ns, proxy_peer_if) and link_up(peer_ns, peer_ns_if)
+
+hops = [
+    hop("host", "root", proxy_host_if, proxy_host_cidr, proxy_host_ll6),
+    hop("proxy-main", proxy_ns, proxy_ns_if, proxy_ns_cidr, proxy_ns_ll6),
+]
+counters = [{"role": "host", **stats("root", proxy_host_if)}, {"role": "proxy-main", **stats(proxy_ns, proxy_ns_if)}]
+routes = route_records(proxy_ns)
+
+if chain_enabled:
+    hops.append(hop("proxy-peer", proxy_ns, proxy_peer_if, proxy_peer_cidr, proxy_peer_ll6))
+    hops.append(hop("peer", peer_ns, peer_ns_if, peer_ns_cidr, peer_ns_ll6))
+    counters.append({"role": "proxy-peer", **stats(proxy_ns, proxy_peer_if)})
+    counters.append({"role": "peer", **stats(peer_ns, peer_ns_if)})
+    routes.extend(route_records(peer_ns))
+
+topology = {
+    "chain": (
+        f"root > {proxy_host_if} <-> {proxy_ns_if} > {proxy_peer_if} <-> {peer_ns_if}"
+        if chain_enabled
+        else f"root > {proxy_host_if} <-> {proxy_ns_if}"
+    ),
+    "dummy": f"{dummy_if} ({dummy_cidr})",
+}
+
+print(
+    json.dumps(
+        {
+            "captured_at": dt.datetime.now(dt.timezone.utc).isoformat(),
+            "peer_chain_enabled": chain_enabled,
+            "peer_recv_ready": proxy_ready,
+            "peer_chain_recv_ready": chain_ready,
+            "topology": topology,
+            "hops": hops,
+            "counters": counters,
+            "routes": routes,
+        },
+        separators=(",", ":"),
+    )
+)
+PY
+}
+
 plot() {
   local root_proxy_state="down"
   local proxy_peer_state="down"
@@ -601,6 +782,11 @@ main() {
     plot)
       need_cmd ip
       plot
+      ;;
+    collect)
+      need_cmd ip
+      need_cmd python3
+      collect
       ;;
     guide)
       need_cmd ip
