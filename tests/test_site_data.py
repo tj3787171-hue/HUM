@@ -20,6 +20,15 @@ class TestSiteData(unittest.TestCase):
         recup = (ROOT / "site" / "recup.php").read_text(encoding="utf-8")
         self.assertEqual(recup.count('href="palace.php"'), 1)
 
+    def test_layers_page_has_required_generated_data(self) -> None:
+        site = ROOT / "site"
+        self.assertIn("artifact-layers.json", (site / "layers.html").read_text(encoding="utf-8"))
+        for name in ("artifact-layers.json", "cache-assembly.json"):
+            with self.subTest(name=name):
+                payload = json.loads((site / "data" / name).read_text(encoding="utf-8"))
+                self.assertIsInstance(payload, dict)
+        self.assertTrue((site / "data" / "cache-interval-plot.svg").is_file())
+
 
 if __name__ == "__main__":
     unittest.main()
