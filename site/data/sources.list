@@ -1,0 +1,40 @@
+# sources.list — HUM.org House of Corps data source manifest
+# Generated: 2026-04-30T15:16:38.489882+00:00
+# Origin: hum.org
+
+## Topology Sources
+  topology.json          /workspace/site/data/topology.json
+  topology.xml           /workspace/site/data/topology.xml
+
+## Recup Sources
+  recup_manifest.json    /home/troy/recup_manifest.json
+  recup_summary.json     /home/troy/recup_summary.json
+  TEMPLATES/             /home/troy/TEMPLATES
+  PHOTOS/                /home/troy/PHOTOS
+
+## Wanted Comb Sources
+  mock_logs              (generated: test, mock, comment, drop, camp)
+  bands                  alpha, beta, gamma, delta
+
+## Systemd Service Tree
+  systemd_tree.json      /workspace/site/data/systemd_tree.json
+
+## Net Driver Recovery
+  net-driver-recover-auto.sh  (codex: auto-recover-netdriver)
+  capabilities           interface-detect, rtnetlink-flush, driver-unbind-rebind
+                         modalias-probe, dhcp-lease, dns-reset, loopback-purge
+
+## FINAL-PRODUCT Output
+  corps.json             /workspace/site/data/corps.json
+  sources.list           /workspace/site/data/sources.list
+  FINAL-PRODUCT/         /workspace/site/data/FINAL-PRODUCT
+
+## Totals
+  topology_interfaces            3
+  topology_routes                3
+  recup_files                    13
+  wanted_comb_entries            12
+  templates_categories           5
+  photos_categories              6
+  systemd_units                  71
+  total_data_points              115

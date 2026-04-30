@@ -1,6 +1,25 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+echo "Dev container ready (LAN profile)."
+echo "Network interfaces:"
+ip -brief addr || true
+echo
+echo "Default route:"
+ip route show default || true
+echo
+echo "Listening ports (if any):"
+ss -lntup || true
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+WORKSPACE_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+
+if [[ ! -f "${WORKSPACE_DIR}/.devcontainer/dev.env" && -f "${WORKSPACE_DIR}/.devcontainer/dev.env.example" ]]; then
+  cp "${WORKSPACE_DIR}/.devcontainer/dev.env.example" "${WORKSPACE_DIR}/.devcontainer/dev.env"
+  chmod 600 "${WORKSPACE_DIR}/.devcontainer/dev.env"
+  echo "Created .devcontainer/dev.env from example. Review and edit private values."
+fi
+
+bash "${SCRIPT_DIR}/import-environment.sh" "${WORKSPACE_DIR}/.devcontainer/dev.env"
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 echo "Dev container ready."
@@ -24,10 +43,6 @@ if command -v lsmod >/dev/null 2>&1; then
   fi
 else
   echo "lsmod command is unavailable; cannot inspect kernel modules."
-if lsmod | grep -q "^macsec"; then
-  echo "macsec module is loaded."
-else
-  echo "macsec module is not currently loaded (load on demand if needed)."
 fi
 echo
 echo "Tooling check:"

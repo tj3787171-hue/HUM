@@ -1,6 +1,6 @@
 # HUM
 
-LAN-ready development container configuration for online/local development.
+Private-by-default development container configuration for online/local development.
 
 ## What's included
 
@@ -13,6 +13,12 @@ LAN-ready development container configuration for online/local development.
   - `iptables`, `bridge-utils`, `ethtool`
   - `python3`, `jq`, `yq`, `shellcheck`
 - `.devcontainer/devcontainer.json` with:
+  - secure runtime defaults (`--init`, `no-new-privileges`)
+  - `host.docker.internal` mapping via `host-gateway`
+  - common forwarded ports (`3000`, `5173`, `8000`, `8080`) plus virtual desktop ports (`5901`, `6080`)
+- `.devcontainer/post-create.sh` to print network info when container is created
+- `.devcontainer/post-start.sh` to re-import private env and refresh runtime metadata
+- `.devcontainer/import-environment.sh` to load `.devcontainer/dev.env` and generate runtime JSON metadata
   - host-network runtime flag (`--network=host`) for Linux LAN access
   - privileged runtime for netns/veth/macsec experiments (`NET_ADMIN`, `NET_RAW`)
   - `host.docker.internal` mapping via `host-gateway`
@@ -47,26 +53,61 @@ management of local ISO/IMG files.
 ## LAN notes
 
 - This setup is optimized for Linux with Docker engine networking.
-- `--network=host` allows services in the container to be reachable on the host/LAN stack.
-- On non-Linux hosts, host-network support can be limited by Docker Desktop behavior.
+- It defaults to bridge networking and forwarded ports to reduce accidental exposure.
+- For local-only access, bind services to `127.0.0.1` and use forwarded ports.
+- If you intentionally need host-network mode for LAN testing, use a temporary local override.
+- `.devcontainer/docker-compose.lan.yml` remains available as an explicit host-network profile for local Linux LAN experiments.
 
-## Virtual setup config bundle
+## Re-container + import environment workflow
 
-The repository now includes a `websetup/` tree for virtual phase planning:
+1. Rebuild/reopen the dev container.
+2. On first create, `.devcontainer/dev.env` is generated from `.devcontainer/dev.env.example`.
+3. Edit `.devcontainer/dev.env` with your private values (`chmod 600 .devcontainer/dev.env`).
+4. Restart/reopen the container again to re-import values cleanly.
 
-- `websetup/sdv/manifest.json` and `python3 -m websetup.sdv validate`
-- `websetup/virtual/virtual-setup.yml`
-- `websetup/virtual/inventory.csv`
-- `websetup/virtual/*.json` with schemas
+Environment import outputs:
 
-Start points:
+- shell export file: `~/.config/hum-dev/imported.env`
+- runtime JSON metadata: `~/.config/hum-dev/runtime.json`
+
+This keeps settings in a JSON-readable form for tools/extensions while keeping secrets out of git.
+
+## LVM / encrypted cloud service planning
+
+Before moving backup data, location metadata, or encrypted cloud-service roots
+into LVM-backed storage, generate a non-destructive plan:
 
 ```bash
-PYTHONPATH=/workspaces/<repo> python3 -m websetup.sdv validate
-PYTHONPATH=/workspaces/<repo> python3 -m websetup.sdv apply
+python3 scripts/hum-lvm-cloud-plan.py --output diagnostics/lvm-cloud-plan.json
 ```
 
-## Penguin terminal dev naming (Proxy + Peer Chain + Docker + Dummy)
+The report includes:
+
+- current mounts and large-block-device candidates
+- whether LVM / cryptsetup / rclone tooling is installed
+- likely local cloud roots (`~/Dropbox`, `~/Nextcloud`, etc.)
+- private listener bind settings imported from `HUM_VDESK_BIND` and `HUM_CHROME_REMOTE_DEBUG_ADDR`
+
+Use `--source /path/to/ssd-or-cloud-root` to include the intended backup source
+path in the report. The script does not create physical volumes, encrypt disks,
+mount filesystems, or contact cloud providers; it only records state for review.
+
+The default devcontainer is private-by-default bridge networking with explicit
+forwarded ports. If you need the older LAN host-network profile for local lab
+work, use `.devcontainer/docker-compose.lan.yml` intentionally as a local
+override rather than as the default container path.
+
+## Virtual desktop privacy defaults
+
+- Recommended virtual desktop bind host: `127.0.0.1`
+- Recommended Chrome debug bind host: `127.0.0.1`
+- Suggested forwarded virtual desktop ports:
+  - `5901` (VNC)
+  - `6080` (web desktop/noVNC)
+
+These defaults keep access for you (and trusted local forwarding endpoints), not broad network listeners.
+
+## Penguin terminal dev naming (Proxy + Docker + Dummy)
 
 If you want the laptop Penguin terminal to use stable developer names that parallel
 the original proxy/docker/dummy model, use:
@@ -80,12 +121,51 @@ Requirement: `ip` command from `iproute2` must be installed in the Penguin termi
 This creates/maintains:
 
 - proxy namespace: `hum-proxy-ns`
+- peer namespace: `hum-peer-ns`
+- upstream proxy veth pair: `hum-proxy-host0` (root) <-> `hum-proxy-ns0` (proxy ns)
+- downstream peer chain pair: `hum-proxy-peer0` (proxy ns) <-> `hum-peer-ns0` (peer ns)
+- dummy interface: `hum-dummy0`
+- a status view that reports full chain recv-ready state and `docker0` if present
+
+Useful commands:
+
+```bash
+sudo bash scripts/hum-dev-netns.sh status
+sudo bash scripts/hum-dev-netns.sh status --json
+sudo bash scripts/hum-dev-netns.sh down
+```
+
+- peer namespace: `hum-peer-ns`
+- proxy veth pair: `hum-proxy-host0` (root) <-> `hum-proxy-ns0` (inside proxy netns)
+- peer chain veth pair: `hum-proxy-peer0` (inside proxy netns) <-> `hum-peer-ns0` (inside peer netns)
 - proxy veth pair: `hum-proxy-host0` (root) <-> `hum-proxy-ns0` (inside netns)
-- peer namespace: `hum-peer-ns` (enabled by default)
-- peer veth pair: `hum-proxy-peer0` (inside `hum-proxy-ns`) <-> `hum-peer-ns0` (inside `hum-peer-ns`)
+- peer namespace: `hum-peer-ns`
+- peer veth pair: `hum-peer-host0` (inside `hum-proxy-ns`) <-> `hum-peer-ns0` (inside `hum-peer-ns`)
 - dummy interface: `hum-dummy0`
 - a status view that also reports `docker0` if present
 
+The default topology is now a peer chain:
+
+`root -> hum-proxy-host0 -> hum-proxy-ns -> hum-peer-host0 -> hum-peer-ns`
+- peer namespace: `hum-peer-ns` (enabled by default)
+- peer veth pair: `hum-proxy-peer0` (inside `hum-proxy-ns`) <-> `hum-peer-ns0` (inside `hum-peer-ns`)
+- dummy interface: `hum-dummy0`
+- a status view that also reports `docker0` if present and shows peer-route state
+
+Peer veth chain sketch:
+
+```text
+root namespace
+  hum-proxy-host0 10.200.0.1/30 fe80::1/64
+    || veth peer ||
+netns hum-proxy-ns
+  hum-proxy-ns0   10.200.0.2/30 fe80::2/64
+    -> default IPv4 via 10.200.0.1
+    -> default IPv6 via fe80::1
+
+side links:
+  hum-dummy0
+  docker0 (if present)
 ### Merger plot guidance
 
 For merger plot work, use the default peer veth chain so traces include both legs:
@@ -116,10 +196,19 @@ sudo env HUM_ENABLE_PEER_CHAIN=0 bash scripts/hum-dev-netns.sh up
 Useful commands:
 
 ```bash
+bash scripts/hum-dev-netns.sh guide
 sudo bash scripts/hum-dev-netns.sh status
+sudo bash scripts/hum-dev-netns.sh collect
 sudo bash scripts/hum-dev-netns.sh trace
+sudo bash scripts/hum-dev-netns.sh plot
 sudo bash scripts/hum-dev-netns.sh down
 ```
+
+`guide` prints the current peer veth chain plus the exact `up`, `status`,
+`ping`, `trace`, and `down` commands to verify it end-to-end. When run
+without `sudo`, the netns side can show as `unknown` if `ip -n` introspection
+is denied; use `sudo bash scripts/hum-dev-netns.sh status` for authoritative
+peer state.
 
 All names can be overridden through `HUM_*` environment variables shown by:
 
@@ -127,19 +216,213 @@ All names can be overridden through `HUM_*` environment variables shown by:
 bash scripts/hum-dev-netns.sh --help
 ```
 
-The proxy veth pair now also carries link-local IPv6 for tracing:
+The veth chain now carries link-local IPv6 for tracing:
 
-- host side: `fe80::1/64` (default `HUM_PROXY_HOST_LL6`)
-- netns side: `fe80::2/64` (default `HUM_PROXY_NS_LL6`)
+- root<->proxy segment:
+  - host side: `fe80::1/64` (default `HUM_PROXY_HOST_LL6`)
+  - proxy ns side: `fe80::2/64` (default `HUM_PROXY_NS_LL6`)
+- proxy<->peer segment:
+  - proxy ns side: `fe80::11/64` (default `HUM_PROXY_PEER_LL6`)
+  - peer ns side: `fe80::12/64` (default `HUM_PEER_NS_LL6`)
 
 `trace` reports:
 
+- peer chain recv-ready state
+- downstream nested RX packet counters (host + proxy + peer)
+- SMAC64-style trace IDs derived from interface MAC addresses
+- IPv4/IPv6 route and neighbor snapshots for both proxy + peer namespaces
+
+### Telemetry database
+
+Use `collect` to emit a structured JSON snapshot, then store it in SQLite:
+
+```bash
+sudo bash scripts/hum-dev-netns.sh collect > diagnostics/netns-snapshot.json
+python3 scripts/hum-telemetry-db.py ingest --database data/telemetry.db --file diagnostics/netns-snapshot.json
+python3 scripts/hum-telemetry-db.py query --database data/telemetry.db --last 5
+python3 scripts/hum-telemetry-db.py alerts --database data/telemetry.db
+```
+
+For continuous local collection:
+
+```bash
+sudo python3 scripts/hum-telemetry-db.py watch --database data/telemetry.db --interval 5
+```
+
+The telemetry database records snapshots, hops, counters, routes, and alerts.
+It uses only Python stdlib modules.
+
+## FF0000 merger plot guidance
+
+`/ff0000.html` now includes an on-screen **Merger plot guidance** block so users can
+quickly tune and validate auto-refresh behavior:
+
+- set Lines/Columns first to define density
+- raise Velocity to merge faster
+- use Start auto refresh after changes
+- watch live refresh interval feedback in milliseconds
+`plot` prints a merger-style topology and guidance commands for bringing the
+peer veth chain up or validating traffic when it is already up.
+
+The veth chain carries link-local IPv6 for tracing:
+
+- root side: `fe80::1/64` on `hum-proxy-host0` (default `HUM_PROXY_HOST_LL6`)
+- proxy side (root link): `fe80::2/64` on `hum-proxy-ns0` (default `HUM_PROXY_NS_LL6`)
+- proxy side (peer link): `fe80::11/64` on `hum-proxy-peer0` (default `HUM_PROXY_PEER_LL6`)
+- peer side: `fe80::12/64` on `hum-peer-ns0` (default `HUM_PEER_NS_LL6`)
+
+The peer chain also carries link-local IPv6 for tracing:
+
+- proxy side: `fe80::5/64` (default `HUM_PEER_PROXY_LL6`)
+- peer side: `fe80::6/64` (default `HUM_PEER_NS_LL6`)
+
+Set `HUM_ENABLE_PEER_CHAIN=0` if you want to keep the original single-pair setup.
+
+`trace` reports:
+
+- peer recv-ready state for both root<->proxy and proxy<->peer links
+- downstream nested RX packet counters (host + proxy + peer)
+- SMAC64-style trace IDs derived from interface MAC addresses
+- IPv4/IPv6 route and neighbor snapshots for the proxy + peer namespaces
 - peer recv-ready state
+- peer chain recv-ready state plus the guidance path
+- downstream nested RX packet counters (host + netns)
+- peer chain RX packet counters (proxy + peer)
+- SMAC64-style trace IDs derived from interface MAC addresses
+- IPv4/IPv6 route and neighbor snapshots for the proxy and peer namespaces
 - peer-chain recv-ready state (when enabled)
 - downstream nested RX packet counters (host + netns, or host + proxy-main + proxy-peer + peer when enabled)
 - SMAC64-style trace IDs derived from interface MAC addresses
 - IPv4/IPv6 route and neighbor snapshots for the proxy namespace
 - IPv4/IPv6 route and neighbor snapshots for the peer namespace (when enabled)
+
+## Merger plot – peer veth chain
+
+A multi-hop peer veth chain extends the single proxy veth pair into a
+series of namespaces connected end-to-end.  Each namespace acts as a
+forwarding peer, and the final namespace is the **merger point** where
+traffic from every preceding hop converges.
+
+```
+[root] ──veth── [peer:1] ──veth── [peer:2] ──veth── [merge:3]
+```
+
+### Quick start
+
+```bash
+# Bring up a 3-hop chain (default)
+sudo bash scripts/hum-veth-chain.sh up
+
+# Print the ASCII merger-plot diagram
+bash scripts/hum-veth-chain.sh plot
+
+# Check per-hop peer readiness and rx counters
+sudo bash scripts/hum-veth-chain.sh status
+
+# Tear down
+sudo bash scripts/hum-veth-chain.sh down
+```
+
+Use `--length N` to change the number of hops (1–16):
+
+```bash
+sudo bash scripts/hum-veth-chain.sh up --length 5
+bash scripts/hum-veth-chain.sh plot --length 5
+```
+
+### Addressing scheme
+
+Each hop gets a `/30` IPv4 subnet plus link-local IPv6:
+
+| Hop | Left (upstream) | Right (downstream) |
+|-----|----------------|--------------------|
+| 1 | `10.201.1.1/30` (root) | `10.201.1.2/30` (ns-1) |
+| 2 | `10.201.2.1/30` (ns-1) | `10.201.2.2/30` (ns-2) |
+| 3 | `10.201.3.1/30` (ns-2) | `10.201.3.2/30` (ns-3) |
+
+IPv6 link-local follows the pattern `fe80::H:1/64` / `fe80::H:2/64`
+per hop H.
+
+Override the base network with `HUM_CHAIN_BASE_NET` (default `10.201`).
+
+### Merger plot guidance
+
+The merger plot is a traffic-convergence model:
+
+- **Peer namespaces** (intermediate hops) have `ip_forward=1` enabled
+  automatically.  They relay packets toward the next hop.
+- **The merger namespace** (final hop) is where all forwarded traffic
+  arrives.  Use it for captures, filters, or services that need to
+  observe the full chain's traffic.
+- **Verification** – from the tail of the chain, confirm end-to-end
+  reachability:
+  ```bash
+  sudo ip netns exec hum-chain-ns3 ping -c2 10.201.1.1
+  ```
+- **Traffic shaping** – add `iptables`/`nftables` rules in any peer
+  namespace to mark, redirect, or rate-limit packets as they traverse
+  the chain.
+- **Capture at the merger point**:
+  ```bash
+  sudo ip netns exec hum-chain-ns3 tcpdump -n -i hum-chain-h3R
+  ```
+- **Coexistence** – the chain uses the `10.201.x.y` range and
+  `hum-chain-*` names, so it runs alongside the existing
+  `hum-proxy-*` setup without conflicts.
+
+### Environment overrides
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `HUM_CHAIN_PREFIX` | `hum-chain` | Namespace/interface name prefix |
+| `HUM_CHAIN_LENGTH` | `3` | Number of hops |
+| `HUM_CHAIN_BASE_NET` | `10.201` | First two octets of hop subnets |
+
+Quick peer verification:
+
+```bash
+sudo ip netns exec hum-proxy-ns ping -c 1 10.200.0.1
+sudo ip netns exec hum-proxy-ns ping -6 -I hum-proxy-ns0 -c 1 fe80::1
+# optional zone-style form:
+# sudo ip netns exec hum-proxy-ns ping -6 -c 1 fe80::1%hum-proxy-ns0
+```
+
+If IPv6 still fails while IPv4 works, use `status` to inspect the host veth's
+other `fe80::/64` address and test that EUI-64 address, then check ICMPv6
+policy such as `ip6tables`/`nft` rules or
+`sysctl net.ipv6.icmp.echo_ignore_all`.
+
+### Merger plot workflow
+
+The FF0000 page at `/ff0000.html` now includes a merger-plot guide for the peer
+veth chain. Before using the plot, bring up the proxy path and confirm the chain
+is ready:
+
+```bash
+sudo bash scripts/hum-dev-netns.sh up
+sudo bash scripts/hum-dev-netns.sh status
+```
+
+The guide and plot assume the default chain:
+
+- root namespace interface: `hum-proxy-host0` (`10.200.0.1/30`, `fe80::1/64`)
+- proxy namespace interface: `hum-proxy-ns0` (`10.200.0.2/30`, `fe80::2/64`)
+- proxy namespace: `hum-proxy-ns`
+- dummy endpoint: `hum-dummy0` (`198.18.0.1/24`)
+
+Readiness checks before relying on the plot:
+
+- `peer recv-ready: yes`
+- populated `trace-smac64 host` and `trace-smac64 ns` values
+- root and netns addresses that match the chain shown in the page
+
+Use trace mode when the merger plot suggests changed redraw cadence or
+downstream activity:
+
+```bash
+sudo bash scripts/hum-dev-netns.sh trace
+sudo bash scripts/hum-dev-netns.sh down
+```
 
 ## DeepSeek backup -> SQLite database linking
 
@@ -289,6 +572,58 @@ ls /mnt/hum/scripts/
 A download page is available at `docs/download.html`—host it on any static
 server and point the download link to wherever you publish the ISO.
 
+## Chromebook lab download-site + Stripe visibility
+
+Use the Chromebook lab helper to verify MAGMA/KALI startup visibility and host
+the toolkit download page from one command:
+
+```bash
+MAGMA_CHECK_URL="http://<magma-startup>/stripe" \
+KALI_CHECK_URL="http://<kali-startup>/stripe" \
+LAB_PORT=8088 \
+bash scripts/chromebook-lab-download-site.sh all
+```
+
+Useful modes:
+
+```bash
+bash scripts/chromebook-lab-download-site.sh check-stripe
+bash scripts/chromebook-lab-download-site.sh serve
+bash scripts/chromebook-lab-download-site.sh all
+```
+
+Local test override:
+
+```bash
+STRIPE_EXPECT_TEXT="HUM Toolkit" \
+MAGMA_CHECK_URL="http://127.0.0.1:8088/download.html" \
+KALI_CHECK_URL="http://127.0.0.1:8088/download.html" \
+bash scripts/chromebook-lab-download-site.sh check-stripe
+```
+
+## Host static IPv4 for proxy / Docker / VNC / TTY
+
+Use `scripts/hum-host-static-ip.sh` when the host process should own a LAN
+address such as `192.168.68.100/22`, while DNS remains untouched:
+
+```bash
+sudo HUM_HOST_STATIC_IF=eth0 \
+  HUM_HOST_STATIC_CIDR=192.168.68.100/22 \
+  HUM_HOST_GATEWAY=192.168.68.51 \
+  bash scripts/hum-host-static-ip.sh apply
+```
+
+Inspect and remove:
+
+```bash
+bash scripts/hum-host-static-ip.sh status
+bash scripts/hum-host-static-ip.sh env
+sudo bash scripts/hum-host-static-ip.sh remove
+```
+
+The script reports proxy (`3128`), VNC (`5901`), noVNC (`6080`), and TTY/SSH
+(`22`) listener state. It never edits `/etc/resolv.conf` or resolver settings.
+
 ## Dev container status indicator (`<>`)
 
 If you see the `<>` style status indicator in the bottom-right status area in
@@ -318,17 +653,6 @@ Browser polling example (every 3s):
 ```html
 <input id="telemetry" />
 <script src="scripts/scanTelemetry.js"></script>
-<script>
-  setInterval(() => {
-    const el = document.getElementById("telemetry");
-    if (el) scanTelemetry(el.value);
-  }, 3000);
-</script>
-```
-
-Or use the built-in helper:
-
-```html
 <script>
   startTelemetryPolling("telemetry", 3000);
 </script>
@@ -528,3 +852,56 @@ python3 scripts/https-file-server.py 8443 \
 ```
 
 To disable HSTS explicitly, set `--hsts-max-age 0` (default is disabled).
+
+## Encrypted cloud directory pack (chunked + compressed)
+
+Create an encrypted cloud-friendly directory layout from any source folder. The
+packer writes:
+
+- `index.json` (manifest with aggregate checksum + per-file/per-chunk hashes)
+- `online-index.html` (simple web directory page)
+- `chunks/*.bin` (compressed + encrypted chunk files)
+
+Defaults:
+
+- chunk size: `4096` bytes
+- minimum chunk size: `1024` bytes
+- compression: `zlib` level `6`
+
+Pack:
+
+```bash
+python3 scripts/hum_cloud_pack.py pack \
+  --source ./data \
+  --cloud-dir ./dist/cloud-data \
+  --passphrase "change-me"
+```
+
+Validate against a known aggregate checksum:
+
+```bash
+python3 scripts/hum_cloud_pack.py pack \
+  --source ./data \
+  --cloud-dir ./dist/cloud-data \
+  --passphrase "change-me" \
+  --expected-aggregate-sha256 c058fd133d909759028353fea46d228c2fd8bcf945cf27680bb751fe1066fc3e
+```
+
+Restore:
+
+```bash
+python3 scripts/hum_cloud_pack.py restore \
+  --cloud-dir ./dist/cloud-data \
+  --target-dir ./dist/cloud-restored \
+  --passphrase "change-me"
+```
+
+Host the generated cloud directory with:
+
+```bash
+python3 scripts/https-file-server.py 8443 \
+  --bind 0.0.0.0 \
+  --directory ./dist/cloud-data \
+  --cert /path/to/server.crt \
+  --key /path/to/server.key
+```

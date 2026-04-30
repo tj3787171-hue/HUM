@@ -48,6 +48,8 @@
       "labels": [
         "planned"
       ]
+    },
+    {
       "id": "penguin",
       "kind": "host",
       "role": "chromebook-linux",
@@ -118,6 +120,94 @@
         "proxy_script": "scripts/lab-www-reverse-proxy.py",
         "proxy_listen": "10.223.77.1:8080",
         "upstream": "10.223.77.2:80"
+      }
+    },
+    {
+      "id": "location-services",
+      "kind": "service",
+      "role": "location-provider",
+      "labels": [
+        "location",
+        "interactive-results",
+        "planned"
+      ],
+      "metadata": {
+        "location_scope": "virtual-lab",
+        "inputs": [
+          "lan_gateway",
+          "namespace_ip",
+          "operator_note"
+        ],
+        "interactive_results": [
+          {
+            "name": "location_review",
+            "mode": "operator-confirmed",
+            "output": "location_assertion"
+          }
+        ]
+      }
+    },
+    {
+      "id": "encrypted-cloud-services",
+      "kind": "service",
+      "role": "encrypted-cloud-storage",
+      "labels": [
+        "encrypted-cloud",
+        "cloud-service",
+        "planned"
+      ],
+      "metadata": {
+        "encryption": "client-managed",
+        "secret_material": "external-only",
+        "service_classes": [
+          "object-storage",
+          "backup-sync",
+          "artifact-archive"
+        ],
+        "automatic_actions": [
+          {
+            "name": "stage_encrypted_artifacts",
+            "trigger": "post-virtual-apply",
+            "result": "cloud_archive_ready"
+          }
+        ]
+      }
+    },
+    {
+      "id": "lvm-secure-cloud",
+      "kind": "storage",
+      "role": "logical-volume-map",
+      "labels": [
+        "lvm",
+        "location",
+        "encrypted-cloud",
+        "automation"
+      ],
+      "metadata": {
+        "mount_root": "/mnt/virtual-drive",
+        "volume_group": "hum-vg",
+        "logical_volume": "secure-cloud",
+        "location_ref": "location-services",
+        "cloud_ref": "encrypted-cloud-services",
+        "automatic_actions": [
+          {
+            "name": "verify_location",
+            "trigger": "before_mount",
+            "result": "location_assertion"
+          },
+          {
+            "name": "unlock_encrypted_cloud",
+            "trigger": "after_location_review",
+            "result": "cloud_archive_ready"
+          }
+        ],
+        "interactive_results": [
+          {
+            "name": "operator_unlock_result",
+            "mode": "prompted",
+            "output": "lvm_mount_ready"
+          }
+        ]
       }
     }
   ],
@@ -220,6 +310,27 @@
       "type": "ns_attachment",
       "state": "active",
       "note": "lab-www namespace attached via ns0 interface at 10.223.77.2/30"
+    },
+    {
+      "from": "location-services",
+      "to": "lvm-secure-cloud",
+      "type": "metadata_feed",
+      "state": "planned",
+      "note": "Operator-confirmed location results gate the secure-cloud logical volume."
+    },
+    {
+      "from": "encrypted-cloud-services",
+      "to": "lvm-secure-cloud",
+      "type": "encrypted_storage_backend",
+      "state": "planned",
+      "note": "Encrypted cloud service classes back the secure-cloud logical volume without storing secrets in git."
+    },
+    {
+      "from": "lvm-secure-cloud",
+      "to": "/mnt/virtual-drive",
+      "type": "mount_location",
+      "state": "planned",
+      "note": "Logical volume map targets the existing virtual-drive mount root."
     }
   ],
   "foreign_assertions": [
