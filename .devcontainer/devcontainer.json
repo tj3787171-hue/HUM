@@ -1,12 +1,4 @@
 {
-  "name": "hum-lan-dev",
-  "dockerComposeFile": [
-    "docker-compose.lan.yml"
-  ],
-  "service": "dev",
-  "shutdownAction": "stopCompose",
-  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
-  "remoteUser": "vscode",
   "name": "hum-private-dev",
   "build": {
     "dockerfile": "Dockerfile",
@@ -18,16 +10,9 @@
   "runArgs": [
     "--init",
     "--add-host=host.docker.internal:host-gateway",
-    "--security-opt=no-new-privileges:true"
-  "containerEnv": {
-    "PYTHONPATH": "/workspaces/${localWorkspaceFolderBasename}"
-  },
-  "runArgs": [
-    "--network=host",
-    "--privileged",
     "--cap-add=NET_ADMIN",
     "--cap-add=NET_RAW",
-    "--add-host=host.docker.internal:host-gateway",
+    "--security-opt=no-new-privileges:true",
     "--tmpfs=/mnt/default:rw,exec,size=128g",
     "--sysctl=net.ipv4.ip_forward=1",
     "--sysctl=net.ipv4.conf.all.rp_filter=0",
@@ -38,12 +23,13 @@
     "source=hum-iso-output,target=/iso-output,type=volume",
     "source=hum-vdrive-cache,target=/mnt/virtual-drive,type=volume",
     "source=hum-vdrive-data,target=/mnt/default-vol,type=volume"
-    "source=hum-iso-output,target=/iso-output,type=volume"
   ],
   "containerEnv": {
+    "PYTHONPATH": "/workspaces/${localWorkspaceFolderBasename}",
     "HUM_ENV_FILE": "${containerWorkspaceFolder}/.devcontainer/dev.env",
     "HUM_VDESK_BIND": "127.0.0.1",
     "HUM_VDESK_PORT": "6080",
+    "HUM_VNC_PORT": "5901",
     "HUM_CHROME_REMOTE_DEBUG_ADDR": "127.0.0.1",
     "HUM_CHROME_REMOTE_DEBUG_PORT": "9222"
   },
@@ -57,9 +43,6 @@
     3000,
     5173,
     8000,
-    8080
-  ],
-  "postCreateCommand": "bash .devcontainer/post-create.sh",
     8080,
     5901,
     6080,
@@ -67,10 +50,12 @@
   ],
   "portsAttributes": {
     "5901": {
-      "label": "virtual-desktop-vnc"
+      "label": "virtual-desktop-vnc",
+      "onAutoForward": "silent"
     },
     "6080": {
-      "label": "virtual-desktop-web"
+      "label": "virtual-desktop-web",
+      "onAutoForward": "silent"
     },
     "9222": {
       "label": "chrome-remote-debug-local-only",
@@ -83,7 +68,6 @@
     "vscode": {
       "extensions": [
         "ms-azuretools.vscode-docker",
-        "ms-vscode-remote.remote-containers"
         "ms-vscode-remote.remote-containers",
         "ms-python.python",
         "redhat.vscode-yaml"

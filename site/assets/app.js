@@ -144,6 +144,12 @@ const HUM = (() => {
     }
   }
 
+  async function loadJson(path) {
+    const res = await fetch(path + "?t=" + Date.now());
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return res.json();
+  }
+
   /* ---- Refresh cycle ---- */
   async function refreshMap(containerId, logId) {
     appendLog(logId, "Fetching topology data...");
@@ -155,6 +161,131 @@ const HUM = (() => {
                         `${topo.veth_peers?.length || 0} link peers`);
     } else {
       appendLog(logId, "ERROR: Could not load topology data.");
+    }
+  }
+
+  function formatBytes(bytes) {
+    const value = Number(bytes) || 0;
+    if (value < 1024) return `${value} B`;
+    const units = ["KB", "MB", "GB", "TB"];
+    let size = value / 1024;
+    let idx = 0;
+    while (size >= 1024 && idx < units.length - 1) {
+      size /= 1024;
+      idx += 1;
+    }
+    return `${size.toFixed(size >= 10 ? 1 : 2)} ${units[idx]}`;
+  }
+
+  function renderLayerInventory(report) {
+    const layerFilter = document.getElementById("layer-filter");
+    const searchFilter = document.getElementById("search-filter");
+    const summary = document.getElementById("layer-summary");
+    const tbody = document.getElementById("layer-table-body");
+    if (!layerFilter || !searchFilter || !summary || !tbody || !report) return;
+
+    const layers = Object.keys(report.layers || {}).sort();
+    if (layerFilter.options.length <= 1) {
+      layers.forEach(layer => {
+        const option = document.createElement("option");
+        option.value = layer;
+        option.textContent = `${layer} (${report.layers[layer].count})`;
+        layerFilter.appendChild(option);
+      });
+    }
+
+    summary.innerHTML = "";
+    [
+      ["Artifacts", report.summary?.artifact_count || 0],
+      ["Total size", formatBytes(report.summary?.total_size_bytes || 0)],
+      ["Archives", report.archives?.length || 0],
+      ["Sampled", formatBytes(report.benchmark?.sampled_bytes || 0)],
+    ].forEach(([label, value]) => {
+      const card = document.createElement("div");
+      card.className = "layer-stat";
+      card.innerHTML = `<div class="value">${value}</div><div class="label">${label}</div>`;
+      summary.appendChild(card);
+    });
+
+    const selected = layerFilter.value || "all";
+    const query = (searchFilter.value || "").toLowerCase();
+    const rows = (report.artifacts || []).filter(item => {
+      const layerOk = selected === "all" || item.layer === selected;
+      const haystack = `${item.path} ${item.kind} ${item.sha256_prefix}`.toLowerCase();
+      return layerOk && (!query || haystack.includes(query));
+    });
+
+    tbody.innerHTML = "";
+    rows.slice(0, 300).forEach(item => {
+      const tr = document.createElement("tr");
+      const read = item.benchmark ? `${item.benchmark.elapsed_ms}ms` : "n/a";
+      tr.innerHTML = `
+        <td>${item.layer}</td>
+        <td><code>${item.path}</code><br><span style="color:var(--text-dim)">${item.kind}</span></td>
+        <td>${formatBytes(item.size_bytes)}</td>
+        <td><code>${item.sha256_prefix}</code></td>
+        <td>${read}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+    if (!rows.length) {
+      tbody.innerHTML = '<tr><td colspan="5">No matching artifacts.</td></tr>';
+    }
+  }
+
+  function renderCacheAssembly(report) {
+    const formula = document.getElementById("cache-formula");
+    const summary = document.getElementById("cache-summary");
+    const tbody = document.getElementById("cache-table-body");
+    if (!formula || !summary || !tbody || !report) return;
+
+    formula.textContent = report.interval_plot?.formula || "No interval formula";
+    summary.innerHTML = "";
+    [
+      ["Pieces", report.piece_count || 0],
+      ["Roots", report.roots?.length || 0],
+      ["Categories", Object.keys(report.categories || {}).length],
+      ["Prefix", report.interval_plot?.prefix || "n/a"],
+    ].forEach(([label, value]) => {
+      const card = document.createElement("div");
+      card.className = "layer-stat";
+      card.innerHTML = `<div class="value">${value}</div><div class="label">${label}</div>`;
+      summary.appendChild(card);
+    });
+
+    tbody.innerHTML = "";
+    (report.interval_plot?.points || []).slice(0, 120).forEach(point => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td><code>${point.id}</code></td>
+        <td>${point.path}</td>
+        <td>${formatBytes(point.size_bytes)}</td>
+        <td>${point.n}</td>
+        <td>${point.y}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+    if (!tbody.children.length) {
+      tbody.innerHTML = '<tr><td colspan="5">No cache intervals found.</td></tr>';
+    }
+  }
+
+  async function refreshLayers() {
+    appendLog("layer-log", "Loading artifact layer JSON...");
+    try {
+      const report = await loadJson("data/artifact-layers.json");
+      renderLayerInventory(report);
+      appendLog("layer-log", `Loaded ${report.summary?.artifact_count || 0} artifacts.`);
+    } catch (error) {
+      appendLog("layer-log", `ERROR: ${error.message}`);
+    }
+
+    try {
+      const cache = await loadJson("data/cache-assembly.json");
+      renderCacheAssembly(cache);
+      appendLog("layer-log", `Loaded ${cache.piece_count || 0} cache pieces.`);
+    } catch (error) {
+      appendLog("layer-log", `ERROR: ${error.message}`);
     }
   }
 
@@ -173,14 +304,21 @@ const HUM = (() => {
     highlightNav();
 
     const mapEl = document.getElementById("svg-map");
-    const logEl = document.getElementById("feedback-log");
     if (mapEl) {
       refreshMap("svg-map", "feedback-log");
       setInterval(() => refreshMap("svg-map", "feedback-log"), 15000);
+    }
+
+    const layerTable = document.getElementById("layer-table-body");
+    if (layerTable) {
+      refreshLayers();
+      document.getElementById("refresh-layers")?.addEventListener("click", refreshLayers);
+      document.getElementById("layer-filter")?.addEventListener("change", refreshLayers);
+      document.getElementById("search-filter")?.addEventListener("input", refreshLayers);
     }
   }
 
   document.addEventListener("DOMContentLoaded", init);
 
-  return { renderSvgMap, refreshMap, appendLog, loadTopology, init };
+  return { renderSvgMap, refreshMap, refreshLayers, appendLog, loadTopology, init };
 })();

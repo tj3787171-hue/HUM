@@ -56,6 +56,7 @@ management of local ISO/IMG files.
 - It defaults to bridge networking and forwarded ports to reduce accidental exposure.
 - For local-only access, bind services to `127.0.0.1` and use forwarded ports.
 - If you intentionally need host-network mode for LAN testing, use a temporary local override.
+- `.devcontainer/docker-compose.lan.yml` remains available as an explicit host-network profile for local Linux LAN experiments.
 
 ## Re-container + import environment workflow
 
@@ -70,6 +71,31 @@ Environment import outputs:
 - runtime JSON metadata: `~/.config/hum-dev/runtime.json`
 
 This keeps settings in a JSON-readable form for tools/extensions while keeping secrets out of git.
+
+## LVM / encrypted cloud service planning
+
+Before moving backup data, location metadata, or encrypted cloud-service roots
+into LVM-backed storage, generate a non-destructive plan:
+
+```bash
+python3 scripts/hum-lvm-cloud-plan.py --output diagnostics/lvm-cloud-plan.json
+```
+
+The report includes:
+
+- current mounts and large-block-device candidates
+- whether LVM / cryptsetup / rclone tooling is installed
+- likely local cloud roots (`~/Dropbox`, `~/Nextcloud`, etc.)
+- private listener bind settings imported from `HUM_VDESK_BIND` and `HUM_CHROME_REMOTE_DEBUG_ADDR`
+
+Use `--source /path/to/ssd-or-cloud-root` to include the intended backup source
+path in the report. The script does not create physical volumes, encrypt disks,
+mount filesystems, or contact cloud providers; it only records state for review.
+
+The default devcontainer is private-by-default bridge networking with explicit
+forwarded ports. If you need the older LAN host-network profile for local lab
+work, use `.devcontainer/docker-compose.lan.yml` intentionally as a local
+override rather than as the default container path.
 
 ## Virtual desktop privacy defaults
 
@@ -172,6 +198,7 @@ Useful commands:
 ```bash
 bash scripts/hum-dev-netns.sh guide
 sudo bash scripts/hum-dev-netns.sh status
+sudo bash scripts/hum-dev-netns.sh collect
 sudo bash scripts/hum-dev-netns.sh trace
 sudo bash scripts/hum-dev-netns.sh plot
 sudo bash scripts/hum-dev-netns.sh down
@@ -204,6 +231,26 @@ The veth chain now carries link-local IPv6 for tracing:
 - downstream nested RX packet counters (host + proxy + peer)
 - SMAC64-style trace IDs derived from interface MAC addresses
 - IPv4/IPv6 route and neighbor snapshots for both proxy + peer namespaces
+
+### Telemetry database
+
+Use `collect` to emit a structured JSON snapshot, then store it in SQLite:
+
+```bash
+sudo bash scripts/hum-dev-netns.sh collect > diagnostics/netns-snapshot.json
+python3 scripts/hum-telemetry-db.py ingest --database data/telemetry.db --file diagnostics/netns-snapshot.json
+python3 scripts/hum-telemetry-db.py query --database data/telemetry.db --last 5
+python3 scripts/hum-telemetry-db.py alerts --database data/telemetry.db
+```
+
+For continuous local collection:
+
+```bash
+sudo python3 scripts/hum-telemetry-db.py watch --database data/telemetry.db --interval 5
+```
+
+The telemetry database records snapshots, hops, counters, routes, and alerts.
+It uses only Python stdlib modules.
 
 ## FF0000 merger plot guidance
 
@@ -525,6 +572,58 @@ ls /mnt/hum/scripts/
 A download page is available at `docs/download.html`—host it on any static
 server and point the download link to wherever you publish the ISO.
 
+## Chromebook lab download-site + Stripe visibility
+
+Use the Chromebook lab helper to verify MAGMA/KALI startup visibility and host
+the toolkit download page from one command:
+
+```bash
+MAGMA_CHECK_URL="http://<magma-startup>/stripe" \
+KALI_CHECK_URL="http://<kali-startup>/stripe" \
+LAB_PORT=8088 \
+bash scripts/chromebook-lab-download-site.sh all
+```
+
+Useful modes:
+
+```bash
+bash scripts/chromebook-lab-download-site.sh check-stripe
+bash scripts/chromebook-lab-download-site.sh serve
+bash scripts/chromebook-lab-download-site.sh all
+```
+
+Local test override:
+
+```bash
+STRIPE_EXPECT_TEXT="HUM Toolkit" \
+MAGMA_CHECK_URL="http://127.0.0.1:8088/download.html" \
+KALI_CHECK_URL="http://127.0.0.1:8088/download.html" \
+bash scripts/chromebook-lab-download-site.sh check-stripe
+```
+
+## Host static IPv4 for proxy / Docker / VNC / TTY
+
+Use `scripts/hum-host-static-ip.sh` when the host process should own a LAN
+address such as `192.168.68.100/22`, while DNS remains untouched:
+
+```bash
+sudo HUM_HOST_STATIC_IF=eth0 \
+  HUM_HOST_STATIC_CIDR=192.168.68.100/22 \
+  HUM_HOST_GATEWAY=192.168.68.51 \
+  bash scripts/hum-host-static-ip.sh apply
+```
+
+Inspect and remove:
+
+```bash
+bash scripts/hum-host-static-ip.sh status
+bash scripts/hum-host-static-ip.sh env
+sudo bash scripts/hum-host-static-ip.sh remove
+```
+
+The script reports proxy (`3128`), VNC (`5901`), noVNC (`6080`), and TTY/SSH
+(`22`) listener state. It never edits `/etc/resolv.conf` or resolver settings.
+
 ## Dev container status indicator (`<>`)
 
 If you see the `<>` style status indicator in the bottom-right status area in
@@ -764,3 +863,56 @@ python3 scripts/https-file-server.py 8443 \
 ```
 
 To disable HSTS explicitly, set `--hsts-max-age 0` (default is disabled).
+
+## Encrypted cloud directory pack (chunked + compressed)
+
+Create an encrypted cloud-friendly directory layout from any source folder. The
+packer writes:
+
+- `index.json` (manifest with aggregate checksum + per-file/per-chunk hashes)
+- `online-index.html` (simple web directory page)
+- `chunks/*.bin` (compressed + encrypted chunk files)
+
+Defaults:
+
+- chunk size: `4096` bytes
+- minimum chunk size: `1024` bytes
+- compression: `zlib` level `6`
+
+Pack:
+
+```bash
+python3 scripts/hum_cloud_pack.py pack \
+  --source ./data \
+  --cloud-dir ./dist/cloud-data \
+  --passphrase "change-me"
+```
+
+Validate against a known aggregate checksum:
+
+```bash
+python3 scripts/hum_cloud_pack.py pack \
+  --source ./data \
+  --cloud-dir ./dist/cloud-data \
+  --passphrase "change-me" \
+  --expected-aggregate-sha256 c058fd133d909759028353fea46d228c2fd8bcf945cf27680bb751fe1066fc3e
+```
+
+Restore:
+
+```bash
+python3 scripts/hum_cloud_pack.py restore \
+  --cloud-dir ./dist/cloud-data \
+  --target-dir ./dist/cloud-restored \
+  --passphrase "change-me"
+```
+
+Host the generated cloud directory with:
+
+```bash
+python3 scripts/https-file-server.py 8443 \
+  --bind 0.0.0.0 \
+  --directory ./dist/cloud-data \
+  --cert /path/to/server.crt \
+  --key /path/to/server.key
+```
