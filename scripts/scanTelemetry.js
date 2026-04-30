@@ -14,6 +14,9 @@ const DEFAULT_PATTERNS = {
   browser_hook: /\b(?:browser|chrome|chromium|electron|webview|openexternal|launch\s+browser|force(?:d)?\s+browser|user[-\s]?agent)\b/i,
 };
 
+const DEFAULT_LOG = (msg) => console.log(msg);
+const USAGE = 'Usage: node scripts/scanTelemetry.js "<text to scan>"';
+
 /**
  * Scan text and return normalized telemetry flags.
  *
@@ -24,8 +27,8 @@ const DEFAULT_PATTERNS = {
 function scanTelemetry(text, options = {}) {
   if (typeof text !== "string" || !text.trim()) return [];
 
-  const patterns = options.patterns || DEFAULT_PATTERNS;
-  const log = options.log || ((msg) => console.log(msg));
+  const patterns = options.patterns ?? DEFAULT_PATTERNS;
+  const log = options.log ?? DEFAULT_LOG;
   const flags = [];
 
   for (const [key, pattern] of Object.entries(patterns)) {
@@ -53,8 +56,11 @@ function startTelemetryPolling(elementId = "telemetry", intervalMs = 3000, optio
   const input = document.getElementById(elementId);
   if (!input) return null;
 
+  let lastValue;
   return setInterval(() => {
     const value = typeof input.value === "string" ? input.value : "";
+    if (value === lastValue) return;
+    lastValue = value;
     scanTelemetry(value, options);
   }, intervalMs);
 }
@@ -69,10 +75,16 @@ if (typeof globalThis !== "undefined") {
 }
 
 if (typeof require !== "undefined" && require.main === module) {
-  const input = process.argv.slice(2).join(" ");
-  if (!input) {
-    console.error('Usage: node scripts/scanTelemetry.js "<text to scan>"');
+  const args = process.argv.slice(2);
+  if (args[0] === "-h" || args[0] === "--help") {
+    console.log(USAGE);
+    process.exit(0);
+  }
+
+  const cliText = args.join(" ");
+  if (!cliText) {
+    console.error(USAGE);
     process.exit(1);
   }
-  scanTelemetry(input);
+  scanTelemetry(cliText);
 }
