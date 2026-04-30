@@ -56,6 +56,7 @@ management of local ISO/IMG files.
 - It defaults to bridge networking and forwarded ports to reduce accidental exposure.
 - For local-only access, bind services to `127.0.0.1` and use forwarded ports.
 - If you intentionally need host-network mode for LAN testing, use a temporary local override.
+- `.devcontainer/docker-compose.lan.yml` remains available as an explicit host-network profile for local Linux LAN experiments.
 
 ## Re-container + import environment workflow
 
@@ -70,6 +71,31 @@ Environment import outputs:
 - runtime JSON metadata: `~/.config/hum-dev/runtime.json`
 
 This keeps settings in a JSON-readable form for tools/extensions while keeping secrets out of git.
+
+## LVM / encrypted cloud service planning
+
+Before moving backup data, location metadata, or encrypted cloud-service roots
+into LVM-backed storage, generate a non-destructive plan:
+
+```bash
+python3 scripts/hum-lvm-cloud-plan.py --output diagnostics/lvm-cloud-plan.json
+```
+
+The report includes:
+
+- current mounts and large-block-device candidates
+- whether LVM / cryptsetup / rclone tooling is installed
+- likely local cloud roots (`~/Dropbox`, `~/Nextcloud`, etc.)
+- private listener bind settings imported from `HUM_VDESK_BIND` and `HUM_CHROME_REMOTE_DEBUG_ADDR`
+
+Use `--source /path/to/ssd-or-cloud-root` to include the intended backup source
+path in the report. The script does not create physical volumes, encrypt disks,
+mount filesystems, or contact cloud providers; it only records state for review.
+
+The default devcontainer is private-by-default bridge networking with explicit
+forwarded ports. If you need the older LAN host-network profile for local lab
+work, use `.devcontainer/docker-compose.lan.yml` intentionally as a local
+override rather than as the default container path.
 
 ## Virtual desktop privacy defaults
 
