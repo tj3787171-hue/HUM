@@ -811,3 +811,56 @@ python3 scripts/https-file-server.py 8443 \
 ```
 
 To disable HSTS explicitly, set `--hsts-max-age 0` (default is disabled).
+
+## Encrypted cloud directory pack (chunked + compressed)
+
+Create an encrypted cloud-friendly directory layout from any source folder. The
+packer writes:
+
+- `index.json` (manifest with aggregate checksum + per-file/per-chunk hashes)
+- `online-index.html` (simple web directory page)
+- `chunks/*.bin` (compressed + encrypted chunk files)
+
+Defaults:
+
+- chunk size: `4096` bytes
+- minimum chunk size: `1024` bytes
+- compression: `zlib` level `6`
+
+Pack:
+
+```bash
+python3 scripts/hum_cloud_pack.py pack \
+  --source ./data \
+  --cloud-dir ./dist/cloud-data \
+  --passphrase "change-me"
+```
+
+Validate against a known aggregate checksum:
+
+```bash
+python3 scripts/hum_cloud_pack.py pack \
+  --source ./data \
+  --cloud-dir ./dist/cloud-data \
+  --passphrase "change-me" \
+  --expected-aggregate-sha256 c058fd133d909759028353fea46d228c2fd8bcf945cf27680bb751fe1066fc3e
+```
+
+Restore:
+
+```bash
+python3 scripts/hum_cloud_pack.py restore \
+  --cloud-dir ./dist/cloud-data \
+  --target-dir ./dist/cloud-restored \
+  --passphrase "change-me"
+```
+
+Host the generated cloud directory with:
+
+```bash
+python3 scripts/https-file-server.py 8443 \
+  --bind 0.0.0.0 \
+  --directory ./dist/cloud-data \
+  --cert /path/to/server.crt \
+  --key /path/to/server.key
+```
