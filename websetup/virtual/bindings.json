@@ -40,6 +40,18 @@
       "purpose": "Runtime bridge/veth topology in matrix is realized by hum-dev-netns script commands."
     },
     {
+      "id": "lvm-cloud-services-to-network-matrix",
+      "sdv": {
+        "artifact": "manifest.json.network",
+        "path": "../sdv/manifest.json#/network"
+      },
+      "virtual": {
+        "artifact": "network-matrix.json",
+        "path": "./network-matrix.json#/nodes/lvm-secure-cloud"
+      },
+      "purpose": "Location and encrypted cloud service nodes are represented in the logical virtual matrix for automation handoff."
+    },
+    {
       "id": "macsec-state-to-feature-flags",
       "sdv": {
         "artifact": "macsec_handoff_state",

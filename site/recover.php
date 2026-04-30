@@ -84,6 +84,7 @@ function unit_badge(string $state): string {
     <a href="recover.php" class="active">Recover</a>
     <a href="palace.php">Palace</a>
     <a href="playbook.php">Playbook</a>
+    <a href="layers.html">Layers</a>
     <a href="convo.php?source=list" target="_blank">API</a>
   </nav>
   <span style="margin-left:auto; font-size:.75rem; color:var(--text-dim);">
