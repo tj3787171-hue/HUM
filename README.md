@@ -691,6 +691,29 @@ bash scripts/virtual-drive-access.sh mount --source /path/to/image.iso --mountpo
 bash scripts/virtual-drive-access.sh umount
 ```
 
+## LVM location + encrypted cloud service plan
+
+Use the planner before touching disks or encrypted cloud-backed storage:
+
+```bash
+python3 scripts/hum-lvm-cloud-plan.py \
+  --source /mnt/deepseek-ssd \
+  --cloud-root /mnt/chromeos/GoogleDrive \
+  --output diagnostics/lvm-cloud-plan.json
+```
+
+The script is non-destructive. It inventories visible block devices, LVM and
+encryption tool availability, candidate source paths, cloud roots, and
+local-only virtual desktop bindings. It writes JSON with:
+
+- `automatic_actions` performed by the planner
+- `recommended_actions` that still require operator confirmation
+- `privacy_bindings` for VNC, web desktop, and Chrome remote debugging
+
+The virtual matrix also includes planned nodes for `location-services`,
+`encrypted-cloud-services`, and `lvm-secure-cloud` so interactive location
+review and encrypted cloud backends are represented before any LVM mutation.
+
 ## Host-only multi-user / graphical service guidance (AMD64)
 
 If you are configuring a real host (not inside devcontainer) for
