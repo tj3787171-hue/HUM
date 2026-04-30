@@ -198,6 +198,7 @@ Useful commands:
 ```bash
 bash scripts/hum-dev-netns.sh guide
 sudo bash scripts/hum-dev-netns.sh status
+sudo bash scripts/hum-dev-netns.sh collect
 sudo bash scripts/hum-dev-netns.sh trace
 sudo bash scripts/hum-dev-netns.sh plot
 sudo bash scripts/hum-dev-netns.sh down
@@ -230,6 +231,26 @@ The veth chain now carries link-local IPv6 for tracing:
 - downstream nested RX packet counters (host + proxy + peer)
 - SMAC64-style trace IDs derived from interface MAC addresses
 - IPv4/IPv6 route and neighbor snapshots for both proxy + peer namespaces
+
+### Telemetry database
+
+Use `collect` to emit a structured JSON snapshot, then store it in SQLite:
+
+```bash
+sudo bash scripts/hum-dev-netns.sh collect > diagnostics/netns-snapshot.json
+python3 scripts/hum-telemetry-db.py ingest --database data/telemetry.db --file diagnostics/netns-snapshot.json
+python3 scripts/hum-telemetry-db.py query --database data/telemetry.db --last 5
+python3 scripts/hum-telemetry-db.py alerts --database data/telemetry.db
+```
+
+For continuous local collection:
+
+```bash
+sudo python3 scripts/hum-telemetry-db.py watch --database data/telemetry.db --interval 5
+```
+
+The telemetry database records snapshots, hops, counters, routes, and alerts.
+It uses only Python stdlib modules.
 
 ## FF0000 merger plot guidance
 
