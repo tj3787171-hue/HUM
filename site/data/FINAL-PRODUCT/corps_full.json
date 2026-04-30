@@ -1,7 +1,7 @@
 {
   "house_of_corps": {
     "origin": "hum.org",
-    "timestamp": "2026-04-19T06:23:03.839887+00:00",
+    "timestamp": "2026-04-30T15:16:38.489882+00:00",
     "version": "1.0.0",
     "name_factory": "HUM Name Factory v1",
     "description": "Collective data after the Name Factory \u2014 reachability, velocity, and mission scored"
@@ -73,7 +73,7 @@
   "recup": {
     "summary": {
       "origin": "hum.org",
-      "timestamp": "2026-04-19T01:34:49Z",
+      "timestamp": "2026-04-30T15:16:38Z",
       "recup_home": "/home/troy",
       "total_scanned": 13,
       "photos_imported": 3,
@@ -257,8 +257,7 @@
         "id": "log-001",
         "type": "test",
         "message": "Container origin verified: hum.org",
-        "timestamp": "2026-04-16T20:32:03.427243+00:00",
-        "timestamp": "2026-04-19T06:23:03.839794+00:00",
+        "timestamp": "2026-04-30T15:16:38.489790+00:00",
         "band": "alpha",
         "reachability": 60,
         "velocity": 90,
@@ -267,14 +266,10 @@
         "factory_tag": "HUM-ALPHA-cff32e91"
       },
       {
-        "id": "log-002",
-        "type": "mock",
-        "message": "NETNS veth peer scan completed",
-        "timestamp": "2026-04-16T20:32:03.427243+00:00",
         "id": "log-009",
         "type": "test",
         "message": "Net driver recovery: check mode passed",
-        "timestamp": "2026-04-19T06:23:03.839794+00:00",
+        "timestamp": "2026-04-30T15:16:38.489790+00:00",
         "band": "alpha",
         "reachability": 60,
         "velocity": 90,
@@ -286,7 +281,7 @@
         "id": "log-002",
         "type": "mock",
         "message": "NETNS veth peer scan completed",
-        "timestamp": "2026-04-19T06:23:03.839794+00:00",
+        "timestamp": "2026-04-30T15:16:38.489790+00:00",
         "band": "alpha",
         "reachability": 60,
         "velocity": 85,
@@ -295,14 +290,10 @@
         "factory_tag": "HUM-ALPHA-a58445d3"
       },
       {
-        "id": "log-004",
-        "type": "test",
-        "message": "Topology JSON/XML sync validated",
-        "timestamp": "2026-04-16T20:32:03.427243+00:00",
         "id": "log-011",
         "type": "mock",
         "message": "RTNETLINK flush + loopback purge ready",
-        "timestamp": "2026-04-19T06:23:03.839794+00:00",
+        "timestamp": "2026-04-30T15:16:38.489790+00:00",
         "band": "alpha",
         "reachability": 60,
         "velocity": 85,
@@ -314,7 +305,7 @@
         "id": "log-004",
         "type": "test",
         "message": "Topology JSON/XML sync validated",
-        "timestamp": "2026-04-19T06:23:03.839794+00:00",
+        "timestamp": "2026-04-30T15:16:38.489790+00:00",
         "band": "beta",
         "reachability": 50,
         "velocity": 90,
@@ -326,8 +317,7 @@
         "id": "log-003",
         "type": "comment",
         "message": "Recup import pipeline initialized",
-        "timestamp": "2026-04-16T20:32:03.427243+00:00",
-        "timestamp": "2026-04-19T06:23:03.839794+00:00",
+        "timestamp": "2026-04-30T15:16:38.489790+00:00",
         "band": "beta",
         "reachability": 40,
         "velocity": 70,
@@ -336,14 +326,10 @@
         "factory_tag": "HUM-BETA-de28d124"
       },
       {
-        "id": "log-008",
-        "type": "test",
-        "message": "Name factory hierarchy pass complete",
-        "timestamp": "2026-04-16T20:32:03.427243+00:00",
         "id": "log-010",
         "type": "camp",
         "message": "Systemd default.target tree captured",
-        "timestamp": "2026-04-19T06:23:03.839794+00:00",
+        "timestamp": "2026-04-30T15:16:38.489790+00:00",
         "band": "beta",
         "reachability": 40,
         "velocity": 65,
@@ -355,7 +341,7 @@
         "id": "log-008",
         "type": "test",
         "message": "Name factory hierarchy pass complete",
-        "timestamp": "2026-04-19T06:23:03.839794+00:00",
+        "timestamp": "2026-04-30T15:16:38.489790+00:00",
         "band": "delta",
         "reachability": 30,
         "velocity": 90,
@@ -364,14 +350,10 @@
         "factory_tag": "HUM-DELTA-a3fea16a"
       },
       {
-        "id": "log-006",
-        "type": "camp",
-        "message": "Camp baseline: eth0 UP 172.30.0.2/24",
-        "timestamp": "2026-04-16T20:32:03.427243+00:00",
         "id": "log-012",
         "type": "comment",
         "message": "Driver unbind/rebind codex verified",
-        "timestamp": "2026-04-19T06:23:03.839794+00:00",
+        "timestamp": "2026-04-30T15:16:38.489790+00:00",
         "band": "gamma",
         "reachability": 30,
         "velocity": 70,
@@ -383,7 +365,7 @@
         "id": "log-006",
         "type": "camp",
         "message": "Camp baseline: eth0 UP 172.30.0.2/24",
-        "timestamp": "2026-04-19T06:23:03.839794+00:00",
+        "timestamp": "2026-04-30T15:16:38.489790+00:00",
         "band": "gamma",
         "reachability": 30,
         "velocity": 65,
@@ -395,8 +377,7 @@
         "id": "log-005",
         "type": "drop",
         "message": "Dropped packet analysis: 0% loss on lo",
-        "timestamp": "2026-04-16T20:32:03.427243+00:00",
-        "timestamp": "2026-04-19T06:23:03.839794+00:00",
+        "timestamp": "2026-04-30T15:16:38.489790+00:00",
         "band": "gamma",
         "reachability": 30,
         "velocity": 60,
@@ -408,8 +389,7 @@
         "id": "log-007",
         "type": "comment",
         "message": "Palace of Web assembly started",
-        "timestamp": "2026-04-16T20:32:03.427243+00:00",
-        "timestamp": "2026-04-19T06:23:03.839794+00:00",
+        "timestamp": "2026-04-30T15:16:38.489790+00:00",
         "band": "delta",
         "reachability": 20,
         "velocity": 70,
@@ -419,14 +399,6 @@
       }
     ]
   },
-  "gram_comb_totals": {
-    "topology_interfaces": 3,
-    "topology_routes": 3,
-    "recup_files": 0,
-    "wanted_comb_entries": 8,
-    "templates_categories": 0,
-    "photos_categories": 0,
-    "total_data_points": 14
   "systemd": {
     "default_target": "graphical.target",
     "summary": {
