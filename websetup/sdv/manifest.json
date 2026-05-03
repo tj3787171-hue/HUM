@@ -20,6 +20,13 @@
     "wait_timeout_sec": 45,
     "start_command": "sudo systemctl start docker"
   },
+  "initfs": {
+    "enabled": true,
+    "script": "scripts/hum-init-fs-vram.sh",
+    "mountpoint": "/mnt/hum-vram",
+    "size": "64M",
+    "subdirs": ["staging", "state", "handoff"]
+  },
   "macsec": {
     "state_file": "/tmp/macsec_handoff_state",
     "links": [

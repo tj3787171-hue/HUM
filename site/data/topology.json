@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-04-18T16:45:28.070164+00:00",
+  "timestamp": "2026-05-01T03:08:00.926949+00:00",
   "hostname": "cursor",
   "interfaces": [
     {
@@ -23,10 +23,10 @@
     {
       "name": "docker0",
       "state": "DOWN",
-      "mac": "06:b5:f4:e4:50:4b",
+      "mac": "02:b9:41:fb:51:1c",
       "addresses": [
         "172.18.0.1/16",
-        "fe80::4b5:f4ff:fee4:504b/64"
+        "fe80::b9:41ff:fefb:511c/64"
       ]
     }
   ],

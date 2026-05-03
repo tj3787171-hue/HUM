@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-04-19T06:23:03.809431+00:00",
+  "timestamp": "2026-05-01T03:08:53.001404+00:00",
   "default_target": "graphical.target",
   "units": [
     {
@@ -65,7 +65,7 @@
     {
       "unit": "docker.service",
       "active": "unknown",
-      "enabled": "enabled"
+      "enabled": "unknown"
     },
     {
       "unit": "dpkg-db-backup.timer",

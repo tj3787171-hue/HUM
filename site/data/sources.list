@@ -1,5 +1,5 @@
 # sources.list — HUM.org House of Corps data source manifest
-# Generated: 2026-04-30T15:16:38.489882+00:00
+# Generated: 2026-05-01T03:10:10.610419+00:00
 # Origin: hum.org
 
 ## Topology Sources
@@ -32,9 +32,9 @@
 ## Totals
   topology_interfaces            3
   topology_routes                3
-  recup_files                    13
+  recup_files                    0
   wanted_comb_entries            12
-  templates_categories           5
-  photos_categories              6
+  templates_categories           0
+  photos_categories              0
   systemd_units                  71
-  total_data_points              115
+  total_data_points              89

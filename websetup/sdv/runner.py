@@ -1,4 +1,4 @@
-"""SDV apply pipeline: validate pool -> wait for Docker -> optional netns setup -> MACsec RX."""
+"""SDV apply pipeline: validate pool -> init-fs -> wait for Docker -> optional netns setup -> MACsec RX."""
 
 from __future__ import annotations
 
@@ -16,11 +16,41 @@ def load_manifest(path: Path | None = None) -> dict[str, Any]:
         return json.load(fh)
 
 
+def _init_fs(manifest: dict[str, Any], root: Path) -> None:
+    """Mount the init-fs virtual RAM scratch filesystem when enabled."""
+    initfs = manifest.get("initfs", {})
+    if not initfs.get("enabled", False):
+        print("[sdv] init-fs skipped (disabled)")
+        return
+
+    script_rel = initfs.get("script", "scripts/hum-init-fs-vram.sh")
+    script = root / script_rel
+    if not script.exists():
+        raise FileNotFoundError(f"missing init-fs script: {script}")
+
+    env = dict(
+        HUM_VRAM_MOUNTPOINT=str(initfs.get("mountpoint", "/mnt/hum-vram")),
+        HUM_VRAM_SIZE=str(initfs.get("size", "64M")),
+    )
+    subdirs = initfs.get("subdirs")
+    if subdirs:
+        env["HUM_VRAM_SUBDIRS"] = ",".join(subdirs) if isinstance(subdirs, list) else str(subdirs)
+
+    subprocess.run(
+        ["sudo", "bash", str(script), "mount"],
+        check=True,
+        env={**dict(__import__("os").environ), **env},
+    )
+    print(f"[sdv] init-fs ready at {env['HUM_VRAM_MOUNTPOINT']}")
+
+
 def apply(manifest: dict[str, Any], root: Path) -> int:
     ok, message = pool.validate_network(manifest)
     if not ok:
         raise ValueError(message)
     print(f"[sdv] {message}")
+
+    _init_fs(manifest, root)
 
     docker_wait.ensure_docker(manifest["docker"])
     print("[sdv] docker bridge ready")

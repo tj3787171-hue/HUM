@@ -1,7 +1,6 @@
 {
   "origin": "hum.org",
-  "timestamp": "2026-04-16T20:32:03.427309+00:00",
-  "timestamp": "2026-04-19T06:23:03.839887+00:00",
+  "timestamp": "2026-05-01T03:10:10.610419+00:00",
   "comb_hierarchy": [
     {
       "tag": "HUM-ALPHA-cff32e91",
@@ -86,97 +85,6 @@
       "band": "delta",
       "score": 45.5,
       "message": "Palace of Web assembly started"
-    },
-    {
-      "tag": "HUM-RECUP-d8d04223",
-      "type": "recup",
-      "band": "config",
-      "score": 0,
-      "message": "config.yaml from recup_dir.1"
-    },
-    {
-      "tag": "HUM-RECUP-f2df9ef3",
-      "type": "recup",
-      "band": "doc",
-      "score": 0,
-      "message": "page.html from recup_dir.1"
-    },
-    {
-      "tag": "HUM-RECUP-5a831ea6",
-      "type": "recup",
-      "band": "doc",
-      "score": 0,
-      "message": "readme.md from recup_dir.1"
-    },
-    {
-      "tag": "HUM-RECUP-e441b800",
-      "type": "recup",
-      "band": "code",
-      "score": 0,
-      "message": "recovered_001.py from recup_dir.1"
-    },
-    {
-      "tag": "HUM-RECUP-a7ec1a4f",
-      "type": "recup",
-      "band": "code",
-      "score": 0,
-      "message": "recovered_002.js from recup_dir.1"
-    },
-    {
-      "tag": "HUM-RECUP-226cc68a",
-      "type": "recup",
-      "band": "code",
-      "score": 0,
-      "message": "recovered_003.php from recup_dir.1"
-    },
-    {
-      "tag": "HUM-RECUP-e9e1aabe",
-      "type": "recup",
-      "band": "config",
-      "score": 0,
-      "message": "settings.json from recup_dir.1"
-    },
-    {
-      "tag": "HUM-RECUP-789b23dc",
-      "type": "recup",
-      "band": "photo",
-      "score": 0,
-      "message": "anim.gif from recup_dir.2"
-    },
-    {
-      "tag": "HUM-RECUP-8bfd000e",
-      "type": "recup",
-      "band": "photo",
-      "score": 0,
-      "message": "diagram.svg from recup_dir.2"
-    },
-    {
-      "tag": "HUM-RECUP-7d54fde5",
-      "type": "recup",
-      "band": "doc",
-      "score": 0,
-      "message": "dump.sql from recup_dir.2"
-    },
-    {
-      "tag": "HUM-RECUP-1ca527fa",
-      "type": "recup",
-      "band": "photo",
-      "score": 0,
-      "message": "photo_001.png from recup_dir.2"
-    },
-    {
-      "tag": "HUM-RECUP-4209d788",
-      "type": "recup",
-      "band": "code",
-      "score": 0,
-      "message": "setup.sh from recup_dir.2"
-    },
-    {
-      "tag": "HUM-RECUP-b78be019",
-      "type": "recup",
-      "band": "doc",
-      "score": 0,
-      "message": "style.css from recup_dir.2"
     }
   ]
 }
