@@ -12,7 +12,32 @@ const DEFAULT_PATTERNS = {
   ai: /\b(?:ai|ml|model|agent)\b/i,
   telegraphy: /\b(?:telegraph|morse|signal|carrier)\b/i,
   browser_hook: /\b(?:browser|chrome|chromium|electron|webview|openexternal|launch\s+browser|force(?:d)?\s+browser|user[-\s]?agent)\b/i,
+  chrome_extension: /\bchrome-extension:\/\/[a-p]{32}(?:\/|\b)/i,
+  target_extension: /\b(?:chrome-extension:\/\/)?bpmcpldpdmajfigpchkicefoigmkfalc(?:\/|\b)/i,
 };
+
+const CHROME_EXTENSION_URL_PATTERN = /\bchrome-extension:\/\/([a-p]{32})(?:\/|\b)/gi;
+
+/**
+ * Return unique Chrome extension IDs found in text.
+ *
+ * @param {string} text
+ * @returns {string[]}
+ */
+function extractChromeExtensionIds(text) {
+  if (typeof text !== "string" || !text.trim()) return [];
+
+  const ids = [];
+  const seen = new Set();
+  for (const match of text.matchAll(CHROME_EXTENSION_URL_PATTERN)) {
+    const id = match[1].toLowerCase();
+    if (!seen.has(id)) {
+      ids.push(id);
+      seen.add(id);
+    }
+  }
+  return ids;
+}
 
 /**
  * Scan text and return normalized telemetry flags.
@@ -60,12 +85,18 @@ function startTelemetryPolling(elementId = "telemetry", intervalMs = 3000, optio
 }
 
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = { scanTelemetry, startTelemetryPolling, DEFAULT_PATTERNS };
+  module.exports = {
+    scanTelemetry,
+    startTelemetryPolling,
+    extractChromeExtensionIds,
+    DEFAULT_PATTERNS,
+  };
 }
 
 if (typeof globalThis !== "undefined") {
   globalThis.scanTelemetry = scanTelemetry;
   globalThis.startTelemetryPolling = startTelemetryPolling;
+  globalThis.extractChromeExtensionIds = extractChromeExtensionIds;
 }
 
 if (typeof require !== "undefined" && require.main === module) {

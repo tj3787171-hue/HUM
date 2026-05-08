@@ -638,6 +638,7 @@ browser/electron/chromium hook-up phrases:
 
 ```bash
 node scripts/scanTelemetry.js "hook redirect force browser chromium agent"
+node scripts/scanTelemetry.js "chrome-extension://bpmcpldpdmajfigpchkicefoigmkfalc/"
 ```
 
 The scanner emits normalized flags like:
@@ -647,6 +648,14 @@ The scanner emits normalized flags like:
 - `AI`
 - `TELEGRAPHY`
 - `BROWSER_HOOK`
+- `CHROME_EXTENSION`
+- `TARGET_EXTENSION` (for `bpmcpldpdmajfigpchkicefoigmkfalc`)
+
+For JSON/conversation pipelines, the browser helper also exposes:
+
+```javascript
+extractChromeExtensionIds("chrome-extension://bpmcpldpdmajfigpchkicefoigmkfalc/");
+```
 
 Browser polling example (every 3s):
 
