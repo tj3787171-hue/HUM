@@ -5,6 +5,8 @@
 .devcontainer/*.local.json
 __pycache__/
 *.pyc
+node_modules/
+.venv-semgrep/
 data/
 diagnostics/
 iso-build/.build/

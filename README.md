@@ -624,6 +624,46 @@ sudo bash scripts/hum-host-static-ip.sh remove
 The script reports proxy (`3128`), VNC (`5901`), noVNC (`6080`), and TTY/SSH
 (`22`) listener state. It never edits `/etc/resolv.conf` or resolver settings.
 
+## Firebase Hosting security
+
+`firebase.json` configures Firebase Hosting for the `site/` directory with
+security headers, no-store JSON responses, and static asset caching. Copy the
+example project mapping before deploying:
+
+```bash
+cp .firebaserc.example .firebaserc
+# edit .firebaserc and replace your-firebase-project-id
+firebase deploy --only hosting
+```
+
+The Firebase config intentionally keeps secrets out of git and does not create
+or mutate Firebase projects.
+
+## Semgrep bootstrap for Kali ISO workflows
+
+Use the Yarn/package scripts or the shell helper directly:
+
+```bash
+yarnpkg run semgrep:check
+yarnpkg run semgrep:scan
+sudo bash websetup/scripts/kali-headless-bootstrap.sh semgrep
+```
+
+The Semgrep rules include review gates for destructive Btrfs/wipe commands,
+fetch-and-execute shell patterns, and broad listener bindings. The bootstrap
+creates a local `.venv-semgrep/` when Semgrep is not already installed.
+
+## Btrfs journal safety
+
+Automated Btrfs journal/filesystem wiping is intentionally blocked. Use:
+
+```bash
+bash scripts/btrfs-journal-safety.sh check
+bash scripts/btrfs-journal-safety.sh refuse-wipe
+```
+
+`refuse-wipe` exits non-zero and documents the manual-offline-recovery policy.
+
 ## Dev container status indicator (`<>`)
 
 If you see the `<>` style status indicator in the bottom-right status area in

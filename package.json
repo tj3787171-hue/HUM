@@ -1,0 +1,12 @@
+{
+  "private": true,
+  "name": "hum-toolkit",
+  "description": "HUM static site and Kali bootstrap helper scripts.",
+  "scripts": {
+    "bootstrap-kali-iso:semgrep": "bash scripts/setup-semgrep-plugin.sh bootstrap-kali-iso",
+    "semgrep:check": "bash scripts/setup-semgrep-plugin.sh check",
+    "semgrep:scan": "bash scripts/setup-semgrep-plugin.sh scan",
+    "firebase:serve-site": "firebase emulators:start --only hosting",
+    "firebase:deploy-site": "firebase deploy --only hosting"
+  }
+}

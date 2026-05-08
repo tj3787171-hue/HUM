@@ -1,0 +1,21 @@
+rules:
+  - id: hum-review-destructive-btrfs-or-wipefs
+    languages:
+      - generic
+    severity: WARNING
+    message: "Review destructive filesystem operation; HUM automation must not wipe Btrfs journals or filesystems."
+    pattern-regex: '(?i)\b(?:wipefs\s+|mkfs\.btrfs\s+|btrfs\s+check\s+--repair|btrfs\s+rescue\s+zero-log)\b'
+
+  - id: hum-review-shell-fetch-exec
+    languages:
+      - generic
+    severity: WARNING
+    message: "Review fetch-and-execute shell pattern before bootstrap use."
+    pattern-regex: '(?i)\b(?:curl|wget)\b[^\n|;]*(?:\||;)\s*(?:sudo\s+)?(?:sh|bash)\b'
+
+  - id: hum-review-broad-listener
+    languages:
+      - generic
+    severity: INFO
+    message: "Review broad listener binding; prefer 127.0.0.1 unless LAN exposure is intended."
+    pattern-regex: '0\.0\.0\.0:(?:22|5901|6080|9222|3128|8080|8443)\b'

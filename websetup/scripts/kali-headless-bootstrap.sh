@@ -72,6 +72,17 @@ step_sdv() {
   PYTHONPATH="$root" python3 -m websetup.sdv apply
 }
 
+step_semgrep() {
+  local root
+  root="$(project_root)"
+  log "Preparing Semgrep bootstrap from $root"
+  if [[ ! -x "$root/scripts/setup-semgrep-plugin.sh" ]]; then
+    echo "Missing $root/scripts/setup-semgrep-plugin.sh. Copy repo first." >&2
+    exit 1
+  fi
+  bash "$root/scripts/setup-semgrep-plugin.sh" bootstrap-kali-iso
+}
+
 ensure_root
 
 case "$STEP" in
@@ -86,8 +97,9 @@ case "$STEP" in
   time) step_time ;;
   docker) step_docker ;;
   sdv) step_sdv ;;
+  semgrep|setup-semgrep-plugin|bootstrap-kali-iso) step_semgrep ;;
   *)
-    echo "Usage: sudo bash kali-headless-bootstrap.sh {all|base|ssh|time|docker|sdv}" >&2
+    echo "Usage: sudo bash kali-headless-bootstrap.sh {all|base|ssh|time|docker|sdv|semgrep}" >&2
     exit 1
     ;;
 esac
