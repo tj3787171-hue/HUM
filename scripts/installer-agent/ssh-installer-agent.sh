@@ -14,8 +14,8 @@ LOCAL_IP="${HUM_LOCAL_IP:-192.168.68.53}"
 SSH_KEY="${HOME}/.ssh/hum-installer-agent"
 LOG_FILE="/tmp/ssh-installer-agent-$(date +%Y%m%d-%H%M%S).log"
 
-KALI_MIRROR="${HUM_KALI_MIRROR:-http://http.kali.org/kali}"
-DEBIAN_MIRROR="${HUM_DEBIAN_MIRROR:-http://deb.debian.org/debian}"
+KALI_MIRROR="${HUM_KALI_MIRROR:-https://http.kali.org/kali}"
+DEBIAN_MIRROR="${HUM_DEBIAN_MIRROR:-https://deb.debian.org/debian}"
 
 log() { echo "[$(date '+%H:%M:%S')] $*" | tee -a "$LOG_FILE"; }
 err() { log "ERROR: $*" >&2; }

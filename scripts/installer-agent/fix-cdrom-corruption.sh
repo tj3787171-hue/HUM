@@ -35,6 +35,7 @@ APT::CDROM::NoMount "true";
 Acquire::cdrom::AutoDetect "false";
 Acquire::Retries "5";
 Acquire::http::Timeout "30";
+Acquire::https::Timeout "30";
 FORCE
 
 # Set DNS
@@ -49,8 +50,8 @@ echo "[CDROM-FIX] Adding network mirror..."
 cat >> /etc/apt/sources.list <<'MIRROR'
 
 # Network sources (CDROM bypass)
-deb http://http.kali.org/kali kali-rolling main contrib non-free non-free-firmware
-deb http://deb.debian.org/debian bookworm main contrib non-free non-free-firmware
+deb https://http.kali.org/kali kali-rolling main contrib non-free non-free-firmware
+deb https://deb.debian.org/debian bookworm main contrib non-free non-free-firmware
 MIRROR
 
 # Set proxy if penguin is reachable

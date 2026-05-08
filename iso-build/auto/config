@@ -2,8 +2,8 @@
 set -euo pipefail
 
 # Allow mirror overrides without editing this file.
-DEBIAN_MIRROR="${HUM_DEBIAN_MIRROR:-http://deb.debian.org/debian/}"
-DEBIAN_SECURITY_MIRROR="${HUM_DEBIAN_SECURITY_MIRROR:-http://security.debian.org/debian-security/}"
+DEBIAN_MIRROR="${HUM_DEBIAN_MIRROR:-https://deb.debian.org/debian/}"
+DEBIAN_SECURITY_MIRROR="${HUM_DEBIAN_SECURITY_MIRROR:-https://security.debian.org/debian-security/}"
 
 # "noauto" prevents recursive execution of auto/config.
 lb config noauto \

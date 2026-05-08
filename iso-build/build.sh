@@ -5,8 +5,8 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ISO_DIR="$ROOT_DIR/iso-build"
 OUT_DIR="$ROOT_DIR/data/iso-output"
 STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
-DEBIAN_MIRROR="${HUM_DEBIAN_MIRROR:-http://deb.debian.org/debian/}"
-DEBIAN_SECURITY_MIRROR="${HUM_DEBIAN_SECURITY_MIRROR:-http://security.debian.org/debian-security/}"
+DEBIAN_MIRROR="${HUM_DEBIAN_MIRROR:-https://deb.debian.org/debian/}"
+DEBIAN_SECURITY_MIRROR="${HUM_DEBIAN_SECURITY_MIRROR:-https://security.debian.org/debian-security/}"
 
 if [[ "${EUID:-$(id -u)}" -ne 0 ]]; then
   echo "This build must run as root (use: sudo bash iso-build/build.sh)." >&2

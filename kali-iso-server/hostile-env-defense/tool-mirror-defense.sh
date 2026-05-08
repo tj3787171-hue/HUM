@@ -21,10 +21,10 @@ DEBIAN_ARCHIVE_KEY="605C66F00D6C9793"
 
 # Trusted mirrors with HTTPS fallback
 MIRRORS="
-http://http.kali.org/kali
-http://kali.download/kali
-http://deb.debian.org/debian
-http://security.debian.org/debian-security
+https://http.kali.org/kali
+https://kali.download/kali
+https://deb.debian.org/debian
+https://security.debian.org/debian-security
 "
 
 # Phase 1: Preserve essential binaries
