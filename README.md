@@ -526,10 +526,15 @@ and cgroup v2 but **no systemd as PID 1**, the snap server script can:
 sudo bash scripts/hum-snap-server.sh up                           # bootstrap
 sudo bash scripts/hum-snap-server.sh loop-mount foo.snap mysnap   # mount at /snap/mysnap
 /snap/mysnap/bin/some-binary                                      # run directly
+sudo bash scripts/hum-snap-server.sh attach copilot-desktop       # move process into snap.hum cgroup
 sudo bash scripts/hum-snap-server.sh loop-unmount mysnap          # clean up
 sudo bash scripts/hum-snap-server.sh status                       # full report
 sudo bash scripts/hum-snap-server.sh down                         # teardown
 ```
+
+Use `attach --pid <pid>` when you already know the exact process ID. The
+command requires root for the real `/sys/fs/cgroup` tree and fails without
+changing anything if `up` has not created the snap cgroup scope.
 
 ### Why not just use snapd directly?
 
