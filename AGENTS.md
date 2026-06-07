@@ -45,3 +45,5 @@ Building the `.devcontainer/Dockerfile` requires pulling `mcr.microsoft.com/devc
 - There is no build step — scripts are run directly.
 - The `hum-dev-netns.sh up/down` subcommands require root privileges and will modify host network namespaces.
 - System dependency `iproute2` must be installed for the network namespace script to work (`sudo apt-get install -y iproute2`).
+- The Cloud VM kernel does not support the `dummy` network interface type; `hum-dev-netns.sh up` will print a warning but still works correctly for veth peer chain setup.
+- `pyright` installs to `~/.local/bin` which may not be on `PATH` by default. Use `export PATH="$HOME/.local/bin:$PATH"` before running it, or invoke directly as `~/.local/bin/pyright`.
