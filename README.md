@@ -25,6 +25,7 @@ Private-by-default development container configuration for online/local developm
   - common forwarded ports (`3000`, `5173`, `8000`, `8080`)
 - `.devcontainer/post-create.sh` to print network/module/tooling status at container create
 - `websetup/` bundle for SDV + virtual phase configuration (`.yml`, `.csv`, `.json`)
+- `scripts/fix_cursor_cli_json.py` to repair Penguin/Chromebook Cursor Agent `cli.json` schema errors (`display` belongs in `cli-config.json`)
 
 ## Use it
 
@@ -106,6 +107,43 @@ override rather than as the default container path.
   - `6080` (web desktop/noVNC)
 
 These defaults keep access for you (and trusted local forwarding endpoints), not broad network listeners.
+
+## Cursor Agent CLI on Penguin (Chromebook)
+
+Penguin (Crostini) shells start in `$HOME`. Running `agent` from there treats
+`~/.cursor/cli.json` as **project** config. That file may only contain
+`version`, `editor`, and `permissions`. Settings such as `display` belong in
+the **global** file `~/.cursor/cli-config.json`.
+
+If `agent` fails with:
+
+```text
+Invalid project config at /home/<user>/.cursor/cli.json: schema validation failed.
+Unrecognized key(s) in object: 'display'
+```
+
+repair it from this repo (stdlib Python 3, no pip):
+
+```bash
+python3 scripts/fix_cursor_cli_json.py --status
+python3 scripts/fix_cursor_cli_json.py
+```
+
+The repair copies `display` (and any other global-only keys) into
+`~/.cursor/cli-config.json`, rewrites `~/.cursor/cli.json` to the project
+schema, and keeps timestamped `.bak.*` copies beside both files.
+
+Preview without writing:
+
+```bash
+python3 scripts/fix_cursor_cli_json.py --dry-run
+```
+
+Put the CLI on PATH in zsh if `agent` is installed under `~/.local/bin`:
+
+```bash
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc && source ~/.zshrc
+```
 
 ## Penguin terminal dev naming (Proxy + Docker + Dummy)
 
