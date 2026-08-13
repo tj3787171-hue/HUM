@@ -18,3 +18,4 @@ penguin-peer0,penguin-peer0,veth,dev-ns,192.168.68.53,,active,-,-,veth namespace
 lab-www,lab-www,lab-web-server,lab-www,10.223.77.2,dev,active,10.223.77.1,-,Isolated HTTP lab namespace with reverse proxy via scripts/lab-www-reverse-proxy.py
 lab-www-host0,lab-www-host0,veth,lab-www,10.223.77.1,,active,-,-,veth host side for lab-www namespace (proxy listener)
 lab-www-ns0,lab-www-ns0,veth,lab-www,10.223.77.2,,active,-,-,veth namespace side for lab-www (upstream web server)
+desktop-server,HUM-desktop,desktop-server,lan,192.168.68.53,physical,planned,192.168.68.51,209.18.47.61,Desktop server area alias of HUM; bind-bridge peer for laptop/penguin via amd64 ISO + Darwin kernel.dmg tokens; snapper/fwupd path; php/apt-listchanges excluded

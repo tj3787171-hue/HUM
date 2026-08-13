@@ -1,0 +1,16 @@
+[Unit]
+Description=HUM laptop-desktop bind-bridge token handshake
+Documentation=https://github.com/tj3787171-hue/HUM
+After=network-online.target snapperd.service plymouth-quit.service
+Wants=snapper-timeline.service snapperd.service fwupd.service fwupd-refresh.service
+Conflicts=phpsessionclean.service apt-listchanges.service
+# Do not After=plymouth-quit-wait.service: default TimeoutStartSec=infinity holds the field.
+# apt-listchanges.service is Perl and was designed on that wait job; keep it off this path.
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/python3 /usr/local/share/hum/hum_bind_bridge.py status --no-probe
+
+[Install]
+WantedBy=multi-user.target

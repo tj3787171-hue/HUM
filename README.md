@@ -107,6 +107,50 @@ override rather than as the default container path.
 
 These defaults keep access for you (and trusted local forwarding endpoints), not broad network listeners.
 
+## Laptop–desktop bind-bridge (ISO/DMG tokens)
+
+Begin the laptop ↔ desktop-server connection by minting bind-bridge tokens from
+present **amd64** ISOs, **Darwin `kernel.dmg`**, and any other `.iso` files.
+Penguin (`192.168.68.52`) and the developer laptop share a planned bind-bridge
+to the desktop server area (`HUM` / `desktop-server` at `192.168.68.53`).
+
+The path is meant to run under `snapper-timeline.service` or `snapperd.service`,
+with `fwupd.service` involved for firmware TCP (`443`/`80`) and UDP (`5353`).
+`phpsessionclean.service` is kept off this path so it is not involved with
+`apt-listchanges.service` (Perl; those units stay local/excluded).
+
+`plymouth-quit-wait.service` is the boot hold-up: its vendor
+`TimeoutStartSec=infinity` is the "Hold until boot process finishes up" job.
+Perl `apt-listchanges` was designed to run after that wait, which is why it
+must not join this field. Prefer **join** (finite timeout + `plymouth-quit`)
+over deleting Plymouth on a graphical desktop.
+
+```bash
+python3 scripts/hum_bind_bridge.py plan --no-probe
+python3 scripts/hum_bind_bridge.py status --no-probe
+python3 scripts/hum_bind_bridge.py emit-units
+python3 scripts/hum_bind_bridge.py emit-units --plymouth mask
+python3 scripts/validate_virtual_setup.py
+```
+
+Search paths include `dist/`, `data/iso-output/`, `/host-downloads`,
+`/mnt/virtual-drive`, and Chromebook Downloads. Override with `--search DIR`.
+The plan is written to `diagnostics/bind-bridge-plan.json` (gitignored). Unit
+snippets stage under `diagnostics/bind-bridge-units/`; copy into
+`/etc/systemd/system/` only after reviewing the `Conflicts=` lines.
+
+Committed unit templates live in `websetup/virtual/units/`.
+
+Join vs remove Plymouth:
+
+- **Join the field (default):** drop-in `TimeoutStartSec=20s` on
+  `plymouth-quit-wait.service`, `After=plymouth-quit.service` on the bind-bridge,
+  and `Conflicts=apt-listchanges.service`. Do **not** `After=` the wait unit
+  itself or the infinity timeout comes back.
+- **Remove it (headless / Penguin):** `systemctl mask plymouth-quit-wait.service plymouth-start.service`
+  then `systemctl daemon-reload`. Use `--plymouth mask` to emit that command file.
+  Do not mask Plymouth on a graphical Kali desktop that still shows a splash.
+
 ## Penguin terminal dev naming (Proxy + Docker + Dummy)
 
 If you want the laptop Penguin terminal to use stable developer names that parallel

@@ -12,4 +12,5 @@ Reference map for SDV and virtual setup artifacts.
 | [virtual/network-matrix.json](virtual/network-matrix.json) | Connectivity graph |
 | [virtual/bindings.json](virtual/bindings.json) | SDV-to-virtual mapping |
 | [virtual/catalog.json](virtual/catalog.json) | Artifact catalog |
+| [virtual/units/](virtual/units/) | Staged snapper/fwupd bind-bridge systemd snippets |
 

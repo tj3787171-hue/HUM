@@ -101,12 +101,33 @@ nodes:
       host: "lab-www-host0"
       peer: "lab-www-ns0"
     gateway: "10.223.77.1"
+  - id: desktop-server
+    profile: physical
+    segment: lan
+    ip_hint: "192.168.68.53"
+    role: "desktop-server"
+    gateway: "192.168.68.51"
+    bind_bridge:
+      laptop: local-laptop-dev
+      penguin: penguin
+      images:
+        - linux-amd64-iso
+        - darwin-kernel-dmg
+      units_allow:
+        - snapper-timeline.service
+        - snapperd.service
+        - fwupd.service
+      units_deny:
+        - phpsessionclean.service
+        - apt-listchanges.service
 
 stacks: []
 hooks:
   before_apply:
     - "bash scripts/hum-dev-netns.sh status"
+    - "python3 scripts/hum_bind_bridge.py plan --no-probe"
   apply:
     - "sudo bash scripts/hum-dev-netns.sh up"
   after_apply:
     - "sudo bash scripts/hum-dev-netns.sh trace"
+    - "python3 scripts/hum_bind_bridge.py status --no-probe"

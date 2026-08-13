@@ -33,6 +33,33 @@
       "matrix_node": "encrypted-cloud-services",
       "encryption_required": true,
       "action_mode": "automatic"
+    },
+    "bind_bridge_tokens": {
+      "enabled": true,
+      "matrix_node": "desktop-server",
+      "script": "scripts/hum_bind_bridge.py",
+      "units_allow": [
+        "snapper-timeline.service",
+        "snapperd.service",
+        "fwupd.service",
+        "fwupd-refresh.service"
+      ],
+      "units_deny": [
+        "phpsessionclean.service",
+        "apt-listchanges.service"
+      ],
+      "plymouth": {
+        "mode": "join",
+        "wait_unit": "plymouth-quit-wait.service",
+        "quit_unit": "plymouth-quit.service",
+        "timeout_sec": 20,
+        "perl_unit": "apt-listchanges.service"
+      },
+      "image_roles": [
+        "linux-amd64-iso",
+        "darwin-kernel-dmg",
+        "iso-image"
+      ]
     }
   }
 }

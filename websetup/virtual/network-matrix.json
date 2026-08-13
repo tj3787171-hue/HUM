@@ -209,6 +209,119 @@
           }
         ]
       }
+    },
+    {
+      "id": "desktop-server",
+      "kind": "host",
+      "role": "desktop-server",
+      "mac": "78:ac:c0:ac:5a:c9",
+      "labels": [
+        "lan",
+        "desktop",
+        "bind-bridge",
+        "amd64",
+        "darwin-dmg"
+      ],
+      "metadata": {
+        "ip_address": "192.168.68.53",
+        "alias_of": "HUM",
+        "gateway": "192.168.68.51",
+        "image_roles": [
+          "linux-amd64-iso",
+          "darwin-kernel-dmg",
+          "iso-image"
+        ],
+        "bind_script": "scripts/hum_bind_bridge.py",
+        "units_allow": [
+          "snapper-timeline.service",
+          "snapperd.service",
+          "fwupd.service",
+          "fwupd-refresh.service"
+        ],
+        "units_deny": [
+          "phpsessionclean.service",
+          "apt-listchanges.service"
+        ],
+        "fwupd_tcp_ports": [443, 80],
+        "fwupd_udp_ports": [5353]
+      }
+    },
+    {
+      "id": "snapper-timeline",
+      "kind": "service",
+      "role": "btrfs-snapshot-timeline",
+      "labels": [
+        "snapper",
+        "bind-bridge",
+        "allowed"
+      ],
+      "metadata": {
+        "unit": "snapper-timeline.service",
+        "companion_unit": "snapperd.service"
+      }
+    },
+    {
+      "id": "fwupd",
+      "kind": "service",
+      "role": "firmware-update",
+      "labels": [
+        "fwupd",
+        "bind-bridge",
+        "tcp",
+        "udp"
+      ],
+      "metadata": {
+        "unit": "fwupd.service",
+        "tcp_ports": [443, 80],
+        "udp_ports": [5353],
+        "note": "LVFS uses TCP 443/80; local device discovery may use UDP 5353. Prior UDP/TCP issues stay on this service, not apt-listchanges."
+      }
+    },
+    {
+      "id": "phpsessionclean",
+      "kind": "service",
+      "role": "php-session-gc",
+      "labels": [
+        "excluded",
+        "bind-bridge-deny"
+      ],
+      "metadata": {
+        "unit": "phpsessionclean.service",
+        "isolation": "must-not-share-path-with-apt-listchanges-on-bind-bridge"
+      }
+    },
+    {
+      "id": "apt-listchanges",
+      "kind": "service",
+      "role": "apt-changelog-mail",
+      "labels": [
+        "excluded",
+        "bind-bridge-deny"
+      ],
+      "metadata": {
+        "unit": "apt-listchanges.service",
+        "isolation": "must-not-share-path-with-phpsessionclean-on-bind-bridge",
+        "runtime": "perl",
+        "designed_on": "plymouth-quit-wait.service"
+      }
+    },
+    {
+      "id": "plymouth-quit-wait",
+      "kind": "service",
+      "role": "boot-splash-gate",
+      "labels": [
+        "plymouth",
+        "bind-bridge-gate",
+        "timeout"
+      ],
+      "metadata": {
+        "unit": "plymouth-quit-wait.service",
+        "companion_unit": "plymouth-quit.service",
+        "default_timeout": "infinity",
+        "hum_timeout_sec": 20,
+        "modes": ["join", "mask"],
+        "note": "This is the boot hold-up. Join the unit field with a finite TimeoutStartSec; do not After= it from hum-bind-bridge. Mask on headless/Penguin. Perl apt-listchanges was designed to run after this wait and stays Conflicts=."
+      }
     }
   ],
   "edges": [
@@ -331,6 +444,57 @@
       "type": "mount_location",
       "state": "planned",
       "note": "Logical volume map targets the existing virtual-drive mount root."
+    },
+    {
+      "from": "local-laptop-dev",
+      "to": "desktop-server",
+      "type": "bind_bridge",
+      "bidirectional": true,
+      "state": "planned",
+      "note": "Laptop-to-desktop bind-bridge tokens from amd64 ISO + Darwin kernel.dmg + other present ISOs."
+    },
+    {
+      "from": "penguin",
+      "to": "desktop-server",
+      "type": "bind_bridge",
+      "bidirectional": true,
+      "state": "planned",
+      "note": "Penguin/Crostini uses the same bind-bridge tokens toward HUM desktop at 192.168.68.53."
+    },
+    {
+      "from": "snapper-timeline",
+      "to": "desktop-server",
+      "type": "snapshot_path",
+      "state": "planned",
+      "note": "snapper-timeline.service or snapperd.service owns bind-bridge state snapshots."
+    },
+    {
+      "from": "fwupd",
+      "to": "desktop-server",
+      "type": "firmware_tcp_udp",
+      "state": "planned",
+      "note": "fwupd.service must be involved on this bridge; TCP 443/80 and UDP 5353 stay off php/apt units."
+    },
+    {
+      "from": "phpsessionclean",
+      "to": "apt-listchanges",
+      "type": "isolated",
+      "state": "excluded",
+      "note": "phpsessionclean.service must not be involved with apt-listchanges.service on the bind-bridge."
+    },
+    {
+      "from": "plymouth-quit-wait",
+      "to": "desktop-server",
+      "type": "boot_gate",
+      "state": "planned",
+      "note": "Bound TimeoutStartSec=20s so Plymouth wait cannot hold snapper/fwupd/bind-bridge. Do not Requires= this unit."
+    },
+    {
+      "from": "plymouth-quit-wait",
+      "to": "apt-listchanges",
+      "type": "isolated",
+      "state": "excluded",
+      "note": "Perl apt-listchanges was designed on plymouth-quit-wait; keep it off the bind-bridge field."
     }
   ],
   "foreign_assertions": [

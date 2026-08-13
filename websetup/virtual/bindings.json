@@ -62,6 +62,30 @@
         "path": "./features.json"
       },
       "purpose": "Optional MACsec lab feature should be enabled only when state and key material are present."
+    },
+    {
+      "id": "iso-dmg-to-bind-bridge-tokens",
+      "sdv": {
+        "artifact": "scripts/hum_bind_bridge.py",
+        "path": "../../scripts/hum_bind_bridge.py"
+      },
+      "virtual": {
+        "artifact": "network-matrix.json",
+        "path": "./network-matrix.json#/nodes/desktop-server"
+      },
+      "purpose": "Mint bind-bridge tokens from amd64 ISOs, Darwin kernel.dmg, and other present ISO files to connect laptop/penguin to the desktop server area."
+    },
+    {
+      "id": "snapper-fwupd-units-to-bind-bridge",
+      "sdv": {
+        "artifact": "websetup/virtual/units",
+        "path": "./units"
+      },
+      "virtual": {
+        "artifact": "features.json",
+        "path": "./features.json#/features/bind_bridge_tokens"
+      },
+      "purpose": "Run the bind-bridge under snapper-timeline.service or snapperd.service with fwupd.service TCP/UDP, keeping phpsessionclean.service and apt-listchanges.service off the path. Bound plymouth-quit-wait.service so its infinite wait cannot hold the field; Perl apt-listchanges stays Conflicts=."
     }
   ]
 }

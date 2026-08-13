@@ -42,6 +42,11 @@
       "path": "schemas/bindings.schema.json",
       "format": "json-schema",
       "role": "validation_schema"
+    },
+    {
+      "path": "units/hum-bind-bridge.service",
+      "format": "systemd-unit",
+      "role": "bind_bridge_unit"
     }
   ]
 }
