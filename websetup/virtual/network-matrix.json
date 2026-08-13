@@ -6,6 +6,43 @@
   "generated_at": "2026-04-05T00:00:00Z",
   "nodes": [
     {
+      "id": "BELL",
+      "kind": "host",
+      "role": "hp-slimline",
+      "labels": [
+        "physical",
+        "slimline-s5000",
+        "docker-identity"
+      ],
+      "metadata": {
+        "serial": "MXX116042G",
+        "product": "BV627AA#ABA",
+        "access": "docker-identity",
+        "ip_address": "unknown",
+        "recovery_unit": "recovery-cursor-agent.service",
+        "scripts": [
+          "scripts/hum-recovery-access.sh",
+          "scripts/hp-slimline-recovery/scan-system.sh"
+        ]
+      }
+    },
+    {
+      "id": "ubuntu-start",
+      "kind": "service",
+      "role": "ubuntu-start",
+      "labels": [
+        "https",
+        "docker-start",
+        "known-working"
+      ],
+      "metadata": {
+        "ip_address": "10.10.2.2",
+        "port": 8443,
+        "url": "https://10.10.2.2:8443",
+        "note": "Current endpoint that can start the Ubuntu server"
+      }
+    },
+    {
       "id": "HUM",
       "kind": "host",
       "role": "kali-host",
@@ -295,6 +332,34 @@
       "type": "ssh_management",
       "state": "active",
       "note": "SSH installer agent manages Kali host installation remotely"
+    },
+    {
+      "from": "penguin",
+      "to": "BELL",
+      "type": "docker_identity",
+      "state": "active",
+      "note": "Chromebook Penguin finds BELL via recovery-cursor-agent.service and Docker published ports; host IP unknown"
+    },
+    {
+      "from": "penguin",
+      "to": "ubuntu-start",
+      "type": "https_start",
+      "state": "active",
+      "note": "https://10.10.2.2:8443 is the known-working start path for the Ubuntu server"
+    },
+    {
+      "from": "ubuntu-start",
+      "to": "BELL",
+      "type": "start_path",
+      "state": "active",
+      "note": "8443 start endpoint brings up the Ubuntu server used with the Slimline recovery loop"
+    },
+    {
+      "from": "BELL",
+      "to": "HUM",
+      "type": "logical_path",
+      "state": "planned",
+      "note": "Slimline recovery path toward Kali desktop after Plymouth/fwupd/binfmt boot units are settled"
     },
     {
       "from": "lab-www-host0",

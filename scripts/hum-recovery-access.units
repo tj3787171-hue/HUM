@@ -1,0 +1,34 @@
+# Penguin default.target catalog (captured 2026-08-13 on tj3787171@penguin)
+# Fields: kind<TAB>unit<TAB>role
+# kind:
+#   failed   = observed × in default.target (breaks readiness)
+#   inactive = observed ○ in default.target (needed or crash-adjacent)
+#   present  = observed ● and required for the Ubuntu/BELL loop
+#   absent   = not in this default.target; Chromebook still treats it as a hole
+#   crash    = known boot-crash candidate (may also be absent)
+#   skip     = never query, start, stop, or mask
+failed	kali-homebase-readonly.service	homebase
+inactive	display-manager.service	desktop
+inactive	collect-netns.service	netns
+inactive	proc-sys-fs-binfmt_misc.automount	binfmt
+inactive	systemd-binfmt.service	binfmt
+inactive	first-boot-cros.service	crostini
+inactive	update-cros-list.service	crostini
+present	docker.service	docker-identity
+present	docker.socket	docker-identity
+present	containerd.service	docker-identity
+present	ssh.service	access
+present	cros-port-listener.service	crostini
+present	collect-netns.timer	netns
+present	dnsmasq.service	proxy
+present	apt-cacher-ng.service	proxy
+present	apache2.service	proxy
+absent	recovery-cursor-agent.service	recovery
+absent	proc-sys-fs-binfmt_misc.mount	binfmt
+crash	plymouth-quit-wait.service	boot-block
+crash	plymouth-quit.service	boot-block
+crash	fwupd.service	firmware-update
+crash	fwupd.socket	firmware-update
+crash	fwupd-refresh.service	firmware-update
+crash	fwupd-refresh.timer	firmware-update
+skip	institute-hikvision-probe.service	do-not-touch

@@ -590,6 +590,42 @@ the userspace FUSE/extract path for environments without root.
 
 Run `--help` on either script for full usage.
 
+## Chromebook boot units + BELL Docker-identity access
+
+Penguin (Crostini) and BELL (HP Slimline s5000, serial `MXX116042G`) use
+`scripts/hum-recovery-access.sh` when the Slimline IP is unknown and
+`recovery-cursor-agent.service` made its links through Docker. The Ubuntu
+server start path that currently works is `https://10.10.2.2:8443`.
+
+`scripts/hum-recovery-access.units` is the Penguin `default.target` catalog:
+failed `kali-homebase-readonly.service`; inactive `display-manager.service`
+and binfmt units; present Docker/SSH/proxy units; absent
+`recovery-cursor-agent.service`, Plymouth, and `fwupd*`.
+`institute-hikvision-probe.service` is skip and is never queried or changed.
+
+On the Chromebook (after `git pull`):
+
+```bash
+bash scripts/hum-recovery-access.sh graph-status
+bash scripts/hum-recovery-access.sh boot-units
+bash scripts/hum-recovery-access.sh binfmt-status
+bash scripts/hum-recovery-access.sh kaudit-report
+bash scripts/hum-recovery-access.sh discover
+bash scripts/hum-recovery-access.sh start-hint
+sudo bash scripts/hum-recovery-access.sh plymouth-boot
+sudo bash scripts/hum-recovery-access.sh plymouth-stop
+sudo bash scripts/hum-recovery-access.sh mask-fwupd --i-am-on-chromebook-penguin
+```
+
+To get `plymouth-quit-wait.service` into the boot graph and finished
+(`active (exited)`), run `plymouth-boot` on Penguin. It enables the unit,
+starts `plymouth-quit` first so the wait can complete, then starts the wait
+unit. If the unit is not installed: add `--install-plymouth`.
+
+`mask-fwupd` only masks firmware-update units and only on a host that looks
+like Crostini. It does not mask `binfmt_misc` (that can break every exec).
+Personal-use files stay on BELL/Kali.
+
 ## Build a bootable ISO
 
 Generate a bootable ISO containing all HUM toolkit scripts:
