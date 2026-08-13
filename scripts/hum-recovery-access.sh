@@ -26,6 +26,7 @@ Usage:
   sudo bash scripts/hum-recovery-access.sh plymouth-stop
   bash scripts/hum-recovery-access.sh ssh-hint
   bash scripts/hum-recovery-access.sh start-hint
+  bash scripts/hum-recovery-access.sh graph-status
   sudo bash scripts/hum-recovery-access.sh mask-fwupd --i-am-on-chromebook-penguin
 
 discover       Read-only: recovery unit, Docker, docker0. No LAN sweep.
@@ -35,6 +36,7 @@ kaudit-report  Count recent kauditd_printk lines (report only).
 plymouth-*     Status/start/stop plymouth-quit-wait.service only.
 ssh-hint       Print SSH targets from Docker published ports / container IPs.
 start-hint     Print the known Ubuntu-start URL (default https://10.10.2.2:8443).
+graph-status   Compare the Penguin default.target catalog to live unit state.
 mask-fwupd     Mask fwupd* only. Requires --i-am-on-chromebook-penguin.
 
 Never touches institute-hikvision-probe.service.
@@ -133,6 +135,21 @@ cmd_boot_units() {
     state="$(unit_state "$unit")"
     printf '%s\t%s\t%s\t%s\n' "$kind" "$unit" "$role" "$state"
   done < <(foreach_catalog)
+}
+
+cmd_graph_status() {
+  echo "=== penguin default.target catalog vs live ==="
+  echo "Readiness fails when a needed unit is failed, inactive, or not-found."
+  echo
+  cmd_boot_units
+  echo
+  echo "=== readiness notes ==="
+  echo "failed (observed ×): kali-homebase-readonly.service"
+  echo "inactive desktop: display-manager.service (no graphical session)"
+  echo "inactive binfmt: systemd-binfmt.service, proc-sys-fs-binfmt_misc.automount"
+  echo "absent from this default.target: recovery-cursor-agent, plymouth-quit-wait, fwupd*"
+  echo "skip: $SKIP_UNIT"
+  echo "start path still: $UBUNTU_START_URL"
 }
 
 cmd_binfmt_status() {
@@ -260,7 +277,7 @@ cmd_mask_fwupd() {
     echo "masking $unit"
     systemctl stop "$unit" 2>/dev/null || true
     systemctl mask "$unit"
-  done < <(foreach_catalog crash)
+  done < <(foreach_catalog)
   echo "fwupd units masked. binfmt and hikvision were not changed."
 }
 
@@ -277,6 +294,7 @@ main() {
     plymouth-stop) cmd_plymouth stop ;;
     ssh-hint) cmd_ssh_hint ;;
     start-hint) cmd_start_hint ;;
+    graph-status) cmd_graph_status ;;
     mask-fwupd) cmd_mask_fwupd "$@" ;;
     -h|--help|help) usage ;;
     *)

@@ -27,8 +27,8 @@ pulls HUM and runs it. Penguin/laptop run the same helper read-only.
 
 ## Components
 
-- `scripts/hum-recovery-access.sh` — discover, boot-units, plymouth, ssh-hint
-- `scripts/hum-recovery-access.units` — exact unit/timer catalog
+- `scripts/hum-recovery-access.sh` — discover, boot-units, graph-status, plymouth, ssh-hint
+- `scripts/hum-recovery-access.units` — Penguin `default.target` catalog (2026-08-13)
 - Inventory/matrix row for BELL with `access: docker-identity` and empty IP
 
 ## Data flow
@@ -38,6 +38,10 @@ pulls HUM and runs it. Penguin/laptop run the same helper read-only.
 3. `plymouth-start` / `plymouth-stop` touch only `plymouth-quit-wait.service`.
 4. `ssh-hint` prints a command from discover output; it does not copy files.
 5. `start-hint` / `discover` print `https://10.10.2.2:8443` as the current Ubuntu-start URL.
+6. `graph-status` compares the Penguin `default.target` catalog to live state.
+   Observed 2026-08-13: `kali-homebase-readonly.service` failed; `display-manager.service`
+   and binfmt units inactive; `recovery-cursor-agent`, Plymouth, and `fwupd*` absent
+   from that tree. Chromebook readiness fails when a needed unit is missing or failed.
 
 ## Safety
 

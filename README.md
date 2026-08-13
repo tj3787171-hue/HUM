@@ -597,11 +597,11 @@ Penguin (Crostini) and BELL (HP Slimline s5000, serial `MXX116042G`) use
 `recovery-cursor-agent.service` made its links through Docker. The Ubuntu
 server start path that currently works is `https://10.10.2.2:8443`.
 
-Exact crash-candidate units live in `scripts/hum-recovery-access.units`:
-`plymouth-quit-wait.service`, `fwupd.service`, `fwupd.socket`,
-`fwupd-refresh.service`, `fwupd-refresh.timer`, `systemd-binfmt.service`,
-and the `binfmt_misc` mount/automount. `institute-hikvision-probe.service`
-is cataloged as skip and is never queried or changed.
+`scripts/hum-recovery-access.units` is the Penguin `default.target` catalog:
+failed `kali-homebase-readonly.service`; inactive `display-manager.service`
+and binfmt units; present Docker/SSH/proxy units; absent
+`recovery-cursor-agent.service`, Plymouth, and `fwupd*`.
+`institute-hikvision-probe.service` is skip and is never queried or changed.
 
 On the Chromebook (after `git pull`):
 
