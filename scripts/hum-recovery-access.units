@@ -26,6 +26,7 @@ present	apache2.service	proxy
 absent	recovery-cursor-agent.service	recovery
 absent	proc-sys-fs-binfmt_misc.mount	binfmt
 crash	plymouth-quit-wait.service	boot-block
+crash	plymouth-quit.service	boot-block
 crash	fwupd.service	firmware-update
 crash	fwupd.socket	firmware-update
 crash	fwupd-refresh.service	firmware-update

@@ -8,6 +8,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 UNITS_FILE="${HUM_RECOVERY_UNITS_FILE:-${SCRIPT_DIR}/hum-recovery-access.units}"
 RECOVERY_UNIT="${HUM_RECOVERY_UNIT:-recovery-cursor-agent.service}"
 PLYMOUTH_UNIT="plymouth-quit-wait.service"
+PLYMOUTH_QUIT_UNIT="plymouth-quit.service"
 SKIP_UNIT="institute-hikvision-probe.service"
 DOCKER_HINT_IF="${HUM_DOCKER_HINT_IF:-docker0}"
 UBUNTU_START_HOST="${HUM_UBUNTU_START_HOST:-10.10.2.2}"
@@ -24,6 +25,7 @@ Usage:
   bash scripts/hum-recovery-access.sh plymouth-status
   sudo bash scripts/hum-recovery-access.sh plymouth-start
   sudo bash scripts/hum-recovery-access.sh plymouth-stop
+  sudo bash scripts/hum-recovery-access.sh plymouth-boot [--install-plymouth]
   bash scripts/hum-recovery-access.sh ssh-hint
   bash scripts/hum-recovery-access.sh start-hint
   bash scripts/hum-recovery-access.sh graph-status
@@ -34,6 +36,7 @@ boot-units     Exact status of cataloged crash units (fwupd, binfmt, plymouth).
 binfmt-status  List /proc/sys/fs/binfmt_misc entries (report only).
 kaudit-report  Count recent kauditd_printk lines (report only).
 plymouth-*     Status/start/stop plymouth-quit-wait.service only.
+plymouth-boot  Enable + complete plymouth-quit-wait (quit first, then wait).
 ssh-hint       Print SSH targets from Docker published ports / container IPs.
 start-hint     Print the known Ubuntu-start URL (default https://10.10.2.2:8443).
 graph-status   Compare the Penguin default.target catalog to live unit state.
@@ -218,6 +221,67 @@ cmd_plymouth() {
   esac
 }
 
+plymouth_unit_known() {
+  local unit="$1"
+  local state
+  state="$(systemctl show -p LoadState --value "$unit" 2>/dev/null || echo unknown)"
+  [[ "$state" != "not-found" && "$state" != "unknown" && -n "$state" ]]
+}
+
+cmd_plymouth_boot() {
+  local install_plymouth=0
+  for arg in "$@"; do
+    if [[ "$arg" == "--install-plymouth" ]]; then
+      install_plymouth=1
+    fi
+  done
+
+  assert_not_skip "$PLYMOUTH_UNIT"
+  assert_not_skip "$PLYMOUTH_QUIT_UNIT"
+  command -v systemctl >/dev/null 2>&1 || die "systemctl missing"
+  [[ "${EUID:-$(id -u)}" -eq 0 ]] || die "plymouth-boot requires root"
+
+  echo "=== plymouth-boot ==="
+  echo "goal: enable $PLYMOUTH_UNIT and let it reach active (exited)"
+  echo "never touching $SKIP_UNIT"
+
+  if ! plymouth_unit_known "$PLYMOUTH_UNIT"; then
+    echo "$PLYMOUTH_UNIT is not installed (absent from this image)."
+    if [[ "$install_plymouth" -eq 1 ]]; then
+      command -v apt-get >/dev/null 2>&1 || die "apt-get missing; cannot install plymouth"
+      apt-get update
+      DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends plymouth
+    else
+      echo "On Penguin run:"
+      echo "  sudo bash scripts/hum-recovery-access.sh plymouth-boot --install-plymouth"
+      echo "or: sudo apt-get install -y plymouth"
+      die "$PLYMOUTH_UNIT not-found"
+    fi
+  fi
+
+  systemctl unmask "$PLYMOUTH_QUIT_UNIT" 2>/dev/null || true
+  systemctl unmask "$PLYMOUTH_UNIT" 2>/dev/null || true
+  systemctl enable "$PLYMOUTH_UNIT"
+
+  # quit-wait blocks until plymouth has quit. Start quit first so wait can finish.
+  if plymouth_unit_known "$PLYMOUTH_QUIT_UNIT"; then
+    echo "starting $PLYMOUTH_QUIT_UNIT so the wait unit can complete"
+    systemctl start "$PLYMOUTH_QUIT_UNIT" || true
+  elif command -v plymouth >/dev/null 2>&1; then
+    echo "starting plymouth quit via CLI"
+    plymouth quit --retain-splash 2>/dev/null || plymouth quit 2>/dev/null || true
+  fi
+
+  systemctl start "$PLYMOUTH_UNIT"
+  echo
+  echo "enabled: $(systemctl is-enabled "$PLYMOUTH_UNIT" 2>/dev/null || echo unknown)"
+  echo "active:  $(systemctl is-active "$PLYMOUTH_UNIT" 2>/dev/null || echo unknown)"
+  systemctl show -p LoadState,ActiveState,SubState,UnitFileState --no-pager "$PLYMOUTH_UNIT" || true
+  echo
+  echo "active (exited) means the wait finished and boot can continue."
+  echo "activating / timeout means Plymouth never quit; re-run plymouth-boot or: sudo plymouth quit"
+}
+
 cmd_start_hint() {
   echo "=== ubuntu start endpoint ==="
   echo "host: $UBUNTU_START_HOST"
@@ -292,6 +356,7 @@ main() {
     plymouth-status) cmd_plymouth status ;;
     plymouth-start) cmd_plymouth start ;;
     plymouth-stop) cmd_plymouth stop ;;
+    plymouth-boot) cmd_plymouth_boot "$@" ;;
     ssh-hint) cmd_ssh_hint ;;
     start-hint) cmd_start_hint ;;
     graph-status) cmd_graph_status ;;

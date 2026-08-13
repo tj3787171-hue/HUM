@@ -606,14 +606,21 @@ and binfmt units; present Docker/SSH/proxy units; absent
 On the Chromebook (after `git pull`):
 
 ```bash
+bash scripts/hum-recovery-access.sh graph-status
 bash scripts/hum-recovery-access.sh boot-units
 bash scripts/hum-recovery-access.sh binfmt-status
 bash scripts/hum-recovery-access.sh kaudit-report
 bash scripts/hum-recovery-access.sh discover
 bash scripts/hum-recovery-access.sh start-hint
+sudo bash scripts/hum-recovery-access.sh plymouth-boot
 sudo bash scripts/hum-recovery-access.sh plymouth-stop
 sudo bash scripts/hum-recovery-access.sh mask-fwupd --i-am-on-chromebook-penguin
 ```
+
+To get `plymouth-quit-wait.service` into the boot graph and finished
+(`active (exited)`), run `plymouth-boot` on Penguin. It enables the unit,
+starts `plymouth-quit` first so the wait can complete, then starts the wait
+unit. If the unit is not installed: add `--install-plymouth`.
 
 `mask-fwupd` only masks firmware-update units and only on a host that looks
 like Crostini. It does not mask `binfmt_misc` (that can break every exec).

@@ -36,6 +36,8 @@ pulls HUM and runs it. Penguin/laptop run the same helper read-only.
 1. `discover` reads systemd + Docker + `docker0` (no subnet scan).
 2. `boot-units` prints each cataloged unit’s `LoadState`/`ActiveState`.
 3. `plymouth-start` / `plymouth-stop` touch only `plymouth-quit-wait.service`.
+   `plymouth-boot` enables that unit, starts `plymouth-quit` first so the wait
+   can finish, then starts the wait unit (`active (exited)` = boot complete).
 4. `ssh-hint` prints a command from discover output; it does not copy files.
 5. `start-hint` / `discover` print `https://10.10.2.2:8443` as the current Ubuntu-start URL.
 6. `graph-status` compares the Penguin `default.target` catalog to live state.
