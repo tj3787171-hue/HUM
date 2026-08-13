@@ -11,6 +11,7 @@ penguin,penguin,chromebook-linux,dev-ns,192.168.68.52,dev,active,192.168.68.51,2
 router-68-51,router-68-51,home-router,lan,192.168.68.51,infra,active,192.168.68.51,209.18.47.61,Router gateway for 192.168.68.0/24 DNS 209.18.47.61 209.18.47.62
 HUM,HUM,kali-host,lan,192.168.68.53,physical,active,192.168.68.51,209.18.47.61,MAC 78:ac:c0:ac:5a:c9 IPv6 fe80::7aac:c0ff:feac:5ac9/64 eth0 192.168.68.53/22
 BELL,BELL,hp-slimline,lan,TBD,physical,active,192.168.68.51,209.18.47.61,HP Pavilion Slimline s5000 serial MXX116042G product BV627AA#ABA access docker-identity IP unknown recovery-cursor-agent.service
+ubuntu-start,ubuntu-start,ubuntu-start,docker-start,10.10.2.2,dev,active,-,-,HTTPS start endpoint https://10.10.2.2:8443 currently able to start the Ubuntu server
 br-int,br-int,linux-bridge,core,10.11.8.1,,active,-,-,SDV reserved
 veth0,veth0,veth,core,10.11.8.50,,active,-,-,Reserved by scripts/hum-dev-netns.sh when adapted
 peer0,peer0,veth,core,10.11.8.51,,active,-,-,Reserved by scripts/hum-dev-netns.sh when adapted

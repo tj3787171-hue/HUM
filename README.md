@@ -594,7 +594,8 @@ Run `--help` on either script for full usage.
 
 Penguin (Crostini) and BELL (HP Slimline s5000, serial `MXX116042G`) use
 `scripts/hum-recovery-access.sh` when the Slimline IP is unknown and
-`recovery-cursor-agent.service` made its links through Docker.
+`recovery-cursor-agent.service` made its links through Docker. The Ubuntu
+server start path that currently works is `https://10.10.2.2:8443`.
 
 Exact crash-candidate units live in `scripts/hum-recovery-access.units`:
 `plymouth-quit-wait.service`, `fwupd.service`, `fwupd.socket`,
@@ -609,6 +610,7 @@ bash scripts/hum-recovery-access.sh boot-units
 bash scripts/hum-recovery-access.sh binfmt-status
 bash scripts/hum-recovery-access.sh kaudit-report
 bash scripts/hum-recovery-access.sh discover
+bash scripts/hum-recovery-access.sh start-hint
 sudo bash scripts/hum-recovery-access.sh plymouth-stop
 sudo bash scripts/hum-recovery-access.sh mask-fwupd --i-am-on-chromebook-penguin
 ```

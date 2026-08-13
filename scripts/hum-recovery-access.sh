@@ -10,6 +10,9 @@ RECOVERY_UNIT="${HUM_RECOVERY_UNIT:-recovery-cursor-agent.service}"
 PLYMOUTH_UNIT="plymouth-quit-wait.service"
 SKIP_UNIT="institute-hikvision-probe.service"
 DOCKER_HINT_IF="${HUM_DOCKER_HINT_IF:-docker0}"
+UBUNTU_START_HOST="${HUM_UBUNTU_START_HOST:-10.10.2.2}"
+UBUNTU_START_PORT="${HUM_UBUNTU_START_PORT:-8443}"
+UBUNTU_START_URL="${HUM_UBUNTU_START_URL:-https://${UBUNTU_START_HOST}:${UBUNTU_START_PORT}}"
 
 usage() {
   cat <<'EOF'
@@ -22,6 +25,7 @@ Usage:
   sudo bash scripts/hum-recovery-access.sh plymouth-start
   sudo bash scripts/hum-recovery-access.sh plymouth-stop
   bash scripts/hum-recovery-access.sh ssh-hint
+  bash scripts/hum-recovery-access.sh start-hint
   sudo bash scripts/hum-recovery-access.sh mask-fwupd --i-am-on-chromebook-penguin
 
 discover       Read-only: recovery unit, Docker, docker0. No LAN sweep.
@@ -30,6 +34,7 @@ binfmt-status  List /proc/sys/fs/binfmt_misc entries (report only).
 kaudit-report  Count recent kauditd_printk lines (report only).
 plymouth-*     Status/start/stop plymouth-quit-wait.service only.
 ssh-hint       Print SSH targets from Docker published ports / container IPs.
+start-hint     Print the known Ubuntu-start URL (default https://10.10.2.2:8443).
 mask-fwupd     Mask fwupd* only. Requires --i-am-on-chromebook-penguin.
 
 Never touches institute-hikvision-probe.service.
@@ -112,6 +117,9 @@ cmd_discover() {
   else
     echo "ip: missing (install iproute2 on this host)"
   fi
+
+  echo
+  cmd_start_hint
 }
 
 cmd_boot_units() {
@@ -193,6 +201,15 @@ cmd_plymouth() {
   esac
 }
 
+cmd_start_hint() {
+  echo "=== ubuntu start endpoint ==="
+  echo "host: $UBUNTU_START_HOST"
+  echo "port: $UBUNTU_START_PORT"
+  echo "url:  $UBUNTU_START_URL"
+  echo "role: known-working HTTPS start for the Ubuntu server"
+  echo "This is the current start path; BELL LAN IP remains unknown."
+}
+
 cmd_ssh_hint() {
   echo "=== ssh hint (Docker identity, no connect) ==="
   if ! command -v docker >/dev/null 2>&1; then
@@ -259,6 +276,7 @@ main() {
     plymouth-start) cmd_plymouth start ;;
     plymouth-stop) cmd_plymouth stop ;;
     ssh-hint) cmd_ssh_hint ;;
+    start-hint) cmd_start_hint ;;
     mask-fwupd) cmd_mask_fwupd "$@" ;;
     -h|--help|help) usage ;;
     *)

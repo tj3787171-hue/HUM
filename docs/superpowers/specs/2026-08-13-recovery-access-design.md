@@ -17,6 +17,7 @@ SSH/desktop paths when BELL’s IP is unknown, and give the Chromebook a
 | BELL | HP Pavilion Slimline s5000, serial `MXX116042G`, product `BV627AA#ABA` | unknown; Docker identity |
 | Kali / HUM | Kali desktop host | `192.168.68.53` (inventory) |
 | Cloud agent | Writes HUM only | no LAN packets |
+| ubuntu-start | Known-working HTTPS start | `https://10.10.2.2:8443` |
 
 ## Architecture
 
@@ -36,6 +37,7 @@ pulls HUM and runs it. Penguin/laptop run the same helper read-only.
 2. `boot-units` prints each cataloged unit’s `LoadState`/`ActiveState`.
 3. `plymouth-start` / `plymouth-stop` touch only `plymouth-quit-wait.service`.
 4. `ssh-hint` prints a command from discover output; it does not copy files.
+5. `start-hint` / `discover` print `https://10.10.2.2:8443` as the current Ubuntu-start URL.
 
 ## Safety
 
