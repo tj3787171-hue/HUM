@@ -32,6 +32,7 @@ SNAP_CGROUP="${HUM_SNAP_CGROUP:-snap.hum}"
 INIT_CGROUP="${HUM_INIT_CGROUP:-hum-init}"
 SNAPD_LOG="${HUM_SNAPD_LOG:-/tmp/hum-snapd.log}"
 SNAPD_PID_FILE="${HUM_SNAPD_PID_FILE:-/tmp/hum-snapd.pid}"
+CGROUP_ROOT="${HUM_CGROUP_ROOT:-/sys/fs/cgroup}"
 
 # ---------------------------------------------------------------------------
 # helpers
@@ -43,6 +44,7 @@ Usage:
   sudo bash scripts/hum-snap-server.sh up
   sudo bash scripts/hum-snap-server.sh down
   sudo bash scripts/hum-snap-server.sh status
+  sudo bash scripts/hum-snap-server.sh attach       [--pid <pid>|<process-name>]
   sudo bash scripts/hum-snap-server.sh loop-mount   <squashfs-file> <name>
   sudo bash scripts/hum-snap-server.sh loop-unmount  <name>
   sudo bash scripts/hum-snap-server.sh loop-list
@@ -51,6 +53,7 @@ Subcommands:
   up              Bootstrap cgroup scope + start snapd daemon.
   down            Stop snapd + tear down cgroup scope.
   status          Report loop mounts, cgroup state, snapd health.
+  attach          Move a process into the snap cgroup scope.
   loop-mount      Mount a .snap file at /snap/<name> via loop device.
   loop-unmount    Unmount /snap/<name> and detach loop device.
   loop-list       List all loop-mounted snaps.
@@ -61,6 +64,7 @@ Environment overrides:
   HUM_INIT_CGROUP      Child cgroup for init procs   (default: hum-init)
   HUM_SNAPD_LOG        snapd log path                (default: /tmp/hum-snapd.log)
   HUM_SNAPD_PID_FILE   snapd PID file                (default: /tmp/hum-snapd.pid)
+  HUM_CGROUP_ROOT      cgroup2 mount root            (default: /sys/fs/cgroup)
 EOF
 }
 
@@ -84,7 +88,7 @@ log() { echo "[hum-snap-server] $*"; }
 # cgroup helpers – move procs to child so root subtree_control is writable
 # ---------------------------------------------------------------------------
 
-cgroup_root="/sys/fs/cgroup"
+cgroup_root="$CGROUP_ROOT"
 
 ensure_child_cgroup() {
   local child="$1"
@@ -294,6 +298,96 @@ loop_list() {
 }
 
 # ---------------------------------------------------------------------------
+# attach: move a running process into the snap cgroup scope
+# ---------------------------------------------------------------------------
+
+is_pid() {
+  [[ "$1" =~ ^[0-9]+$ ]]
+}
+
+target_cgroup_path() {
+  printf '%s/%s\n' "$cgroup_root" "$SNAP_CGROUP"
+}
+
+resolve_attach_pids() {
+  local target="$1"
+  shift || true
+
+  if [[ "$target" == "--pid" ]]; then
+    [[ $# -lt 1 ]] && { echo "Usage: attach --pid <pid>" >&2; return 1; }
+    is_pid "$1" || { echo "Error: invalid pid: $1" >&2; return 1; }
+    printf '%s\n' "$1"
+    return 0
+  fi
+
+  if is_pid "$target"; then
+    printf '%s\n' "$target"
+    return 0
+  fi
+
+  need_cmd pgrep || return 1
+  pgrep -x "$target" 2>/dev/null || pgrep -f "(^|/)$target([[:space:]]|$)" 2>/dev/null
+}
+
+attach_process() {
+  local target="${1:-}"
+  [[ -z "$target" ]] && { echo "Usage: attach [--pid <pid>|<process-name>]" >&2; return 1; }
+
+  if [[ "$cgroup_root" == "/sys/fs/cgroup" ]]; then
+    require_root
+  fi
+
+  local target_path
+  target_path="$(target_cgroup_path)"
+  if [[ ! -d "$target_path" ]]; then
+    echo "Error: snap cgroup does not exist: $target_path" >&2
+    echo "Run first: sudo bash scripts/hum-snap-server.sh up" >&2
+    return 1
+  fi
+  if [[ ! -w "${target_path}/cgroup.procs" ]]; then
+    echo "Error: cgroup.procs is not writable: ${target_path}/cgroup.procs" >&2
+    return 1
+  fi
+
+  local pids
+  if ! pids="$(resolve_attach_pids "$@")" || [[ -z "$pids" ]]; then
+    echo "Error: no matching process found: $target" >&2
+    return 1
+  fi
+
+  local attached=0
+  local failed=0
+  local pid
+  while IFS= read -r pid; do
+    [[ -z "$pid" ]] && continue
+    if ! is_pid "$pid"; then
+      log "Skipping non-pid match: $pid"
+      failed=$((failed + 1))
+      continue
+    fi
+    if ! kill -0 "$pid" 2>/dev/null; then
+      log "Skipping stale pid: $pid"
+      failed=$((failed + 1))
+      continue
+    fi
+    if printf '%s\n' "$pid" >> "${target_path}/cgroup.procs" 2>/dev/null; then
+      echo "attached pid: $pid -> $target_path"
+      attached=$((attached + 1))
+    else
+      log "Could not attach pid: $pid"
+      failed=$((failed + 1))
+    fi
+  done <<< "$pids"
+
+  if [[ "$attached" -eq 0 ]]; then
+    echo "Error: no processes were attached ($failed failed)" >&2
+    return 1
+  fi
+
+  log "Attached $attached process(es) to $target_path ($failed failed)"
+}
+
+# ---------------------------------------------------------------------------
 # up / down / status
 # ---------------------------------------------------------------------------
 
@@ -390,8 +484,8 @@ status_report() {
   echo ""
 
   echo "[cgroup v2]"
-  echo "  type:               $(stat -fc %T /sys/fs/cgroup/ 2>/dev/null || echo unknown)"
-  echo "  subtree_control:    $(cat ${cgroup_root}/cgroup.subtree_control 2>/dev/null || echo '(empty)')"
+  echo "  type:               $(stat -fc %T "$cgroup_root" 2>/dev/null || echo unknown)"
+  echo "  subtree_control:    $(cat "${cgroup_root}/cgroup.subtree_control" 2>/dev/null || echo '(empty)')"
   echo "  init cgroup:        ${cgroup_root}/${INIT_CGROUP} $(test -d "${cgroup_root}/${INIT_CGROUP}" && echo EXISTS || echo MISSING)"
   echo "  snap cgroup:        ${cgroup_root}/${SNAP_CGROUP} $(test -d "${cgroup_root}/${SNAP_CGROUP}" && echo EXISTS || echo MISSING)"
   if [[ -d "${cgroup_root}/${SNAP_CGROUP}" ]]; then
@@ -465,6 +559,11 @@ main() {
       ;;
     status)
       status_report
+      ;;
+    attach)
+      [[ $# -lt 2 ]] && { echo "Usage: attach [--pid <pid>|<process-name>]" >&2; exit 1; }
+      shift
+      attach_process "$@"
       ;;
     loop-mount)
       require_root
