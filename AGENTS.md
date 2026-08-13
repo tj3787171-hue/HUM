@@ -9,7 +9,7 @@ HUM is a lightweight utility repository (no package manager, no build step, no l
 - **Dev Container config** (`.devcontainer/`) — Ubuntu 24.04-based container with LAN/network tools.
 - **`scripts/hum-dev-netns.sh`** — Bash script for Linux network namespace setup (requires `iproute2` and root).
 - **`scripts/deepseek_db_link.py`** — Python 3 CLI that indexes DeepSeek backup exports into SQLite. Uses only stdlib modules (zero pip dependencies).
-- **`scripts/hum_bind_bridge.py`** — Stdlib planner that mints laptop–desktop bind-bridge tokens from amd64 ISO / Darwin kernel.dmg artifacts and stages snapper/fwupd unit snippets.
+- **`scripts/hum_clone_cert_bootstrap.py`** — Stdlib `begin` check for clone roots and authenticated TLS path variables (no PEM bodies in git).
 
 ### Running scripts
 
@@ -20,6 +20,7 @@ HUM is a lightweight utility repository (no package manager, no build step, no l
 | Network namespace up/down | `sudo bash scripts/hum-dev-netns.sh up` | Requires root + `iproute2` |
 | DeepSeek importer | `python3 scripts/deepseek_db_link.py --source <dir> --database <db>` | Stdlib-only Python 3 |
 | Bind-bridge planner | `python3 scripts/hum_bind_bridge.py plan --no-probe` | Stdlib-only Python 3; ISO/DMG tokens, snapper/fwupd path |
+| Clone/cert begin | `python3 scripts/hum_clone_cert_bootstrap.py begin` | Stdlib-only Python 3; clone root + TLS path env vars |
 | Snap bypass | `bash scripts/hum-snap-bypass.sh <subcommand>` | Requires `squashfs-tools`, `squashfuse`, `xz-utils`, `file`, `fuse3` |
 
 ### Linting
@@ -27,8 +28,8 @@ HUM is a lightweight utility repository (no package manager, no build step, no l
 No project-level lint config exists. Use these tools for quality checks:
 
 - **Bash**: `shellcheck scripts/hum-dev-netns.sh .devcontainer/post-create.sh`
-- **Python**: `pyright scripts/deepseek_db_link.py scripts/hum_bind_bridge.py` (install via `pip install pyright`)
-- **Bind-bridge tests**: `python3 -m unittest tests.test_hum_bind_bridge tests.test_sdv`
+- **Python**: `pyright scripts/deepseek_db_link.py scripts/hum_bind_bridge.py scripts/hum_clone_cert_bootstrap.py` (install via `pip install pyright`)
+- **Bind-bridge tests**: `python3 -m unittest tests.test_hum_bind_bridge tests.test_hum_clone_cert_bootstrap tests.test_sdv`
 
 ### Docker / Dev Container build
 

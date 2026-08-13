@@ -65,6 +65,20 @@ management of local ISO/IMG files.
 3. Edit `.devcontainer/dev.env` with your private values (`chmod 600 .devcontainer/dev.env`).
 4. Restart/reopen the container again to re-import values cleanly.
 
+Start clone paths and authenticated cert **path** variables before bind-bridge
+or HTTPS serving (files stay outside git):
+
+```bash
+cp .devcontainer/dev.env.example .devcontainer/dev.env
+chmod 600 .devcontainer/dev.env
+# Set HUM_CLONE_ROOT, HUM_TLS_CERT, HUM_TLS_KEY, HUM_TLS_CA or SSL_CERT_FILE / GIT_SSL_CAINFO
+bash .devcontainer/import-environment.sh
+python3 scripts/hum_clone_cert_bootstrap.py begin
+```
+
+`begin` creates `HUM_CLONE_ROOT` (default `~/src`) and exits `2` until at least
+one cert path variable is declared. Penguin zsh is hooked the same way as bash.
+
 Environment import outputs:
 
 - shell export file: `~/.config/hum-dev/imported.env`
@@ -116,6 +130,11 @@ to the desktop server area (`HUM` / `desktop-server` at `192.168.68.53`).
 
 The path is meant to run under `snapper-timeline.service` or `snapperd.service`,
 with `fwupd.service` involved for firmware TCP (`443`/`80`) and UDP (`5353`).
+Start clone/cert path variables first:
+
+```bash
+python3 scripts/hum_clone_cert_bootstrap.py begin
+```
 `phpsessionclean.service` is kept off this path so it is not involved with
 `apt-listchanges.service` (Perl; those units stay local/excluded).
 

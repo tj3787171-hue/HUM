@@ -9,6 +9,7 @@ TARGET_DIR="${HOME}/.config/hum-dev"
 TARGET_ENV="${TARGET_DIR}/imported.env"
 TARGET_JSON="${TARGET_DIR}/runtime.json"
 BASHRC="${HOME}/.bashrc"
+ZSHRC="${HOME}/.zshrc"
 
 mkdir -p "${TARGET_DIR}"
 touch "${TARGET_ENV}"
@@ -43,16 +44,18 @@ fi
 
 # shellcheck disable=SC2016
 SOURCE_LINE='[ -f "$HOME/.config/hum-dev/imported.env" ] && set -a && . "$HOME/.config/hum-dev/imported.env" && set +a'
-if [[ ! -f "${BASHRC}" ]]; then
-  touch "${BASHRC}"
-fi
-if ! grep -Fq "${SOURCE_LINE}" "${BASHRC}"; then
-  {
-    echo
-    echo "# HUM imported environment"
-    echo "${SOURCE_LINE}"
-  } >> "${BASHRC}"
-fi
+for rc_file in "${BASHRC}" "${ZSHRC}"; do
+  if [[ ! -f "${rc_file}" ]]; then
+    touch "${rc_file}"
+  fi
+  if ! grep -Fq "${SOURCE_LINE}" "${rc_file}"; then
+    {
+      echo
+      echo "# HUM imported environment"
+      echo "${SOURCE_LINE}"
+    } >> "${rc_file}"
+  fi
+done
 
 if [[ -s "${TARGET_ENV}" ]]; then
   set -a
@@ -76,6 +79,11 @@ payload = {
     "vnc_port": os.environ.get("HUM_VNC_PORT", "5901"),
     "chrome_remote_debug_bind": os.environ.get("HUM_CHROME_REMOTE_DEBUG_ADDR", "127.0.0.1"),
     "chrome_remote_debug_port": os.environ.get("HUM_CHROME_REMOTE_DEBUG_PORT", "9222"),
+    "clone_root": os.environ.get("HUM_CLONE_ROOT", ""),
+    "repo_url": os.environ.get("HUM_REPO_URL", ""),
+    "tls_cert_path": os.environ.get("HUM_TLS_CERT", ""),
+    "tls_key_path_set": bool(os.environ.get("HUM_TLS_KEY", "").strip()),
+    "tls_ca_path": os.environ.get("HUM_TLS_CA", "") or os.environ.get("SSL_CERT_FILE", "") or os.environ.get("GIT_SSL_CAINFO", ""),
     "generated_from": os.environ["HUM_RUNTIME_JSON_SOURCE"],
 }
 target.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
