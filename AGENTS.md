@@ -9,6 +9,7 @@ HUM is a lightweight utility repository (no package manager, no build step, no l
 - **Dev Container config** (`.devcontainer/`) — Ubuntu 24.04-based container with LAN/network tools.
 - **`scripts/hum-dev-netns.sh`** — Bash script for Linux network namespace setup (requires `iproute2` and root).
 - **`scripts/deepseek_db_link.py`** — Python 3 CLI that indexes DeepSeek backup exports into SQLite. Uses only stdlib modules (zero pip dependencies).
+- **`scripts/hum_bind_bridge.py`** — Stdlib planner that mints laptop–desktop bind-bridge tokens from amd64 ISO / Darwin kernel.dmg artifacts and stages snapper/fwupd unit snippets.
 - **`scripts/hum_clone_cert_bootstrap.py`** — Stdlib `begin` check for clone roots and authenticated TLS path variables (no PEM bodies in git).
 
 ### Running scripts
