@@ -590,6 +590,33 @@ the userspace FUSE/extract path for environments without root.
 
 Run `--help` on either script for full usage.
 
+## Chromebook boot units + BELL Docker-identity access
+
+Penguin (Crostini) and BELL (HP Slimline s5000, serial `MXX116042G`) use
+`scripts/hum-recovery-access.sh` when the Slimline IP is unknown and
+`recovery-cursor-agent.service` made its links through Docker.
+
+Exact crash-candidate units live in `scripts/hum-recovery-access.units`:
+`plymouth-quit-wait.service`, `fwupd.service`, `fwupd.socket`,
+`fwupd-refresh.service`, `fwupd-refresh.timer`, `systemd-binfmt.service`,
+and the `binfmt_misc` mount/automount. `institute-hikvision-probe.service`
+is cataloged as skip and is never queried or changed.
+
+On the Chromebook (after `git pull`):
+
+```bash
+bash scripts/hum-recovery-access.sh boot-units
+bash scripts/hum-recovery-access.sh binfmt-status
+bash scripts/hum-recovery-access.sh kaudit-report
+bash scripts/hum-recovery-access.sh discover
+sudo bash scripts/hum-recovery-access.sh plymouth-stop
+sudo bash scripts/hum-recovery-access.sh mask-fwupd --i-am-on-chromebook-penguin
+```
+
+`mask-fwupd` only masks firmware-update units and only on a host that looks
+like Crostini. It does not mask `binfmt_misc` (that can break every exec).
+Personal-use files stay on BELL/Kali.
+
 ## Build a bootable ISO
 
 Generate a bootable ISO containing all HUM toolkit scripts:

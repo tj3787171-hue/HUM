@@ -6,6 +6,27 @@
   "generated_at": "2026-04-05T00:00:00Z",
   "nodes": [
     {
+      "id": "BELL",
+      "kind": "host",
+      "role": "hp-slimline",
+      "labels": [
+        "physical",
+        "slimline-s5000",
+        "docker-identity"
+      ],
+      "metadata": {
+        "serial": "MXX116042G",
+        "product": "BV627AA#ABA",
+        "access": "docker-identity",
+        "ip_address": "unknown",
+        "recovery_unit": "recovery-cursor-agent.service",
+        "scripts": [
+          "scripts/hum-recovery-access.sh",
+          "scripts/hp-slimline-recovery/scan-system.sh"
+        ]
+      }
+    },
+    {
       "id": "HUM",
       "kind": "host",
       "role": "kali-host",
@@ -295,6 +316,20 @@
       "type": "ssh_management",
       "state": "active",
       "note": "SSH installer agent manages Kali host installation remotely"
+    },
+    {
+      "from": "penguin",
+      "to": "BELL",
+      "type": "docker_identity",
+      "state": "active",
+      "note": "Chromebook Penguin finds BELL via recovery-cursor-agent.service and Docker published ports; host IP unknown"
+    },
+    {
+      "from": "BELL",
+      "to": "HUM",
+      "type": "logical_path",
+      "state": "planned",
+      "note": "Slimline recovery path toward Kali desktop after Plymouth/fwupd/binfmt boot units are settled"
     },
     {
       "from": "lab-www-host0",
