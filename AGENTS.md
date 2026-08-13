@@ -18,6 +18,7 @@ HUM is a lightweight utility repository (no package manager, no build step, no l
 | Network namespace status | `bash scripts/hum-dev-netns.sh status` | Requires `iproute2` |
 | Network namespace up/down | `sudo bash scripts/hum-dev-netns.sh up` | Requires root + `iproute2` |
 | DeepSeek importer | `python3 scripts/deepseek_db_link.py --source <dir> --database <db>` | Stdlib-only Python 3 |
+| Cursor CLI config repair | `python3 scripts/fix_cursor_cli_json.py` | Stdlib-only Python 3; fixes Penguin `agent` `cli.json` schema errors |
 | Snap bypass | `bash scripts/hum-snap-bypass.sh <subcommand>` | Requires `squashfs-tools`, `squashfuse`, `xz-utils`, `file`, `fuse3` |
 
 ### Linting
@@ -25,7 +26,8 @@ HUM is a lightweight utility repository (no package manager, no build step, no l
 No project-level lint config exists. Use these tools for quality checks:
 
 - **Bash**: `shellcheck scripts/hum-dev-netns.sh .devcontainer/post-create.sh`
-- **Python**: `pyright scripts/deepseek_db_link.py` (install via `pip install pyright`)
+- **Python**: `pyright scripts/deepseek_db_link.py scripts/fix_cursor_cli_json.py` (install via `pip install pyright`)
+- **Cursor CLI repair tests**: `python3 -m unittest tests.test_fix_cursor_cli_json`
 
 ### Docker / Dev Container build
 
