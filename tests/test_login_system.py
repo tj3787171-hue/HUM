@@ -79,7 +79,8 @@ class TestLoginTree(unittest.TestCase):
     def test_xml_documents_parse(self) -> None:
         for relative in ("xml/auth-config.xml", "xml/sitemap.xml", "docs/login-system.xhtml"):
             with self.subTest(relative=relative):
-                ET.parse(LOGIN / relative)
+                with (LOGIN / relative).open("rb") as handle:
+                    ET.parse(handle)
 
     def test_lab_nav_links_to_login(self) -> None:
         index = (ROOT / "site" / "index.php").read_text(encoding="utf-8")

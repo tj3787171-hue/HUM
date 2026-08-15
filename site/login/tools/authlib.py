@@ -82,7 +82,8 @@ def load_config(path: Path | None = None) -> AuthConfig:
     config_path = path or DEFAULT_CONFIG
     values: dict[str, Any] = {}
     if config_path.is_file():
-        root = ET.parse(config_path).getroot()
+        with config_path.open("rb") as handle:
+            root = ET.parse(handle).getroot()
         for child in root:
             name = _local_tag(child.tag)
             if name == "site":
