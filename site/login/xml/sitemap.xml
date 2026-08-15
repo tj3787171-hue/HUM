@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>/login/</loc></url>
+  <url><loc>/login/index.html</loc></url>
+  <url><loc>/login/login.php</loc></url>
+  <url><loc>/login/register.php</loc></url>
+  <url><loc>/login/dashboard.php</loc></url>
+  <url><loc>/login/account.php</loc></url>
+  <url><loc>/login/api/session.xml</loc></url>
+  <url><loc>/login/docs/login-system.xhtml</loc></url>
+</urlset>

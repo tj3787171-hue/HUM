@@ -11,3 +11,7 @@ iso-build/.build/
 
 # Built artifacts
 dist/*.iso
+
+# Local SQL login database (never commit password hashes).
+site/login/var/*.sqlite
+site/login/var/*.sqlite-*

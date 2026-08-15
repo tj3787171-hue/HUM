@@ -1,0 +1,25 @@
+<html xmlns:o="urn:schemas-microsoft-com:office:office"
+      xmlns:w="urn:schemas-microsoft-com:office:word"
+      xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+  <meta charset="UTF-8"/>
+  <title>HUM.org SQL login system</title>
+  <!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View></w:WordDocument></xml><![endif]-->
+</head>
+<body>
+  <h1>HUM.org SQL login system</h1>
+  <p>Open this file in Word or another word processor. It describes the lab login desk that lives under <code>site/login/</code>.</p>
+  <h2>Advice</h2>
+  <ul>
+    <li>Use SQLite here. The HUM repo already treats SQLite as the local database. You do not need MySQL for a single-operator lab login.</li>
+    <li>Keep one schema file. PHP and Python must insert the same columns or sessions will not match.</li>
+    <li>Hash passwords with PBKDF2-SHA256. Do not store plaintext and do not print hashes in logs.</li>
+    <li>Gate dashboard and account pages on a database session cookie, not a hidden form field.</li>
+    <li>RTF, DOC, and XHTML are operator documents. They are not part of the login path.</li>
+  </ul>
+  <h2>Commands</h2>
+  <p><code>python3 site/login/tools/init_auth_db.py init</code></p>
+  <p><code>python3 site/login/tools/init_auth_db.py seed --password LabOnly1234</code></p>
+  <p><code>python3 site/login/tools/login_server.py --host 127.0.0.1 --port 8088</code></p>
+</body>
+</html>

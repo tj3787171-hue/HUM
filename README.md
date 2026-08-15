@@ -26,6 +26,7 @@ Private-by-default development container configuration for online/local developm
 - `.devcontainer/post-create.sh` to print network/module/tooling status at container create
 - `websetup/` bundle for SDV + virtual phase configuration (`.yml`, `.csv`, `.json`)
 - `scripts/fix_cursor_cli_json.py` to repair Penguin/Chromebook Cursor Agent `cli.json` schema errors (`display` belongs in `cli-config.json`)
+- `site/login/` SQL login desk (SQLite + PHP pages + stdlib Python server)
 
 ## Use it
 
@@ -461,6 +462,21 @@ downstream activity:
 sudo bash scripts/hum-dev-netns.sh trace
 sudo bash scripts/hum-dev-netns.sh down
 ```
+
+## SQL login desk
+
+`site/login/` is a local SQLite login website. PHP pages and a stdlib Python
+server share `site/login/sql/schema.sql`. See `site/login/README.md` for the
+file-type advice and security notes.
+
+```bash
+python3 site/login/tools/init_auth_db.py init
+python3 site/login/tools/init_auth_db.py seed --password 'LabOnly1234'
+python3 site/login/tools/login_server.py --host 127.0.0.1 --port 8088
+```
+
+Open `http://127.0.0.1:8088/`. The SQLite file is `site/login/var/auth.sqlite`
+and is gitignored.
 
 ## DeepSeek backup -> SQLite database linking
 

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<authConfig xmlns="https://hum.org/login/config">
+  <site name="HUM.org Lab Login" origin="hum.org"/>
+  <database engine="sqlite" path="var/auth.sqlite"/>
+  <session cookieName="hum_session" ttlSeconds="43200" sameSite="Lax" httpOnly="true" secure="false"/>
+  <password algorithm="pbkdf2_sha256" iterations="210000" minLength="10" saltBytes="16" hashBytes="32"/>
+  <username pattern="^[A-Za-z][A-Za-z0-9_]{2,31}$"/>
+  <throttle maxFailures="5" windowSeconds="900"/>
+  <bind host="127.0.0.1" port="8088"/>
+</authConfig>

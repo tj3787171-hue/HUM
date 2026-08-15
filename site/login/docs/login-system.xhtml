@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+  <title>HUM.org SQL login system</title>
+</head>
+<body>
+  <h1>HUM.org SQL login system</h1>
+  <p>This desk stores local lab accounts in SQLite. PHP and Python share <code>sql/schema.sql</code> and the same PBKDF2 password string.</p>
+  <h2>Tables</h2>
+  <ul>
+    <li><code>users</code> — username, email, password hash, display name</li>
+    <li><code>sessions</code> — random cookie token and expiry</li>
+    <li><code>login_attempts</code> — success or failure for throttle</li>
+    <li><code>csrf_tokens</code> — one-time form tokens</li>
+  </ul>
+  <h2>Run without PHP</h2>
+  <pre>python3 site/login/tools/init_auth_db.py init
+python3 site/login/tools/init_auth_db.py seed --password 'LabOnly1234'
+python3 site/login/tools/login_server.py --host 127.0.0.1 --port 8088</pre>
+  <h2>Security rules</h2>
+  <ul>
+    <li>Never store a raw password.</li>
+    <li>Always bind user input with prepared statements.</li>
+    <li>Keep the SQLite file out of the web root when you can; <code>var/</code> is blocked by <code>.htaccess</code>.</li>
+    <li>This is a local lab login, not an internet identity provider.</li>
+  </ul>
+</body>
+</html>
