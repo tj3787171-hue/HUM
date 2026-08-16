@@ -1,0 +1,22 @@
+{\rtf1\ansi\deff0
+{\fonttbl{\f0 TeX Gyre Heros;}{\f1 Courier New;}}
+\f0\fs24 HUM.org SQL login system\par
+\par
+This website build is a local lab login desk. Accounts live in SQLite. PHP pages and the Python server share one schema and one password hash format.\par
+\par
+\b File types that matter\b0\par
+SQL — schema.sql creates users, sessions, login_attempts, and csrf_tokens.\par
+PHP — public forms plus includes for PDO, CSRF, and layout.\par
+HTML / XHTML — landing page and a well-formed operator spec.\par
+XML — auth-config.xml, sitemap.xml, and the session status API.\par
+CSS / JS — theme and client-side field checks. The server still validates.\par
+PY — init_auth_db.py and login_server.py for hosts without PHP.\par
+RTF / DOC — these operator notes.\par
+\par
+\b Start the Python server\b0\par
+\f1 python3 site/login/tools/init_auth_db.py init\par
+python3 site/login/tools/init_auth_db.py seed --password LabOnly1234\par
+python3 site/login/tools/login_server.py --host 127.0.0.1 --port 8088\f0\par
+\par
+Do not commit a real password. Seed only on the machine that will run the desk.\par
+}

@@ -26,6 +26,8 @@ Private-by-default development container configuration for online/local developm
 - `.devcontainer/post-create.sh` to print network/module/tooling status at container create
 - `websetup/` bundle for SDV + virtual phase configuration (`.yml`, `.csv`, `.json`)
 - `scripts/fix_cursor_cli_json.py` to repair Penguin/Chromebook Cursor Agent `cli.json` schema errors (`display` belongs in `cli-config.json`)
+- `site/login/` SQL login desk (SQLite + PHP pages + stdlib Python server)
+- `site/circuits/` blogspot delivery for virtio ISO tracks and isolation zones
 
 ## Use it
 
@@ -461,6 +463,58 @@ downstream activity:
 sudo bash scripts/hum-dev-netns.sh trace
 sudo bash scripts/hum-dev-netns.sh down
 ```
+
+## SQL login desk
+
+`site/login/` is a local SQLite login website. PHP pages and a stdlib Python
+server share `site/login/sql/schema.sql`. See `site/login/README.md` for the
+file-type advice and security notes.
+
+```bash
+python3 site/login/tools/init_auth_db.py init
+python3 site/login/tools/init_auth_db.py seed --password 'LabOnly1234'
+python3 site/login/tools/login_server.py --host 127.0.0.1 --port 8088
+```
+
+Open `http://127.0.0.1:8088/`. The SQLite file is `site/login/var/auth.sqlite`
+and is gitignored.
+
+## Virtio housing + isolation zones
+
+Guest `/dev/vda` maps to host `/dev/sda`. Present ISO tracks are Ubuntu
+Server, Kali Desktop, and Zorin. Fedora and other Debian rebuilds stay
+optional. macOS Sequoia and Windows 11 stay operator-provided onsite ISOs
+and are not bundled.
+
+`/dev/nbd0` is treated as a high-risk block export. VNC stays on
+`127.0.0.1` display zones and is never attached to nbd0.
+
+```bash
+python3 scripts/hum-isolation-zones.py plan
+python3 scripts/hum-isolation-zones.py nbd-risk
+python3 scripts/hum-ip-drift.py plan
+```
+
+The blogspot pages live at `site/circuits/` and at `http://127.0.0.1:8088/circuits/`
+when the login server is running.
+
+## HTTPS cert broadcast (LVM-cache frontend)
+
+The desktop agent writes the virtio disk. This repo builds a searchable cache
+and serves it over TLS. Show-and-tell for that agent:
+
+- `site/broadcast/pages/show-and-tell.html`
+- `docs/DESKTOP_AGENT_SHOW_AND_TELL.md`
+
+```bash
+python3 scripts/hum_https_broadcast.py build
+python3 scripts/hum_https_broadcast.py cert
+python3 scripts/hum_https_broadcast.py --host 127.0.0.1 --port 8443 serve
+```
+
+Open `https://127.0.0.1:8443/show-and-tell.html`. The public cert is `/cert.pem`.
+The private key is not served. `site/broadcast/systemd/hum-housing.target` is
+the systemctl concert.
 
 ## DeepSeek backup -> SQLite database linking
 

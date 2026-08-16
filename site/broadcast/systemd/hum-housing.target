@@ -1,0 +1,8 @@
+[Unit]
+Description=HUM virtio housing concert
+Documentation=file:site/broadcast/pages/show-and-tell.html
+Wants=hum-broadcast-cache.service hum-https-broadcast.service hum-login.service
+After=network-online.target
+
+[Install]
+WantedBy=multi-user.target

@@ -245,6 +245,8 @@ function stage_badge(string $stage): string {
     <a href="recup.php">Recup</a>
     <a href="palace.php">Palace</a>
     <a href="playbook.php" class="active">Playbook</a>
+    <a href="circuits/">Circuits</a>
+    <a href="login/">Login</a>
     <a href="convo.php?source=list" target="_blank">API</a>
   </nav>
   <span style="margin-left:auto; font-size:.75rem; color:var(--text-dim);">

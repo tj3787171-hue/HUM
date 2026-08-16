@@ -1,0 +1,84 @@
+{
+  "housing": "10.224.0.0/16",
+  "virtio": {
+    "guest": "/dev/vda",
+    "host": "/dev/sda",
+    "note": "Virtio guest disk vda maps to the host sda/vda attachment. Not nbd0."
+  },
+  "nbd0": {
+    "device": "/dev/nbd0",
+    "zone": 300,
+    "vnc_attach": "denied",
+    "reason": "VNC is a display path. nbd0 is a block export. Sharing a namespace is a high-risk collision."
+  },
+  "pattern_2026": {
+    "https": {
+      "port": 443,
+      "bind": "127.0.0.1"
+    },
+    "dns": {
+      "port": 53,
+      "scope": "housing-ns-only"
+    },
+    "login": {
+      "port": 8088,
+      "bind": "127.0.0.1"
+    }
+  },
+  "guest_count": 3,
+  "guests": [
+    {
+      "index": 0,
+      "track": "10.224.0.0/30",
+      "left": "10.224.0.1",
+      "right": "10.224.0.2",
+      "dummy_rail": "hum-dummy0",
+      "display_zone": 100,
+      "disk_zone": 200,
+      "vnc_bind": "127.0.0.1",
+      "vnc_port": 5901,
+      "novnc_port": 6080,
+      "vnc_shares_nbd": false
+    },
+    {
+      "index": 1,
+      "track": "10.224.1.0/30",
+      "left": "10.224.1.1",
+      "right": "10.224.1.2",
+      "dummy_rail": "hum-dummy1",
+      "display_zone": 101,
+      "disk_zone": 201,
+      "vnc_bind": "127.0.0.1",
+      "vnc_port": 5902,
+      "novnc_port": 6081,
+      "vnc_shares_nbd": false
+    },
+    {
+      "index": 2,
+      "track": "10.224.2.0/30",
+      "left": "10.224.2.1",
+      "right": "10.224.2.2",
+      "dummy_rail": "hum-dummy2",
+      "display_zone": 102,
+      "disk_zone": 202,
+      "vnc_bind": "127.0.0.1",
+      "vnc_port": 5903,
+      "novnc_port": 6082,
+      "vnc_shares_nbd": false
+    }
+  ],
+  "optional_iso_ids": [
+    "fedora",
+    "debian-alien",
+    "sequoia-macos",
+    "windows-11"
+  ],
+  "kernel_plan": [
+    "ip netns add hum-track-0",
+    "ip netns add hum-track-1",
+    "ip netns add hum-track-2",
+    "keep VNC listeners on 127.0.0.1 only",
+    "do not qemu-nbd or nbd-client into the VNC namespace",
+    "dummy rails are names only when the kernel lacks dummy iface support"
+  ]
+}

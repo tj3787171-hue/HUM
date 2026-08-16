@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>HUM.org — SQL Login</title>
+  <link rel="stylesheet" href="assets/login.css"/>
+</head>
+<body>
+<header>
+  <span class="logo">HUM.org</span>
+  <nav>
+    <a href="index.html" class="active">Home</a>
+    <a href="../welcome.html">Lab</a>
+    <a href="login.php">Login</a>
+    <a href="register.php">Register</a>
+  </nav>
+</header>
+<div class="container auth-wrap">
+  <section class="panel">
+    <h1>SQL login desk</h1>
+    <p class="lede">Local SQLite accounts for the HUM.org lab. Use the PHP pages on a PHP host, or the Python server in this repo.</p>
+    <p>
+      <a class="enter-btn" href="login.php">Sign in</a>
+      <a class="enter-btn" href="register.php">Create account</a>
+    </p>
+  </section>
+  <section class="panel">
+    <h2>What each file type does</h2>
+    <table>
+      <thead><tr><th>Type</th><th>Where</th><th>Why it exists</th></tr></thead>
+      <tbody>
+        <tr><td>SQL</td><td><code>sql/schema.sql</code></td><td>The account tables. This is the source of truth.</td></tr>
+        <tr><td>PHP</td><td><code>*.php</code>, <code>includes/</code></td><td>Classic web login when a PHP host is available.</td></tr>
+        <tr><td>HTML / XHTML</td><td><code>index.html</code>, <code>docs/</code></td><td>Static landing and a well-formed spec.</td></tr>
+        <tr><td>XML</td><td><code>xml/</code>, <code>api/session.php</code></td><td>Config, sitemap, session status.</td></tr>
+        <tr><td>CSS / JS</td><td><code>assets/</code></td><td>Look and client-side field checks only.</td></tr>
+        <tr><td>PY</td><td><code>tools/</code></td><td>Init the database and serve the site without PHP.</td></tr>
+        <tr><td>RTF / DOC</td><td><code>docs/</code></td><td>Operator notes you can open in a word processor.</td></tr>
+      </tbody>
+    </table>
+  </section>
+</div>
+<footer>HUM.org Lab &middot; SQLite login &middot; local accounts only</footer>
+<script src="assets/login.js"></script>
+</body>
+</html>

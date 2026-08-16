@@ -1,0 +1,14 @@
+[Unit]
+Description=Build HUM LVM-cache hypertext from the inside
+Documentation=file:site/broadcast/pages/show-and-tell.html
+After=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/workspace
+Environment=HUM_LVM_CACHE=
+ExecStart=/usr/bin/python3 /workspace/scripts/hum_https_broadcast.py build
+RemainAfterExit=yes
+
+[Install]
+WantedBy=hum-housing.target

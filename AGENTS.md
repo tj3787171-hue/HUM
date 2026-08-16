@@ -18,6 +18,11 @@ HUM is a lightweight utility repository (no package manager, no build step, no l
 | Network namespace status | `bash scripts/hum-dev-netns.sh status` | Requires `iproute2` |
 | Network namespace up/down | `sudo bash scripts/hum-dev-netns.sh up` | Requires root + `iproute2` |
 | DeepSeek importer | `python3 scripts/deepseek_db_link.py --source <dir> --database <db>` | Stdlib-only Python 3 |
+| SQL login init | `python3 site/login/tools/init_auth_db.py init` | Stdlib-only Python 3; creates `site/login/var/auth.sqlite` |
+| SQL login server | `python3 site/login/tools/login_server.py --host 127.0.0.1 --port 8088` | Stdlib HTTP stand-in when PHP is not installed |
+| Isolation zones | `python3 scripts/hum-isolation-zones.py plan` | Virtio vda/sda tracks; VNC never attaches to nbd0 |
+| Static IP drift | `python3 scripts/hum-ip-drift.py status` | Compare expected housing IPv4; `correct` delegates to hum-host-static-ip.sh |
+| HTTPS cache broadcast | `python3 scripts/hum_https_broadcast.py build && python3 scripts/hum_https_broadcast.py serve` | LVM-cache (or local fallback) TLS desk; public cert at `/cert.pem` |
 | Cursor CLI config repair | `python3 scripts/fix_cursor_cli_json.py` | Stdlib-only Python 3; fixes Penguin `agent` `cli.json` schema errors |
 | Snap bypass | `bash scripts/hum-snap-bypass.sh <subcommand>` | Requires `squashfs-tools`, `squashfuse`, `xz-utils`, `file`, `fuse3` |
 
@@ -26,8 +31,11 @@ HUM is a lightweight utility repository (no package manager, no build step, no l
 No project-level lint config exists. Use these tools for quality checks:
 
 - **Bash**: `shellcheck scripts/hum-dev-netns.sh .devcontainer/post-create.sh`
-- **Python**: `pyright scripts/deepseek_db_link.py scripts/fix_cursor_cli_json.py` (install via `pip install pyright`)
+- **Python**: `pyright scripts/deepseek_db_link.py scripts/fix_cursor_cli_json.py site/login/tools/authlib.py` (install via `pip install pyright`)
 - **Cursor CLI repair tests**: `python3 -m unittest tests.test_fix_cursor_cli_json`
+- **SQL login tests**: `python3 -m unittest tests.test_login_system`
+- **Circuit / isolation tests**: `python3 -m unittest tests.test_circuits`
+- **HTTPS broadcast tests**: `python3 -m unittest tests.test_https_broadcast`
 
 ### Docker / Dev Container build
 

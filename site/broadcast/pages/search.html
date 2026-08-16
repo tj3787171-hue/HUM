@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>HUM cache search</title>
+  <link rel="stylesheet" href="assets/broadcast.css"/>
+</head>
+<body>
+  <header>
+    <span class="logo">HUM.org</span>
+    <nav>
+      <a href="/">Cache</a>
+      <a href="/show-and-tell.html">Show and tell</a>
+      <a href="/wealth.html">Wealth</a>
+      <a href="/search.html">Search</a>
+      <a href="/cert.pem">Cert</a>
+    </nav>
+  </header>
+  <main>
+    <section>
+      <h1>Search the housing</h1>
+      <p class="lede">Frontend index only. Local cache. No dark-web crawl.</p>
+      <label>Query
+        <input id="q" type="search" placeholder="iso, login, vda, zorin"/>
+      </label>
+      <div id="trends"></div>
+      <table>
+        <thead><tr><th>Title</th><th>Kind</th><th>Path</th></tr></thead>
+        <tbody id="hits"></tbody>
+      </table>
+    </section>
+  </main>
+  <script src="assets/search.js"></script>
+</body>
+</html>
