@@ -1,0 +1,14 @@
+[Unit]
+Description=HUM HTTPS cert-broadcast on the housing cache
+Documentation=file:site/broadcast/pages/show-and-tell.html
+After=hum-broadcast-cache.service
+Requires=hum-broadcast-cache.service
+
+[Service]
+Type=simple
+WorkingDirectory=/workspace
+ExecStart=/usr/bin/python3 /workspace/scripts/hum_https_broadcast.py --host 127.0.0.1 --port 8443 serve
+Restart=on-failure
+
+[Install]
+WantedBy=hum-housing.target

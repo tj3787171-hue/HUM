@@ -8,6 +8,10 @@
     <title>VNC and nbd0 stay in different zones</title>
     <body>nbd0 is a block export. VNC is a display path. They do not share a namespace. The calculator puts VNC on 127.0.0.1 display zones 100+ and locks nbd0 in zone 300 with vnc_attach denied. That is isolation, not a pentest attach.</body>
   </post>
+  <post id="4" slug="https-broadcast" date="2026-08-16">
+    <title>HTTPS cert broadcast on the LVM cache</title>
+    <body>The desktop agent writes the virtio disk. The cloud agent builds a searchable cache and serves it on 127.0.0.1:8443. The public cert is at /cert.pem. The key is not. systemctl start hum-housing.target is the concert. Dark-web and nbd0 attach stay off the set list.</body>
+  </post>
   <post id="3" slug="signin-collision" date="2026-08-16">
     <title>One sign-in covers URL, package, and display dial-in</title>
     <body>The SQL login desk is the collision point. A future APK or PKG only opens the same HTTPS origin. VNC dial-in, if used, stays on the loopback display zone after that session. Dummy rails keep each guest track inside its /30. HTTPS 443, housing DNS 53, and login 8088 are the 2026 listener pattern.</body>

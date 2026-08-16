@@ -17,3 +17,6 @@ dist/*.iso
 # Local SQL login database (never commit password hashes).
 site/login/var/*.sqlite
 site/login/var/*.sqlite-*
+
+# Broadcast TLS material (public cert is generated locally; never commit the key).
+site/broadcast/var/tls/

@@ -1,0 +1,13 @@
+[Unit]
+Description=HUM SQL login desk
+Documentation=file:site/login/README.md
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/workspace
+ExecStart=/usr/bin/python3 /workspace/site/login/tools/login_server.py --host 127.0.0.1 --port 8088
+Restart=on-failure
+
+[Install]
+WantedBy=hum-housing.target

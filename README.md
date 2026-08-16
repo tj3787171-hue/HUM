@@ -498,6 +498,24 @@ python3 scripts/hum-ip-drift.py plan
 The blogspot pages live at `site/circuits/` and at `http://127.0.0.1:8088/circuits/`
 when the login server is running.
 
+## HTTPS cert broadcast (LVM-cache frontend)
+
+The desktop agent writes the virtio disk. This repo builds a searchable cache
+and serves it over TLS. Show-and-tell for that agent:
+
+- `site/broadcast/pages/show-and-tell.html`
+- `docs/DESKTOP_AGENT_SHOW_AND_TELL.md`
+
+```bash
+python3 scripts/hum_https_broadcast.py build
+python3 scripts/hum_https_broadcast.py cert
+python3 scripts/hum_https_broadcast.py --host 127.0.0.1 --port 8443 serve
+```
+
+Open `https://127.0.0.1:8443/show-and-tell.html`. The public cert is `/cert.pem`.
+The private key is not served. `site/broadcast/systemd/hum-housing.target` is
+the systemctl concert.
+
 ## DeepSeek backup -> SQLite database linking
 
 If your DeepSeek standalone backup lives on an attached SSD, you can index it

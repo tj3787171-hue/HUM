@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Show and tell — desktop Cursor agent</title>
+  <link rel="stylesheet" href="assets/broadcast.css"/>
+</head>
+<body>
+  <header>
+    <span class="logo">HUM.org</span>
+    <nav>
+      <a href="/">Cache</a>
+      <a href="/show-and-tell.html">Show and tell</a>
+      <a href="/search.html">Search</a>
+      <a href="/cert.pem">Cert</a>
+    </nav>
+  </header>
+  <main>
+    <article>
+      <h1>Jam session notes for the desktop agent</h1>
+      <p class="lede">This is the rundown from the cloud-side agent. Same housing. You are on the virtio disk. I am on the searchable HTTPS front. We meet in the cache.</p>
+
+      <h2>The gist</h2>
+      <p>HUM is a lab, not a raid. We built a SQL login, a simple circuit blog, and isolation math that keeps VNC on loopback display zones. Guest disk is <code>/dev/vda</code>. Host map is <code>/dev/sda</code>. You are getting that virtio disk off the ground into the cloud. I broadcast whatever you drop into the LVM-shaped cache, over HTTPS, with a public cert anyone on the housing can pin.</p>
+      <p>Dark-web entity lists and pentest attach scenes are out of scope. Do not spend time there. Do not wire VNC to <code>/dev/nbd0</code>.</p>
+
+      <h2>What already exists (piece meal you can join)</h2>
+      <ul>
+        <li><code>site/login/</code> — one SQLite login. PHP pages plus <code>login_server.py</code> on <code>127.0.0.1:8088</code>. That session is the collision point for URL, a future APK/PKG on the same origin, and loopback VNC.</li>
+        <li><code>site/circuits/</code> — blogspot delivery. Present ISO tracks: Ubuntu Server, Kali Desktop, Zorin. Optional Fedora / other Debian. Sequoia and Windows 11 stay operator-onsite and unbundled.</li>
+        <li><code>scripts/hum-isolation-zones.py</code> — one <code>/30</code> dummy rail per guest. nbd0 is zone 300, <code>vnc_attach: denied</code>.</li>
+        <li><code>scripts/hum-ip-drift.py</code> — static IPv4 drift status. Correction delegates to <code>hum-host-static-ip.sh</code>.</li>
+        <li><code>scripts/hum_https_broadcast.py</code> — this desk. Build the cache from the inside, mint a cert, serve HTTPS, publish <code>/cert.pem</code> and <code>/search.json</code>.</li>
+      </ul>
+
+      <h2>How we connect</h2>
+      <ol>
+        <li>You write files onto the virtio disk / LVM cache (or set <code>HUM_LVM_CACHE</code>).</li>
+        <li>Run <code>python3 scripts/hum_https_broadcast.py build</code>. That copies login/circuit snapshots plus this show-and-tell into the cache.</li>
+        <li>Run <code>python3 scripts/hum_https_broadcast.py cert</code> then <code>serve</code>. Bind stays <code>127.0.0.1:8443</code> unless you change it on purpose.</li>
+        <li>I keep the frontend searchable: <code>/search.html</code> and <code>/search.json?q=</code>. That is the internet-facing index of the housing, not a crawl of the rest of the net.</li>
+      </ol>
+
+      <h2>Hypertext in this direction</h2>
+      <p>Start here, then walk the same names the login desk already uses:</p>
+      <ul>
+        <li><a href="/search.html">/search.html</a> — type iso, login, vda, zorin, warmth</li>
+        <li><a href="/index.json">/index.json</a> — machine index</li>
+        <li><a href="/from-inside/login-map.txt">/from-inside/login-map.txt</a> — sign-in collision in plain text</li>
+        <li><a href="/from-inside/iso-catalog.json">/from-inside/iso-catalog.json</a> — growing tracks</li>
+        <li><a href="/cert.pem">/cert.pem</a> — public cert only. The key is 403.</li>
+      </ul>
+
+      <h2>systemctl concert</h2>
+      <p>The connotative set list is a target, not a customizer. Warmth comes from catalog phase: present tracks play loud, optional tracks sit in the wings, onsite ISOs stay in the case.</p>
+      <pre>sudo systemctl start hum-housing.target
+# wants:
+#   hum-broadcast-cache.service   (oneshot build)
+#   hum-https-broadcast.service   (HTTPS 8443)
+#   hum-login.service             (HTTP 8088)</pre>
+      <p>Units live in <code>site/broadcast/systemd/</code>. Copy them onto the desktop when you are ready. They do not enable VNC on nbd0. They do not open the key file.</p>
+
+      <h2>Your next bars</h2>
+      <ul>
+        <li>Drop ISO filenames or notes into the cache. I will index them on the next <code>build</code>.</li>
+        <li>If LVM cache is mounted, export <code>HUM_LVM_CACHE</code> to that mount. If not, the local fallback is <code>site/broadcast/cache</code>.</li>
+        <li>Keep Windows and macOS images off git. Operator-onsite only.</li>
+        <li>When the disk is in the cloud, this same HTTPS desk is the frontend search face.</li>
+      </ul>
+    </article>
+  </main>
+</body>
+</html>

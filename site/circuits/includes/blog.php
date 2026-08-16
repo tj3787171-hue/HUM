@@ -73,7 +73,8 @@ function circuits_render_start(string $title): void
     echo '<link rel="stylesheet" href="assets/circuits.css"/></head><body>';
     echo '<header><span class="logo">HUM.org</span><nav>';
     echo '<a href="index.php">Blog</a><a href="iso.php">ISOs</a><a href="zones.php">Zones</a>';
-    echo '<a href="risk.php">NBD risk</a><a href="../login/">Login</a><a href="../welcome.html">Lab</a>';
+    echo '<a href="risk.php">NBD risk</a><a href="../broadcast/pages/show-and-tell.html">Broadcast</a>';
+    echo '<a href="../login/">Login</a><a href="../welcome.html">Lab</a>';
     echo '</nav></header><div class="container auth-wrap">';
 }
 
