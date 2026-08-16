@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blog xmlns="https://hum.org/circuits/blog" title="HUM circuits">
+  <post id="1" slug="virtio-vda" date="2026-08-16">
+    <title>Virtio vda sits on /dev/sda</title>
+    <body>The housing disk is one map: guest /dev/vda to host /dev/sda. ISOs add connectivity over time. Ubuntu Server, Kali Desktop, and Zorin are the present tracks. Fedora and other Debian rebuilds stay optional. macOS Sequoia and Windows 11 stay operator-provided onsite ISOs and are not bundled here.</body>
+  </post>
+  <post id="2" slug="nbd0-vnc" date="2026-08-16">
+    <title>VNC and nbd0 stay in different zones</title>
+    <body>nbd0 is a block export. VNC is a display path. They do not share a namespace. The calculator puts VNC on 127.0.0.1 display zones 100+ and locks nbd0 in zone 300 with vnc_attach denied. That is isolation, not a pentest attach.</body>
+  </post>
+  <post id="3" slug="signin-collision" date="2026-08-16">
+    <title>One sign-in covers URL, package, and display dial-in</title>
+    <body>The SQL login desk is the collision point. A future APK or PKG only opens the same HTTPS origin. VNC dial-in, if used, stays on the loopback display zone after that session. Dummy rails keep each guest track inside its /30. HTTPS 443, housing DNS 53, and login 8088 are the 2026 listener pattern.</body>
+  </post>
+</blog>

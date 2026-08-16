@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "year": 2026,
+  "housing": "virtio-vda",
+  "host_disk": "/dev/sda",
+  "guest_disk": "/dev/vda",
+  "nbd_export": {
+    "device": "/dev/nbd0",
+    "risk": "high",
+    "vnc_attach": "denied",
+    "zone": 300
+  },
+  "signin_collision": {
+    "url": "/login/",
+    "pkg": "optional APK/PKG that opens the same HTTPS origin",
+    "vnc": "127.0.0.1 display zone only"
+  },
+  "isos": [
+    {
+      "id": "ubuntu-server",
+      "title": "Ubuntu Server",
+      "phase": "present",
+      "family": "debian",
+      "role": "server",
+      "bundle": false
+    },
+    {
+      "id": "kali-desktop",
+      "title": "Kali Desktop",
+      "phase": "present",
+      "family": "debian",
+      "role": "desktop",
+      "bundle": false
+    },
+    {
+      "id": "zorin",
+      "title": "Zorin",
+      "phase": "present",
+      "family": "debian",
+      "role": "desktop",
+      "bundle": false
+    },
+    {
+      "id": "fedora",
+      "title": "Fedora",
+      "phase": "optional",
+      "family": "rpm",
+      "role": "desktop",
+      "bundle": false
+    },
+    {
+      "id": "debian-alien",
+      "title": "Other Debian or alien rebuild",
+      "phase": "optional",
+      "family": "debian",
+      "role": "either",
+      "bundle": false
+    },
+    {
+      "id": "sequoia-macos",
+      "title": "macOS Sequoia (operator ISO)",
+      "phase": "optional-onsite",
+      "family": "darwin",
+      "role": "desktop",
+      "bundle": false,
+      "operator_iso": true
+    },
+    {
+      "id": "windows-11",
+      "title": "Windows 11 (operator ISO)",
+      "phase": "optional-onsite",
+      "family": "windows",
+      "role": "desktop",
+      "bundle": false,
+      "operator_iso": true
+    }
+  ]
+}

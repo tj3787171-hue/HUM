@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<signinOptions xmlns="https://hum.org/circuits/signin">
+  <option id="url" kind="https">/login/</option>
+  <option id="pkg" kind="apk-pkg">Same origin as /login/ — no separate password store</option>
+  <option id="vnc" kind="display">vnc://127.0.0.1:5901 after session, display zone only</option>
+  <option id="nbd0" kind="block-export" attach="denied">/dev/nbd0 stays out of the VNC path</option>
+</signinOptions>

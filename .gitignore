@@ -6,6 +6,8 @@
 __pycache__/
 *.pyc
 data/
+!site/circuits/data/
+!site/circuits/data/**
 diagnostics/
 iso-build/.build/
 
