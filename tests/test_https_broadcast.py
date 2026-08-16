@@ -38,6 +38,15 @@ class TestBroadcastCache(unittest.TestCase):
             self.assertIn("hum-https-broadcast.service", index["concert"])
             hits = broadcast.search_index(index, "zorin")
             self.assertTrue(any(hit["id"] == "zorin" for hit in hits))
+            palace = broadcast.search_index(index, "palace")
+            self.assertTrue(any("palace" in str(hit["path"]) or "palace" in str(hit["title"]).lower() for hit in palace))
+            telemetry = broadcast.search_index(index, "telemetry")
+            self.assertTrue(telemetry)
+            recup = broadcast.search_index(index, "recup")
+            self.assertTrue(recup)
+            self.assertGreaterEqual(index.get("wealth_count", 0), 8)
+            self.assertTrue((cache / "from-inside" / "wealth" / "final-palace.json").is_file())
+            self.assertTrue((cache / "wealth.html").is_file())
             warming = [row["id"] for row in index["trends"] if row["connotation"] == "warming"]
             self.assertIn("ubuntu-server", warming)
 
@@ -53,22 +62,22 @@ class TestBroadcastCache(unittest.TestCase):
 
             thread = threading.Thread(
                 target=broadcast.serve,
-                args=("127.0.0.1", 8444, cache, Path(info["cert"]), Path(info["key"])),
+                args=("127.0.0.1", 8446, cache, Path(info["cert"]), Path(info["key"])),
                 daemon=True,
             )
             thread.start()
-            self._wait("https://127.0.0.1:8444/index.json")
+            self._wait("https://127.0.0.1:8446/index.json")
             ctx = ssl._create_unverified_context()
-            index = json.loads(urllib.request.urlopen("https://127.0.0.1:8444/index.json", context=ctx).read())
+            index = json.loads(urllib.request.urlopen("https://127.0.0.1:8446/index.json", context=ctx).read())
             self.assertGreaterEqual(len(index["entries"]), 3)
-            cert_body = urllib.request.urlopen("https://127.0.0.1:8444/cert.pem", context=ctx).read()
+            cert_body = urllib.request.urlopen("https://127.0.0.1:8446/cert.pem", context=ctx).read()
             self.assertIn(b"BEGIN CERTIFICATE", cert_body)
             search = json.loads(
-                urllib.request.urlopen("https://127.0.0.1:8444/search.json?q=login", context=ctx).read()
+                urllib.request.urlopen("https://127.0.0.1:8446/search.json?q=palace", context=ctx).read()
             )
             self.assertTrue(search["hits"])
             with self.assertRaises(urllib.error.HTTPError) as raised:
-                urllib.request.urlopen("https://127.0.0.1:8444/key.pem", context=ctx)
+                urllib.request.urlopen("https://127.0.0.1:8446/key.pem", context=ctx)
             self.assertEqual(raised.exception.code, 403)
 
     def test_cli_cache_root_and_build(self) -> None:

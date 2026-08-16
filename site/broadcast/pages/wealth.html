@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>HUM wealth in the cache</title>
+  <link rel="stylesheet" href="assets/broadcast.css"/>
+</head>
+<body>
+  <header>
+    <span class="logo">HUM.org</span>
+    <nav>
+      <a href="/">Cache</a>
+      <a href="/show-and-tell.html">Show and tell</a>
+      <a href="/wealth.html">Wealth</a>
+      <a href="/search.html">Search</a>
+      <a href="/cert.pem">Cert</a>
+    </nav>
+  </header>
+  <main>
+    <section>
+      <h1>The entire wealth already in this image</h1>
+      <p class="lede">Telemetry, recup, palace, convo, cache assembly. The desktop agent has the transcript. This page is that data, searchable.</p>
+      <p>Try <a href="/search.html">search</a> for <code>palace</code>, <code>recup</code>, <code>telemetry</code>, or <code>convo</code>.</p>
+      <table>
+        <thead><tr><th>Title</th><th>Kind</th><th>Path</th></tr></thead>
+        <tbody id="hits"></tbody>
+      </table>
+    </section>
+  </main>
+  <script>
+    function esc(value) {
+      return String(value || "").replace(/[&<>"']/g, function (ch) {
+        return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" })[ch];
+      });
+    }
+    fetch("/index.json").then(function (res) { return res.json(); }).then(function (index) {
+      var body = document.getElementById("hits");
+      (index.entries || []).filter(function (row) {
+        return (row.tags || []).indexOf("wealth") !== -1;
+      }).forEach(function (row) {
+        var tr = document.createElement("tr");
+        tr.innerHTML = "<td>" + esc(row.title) + "</td><td>" + esc(row.kind) + "</td><td><a href=\"" + esc(row.path) + "\">" + esc(row.path) + "</a></td>";
+        body.appendChild(tr);
+      });
+    });
+  </script>
+</body>
+</html>

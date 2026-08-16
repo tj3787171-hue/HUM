@@ -15,6 +15,7 @@ import http.server
 import json
 import os
 import shutil
+import sqlite3
 import ssl
 import subprocess
 import sys
@@ -87,6 +88,132 @@ def generate_cert(tls_dir: Path, common_name: str = "hum.local") -> dict[str, st
 
 def load_json(path: Path) -> Any:
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+WEALTH_FILES = (
+    ("site/data/topology.json", "telemetry", "Netns topology snapshot", 3),
+    ("site/data/topology.xml", "telemetry", "Netns topology XML", 2),
+    ("site/data/systemd_tree.json", "systemd", "systemd concert tree", 3),
+    ("site/data/corps.json", "convo", "House of Corps", 3),
+    ("site/data/sources.list", "convo", "Conversation sources list", 2),
+    ("site/data/artifact-layers.json", "cache", "Artifact layers", 2),
+    ("site/data/cache-assembly.json", "cache", "Cache assembly", 3),
+    ("site/data/cache-interval-plot.svg", "cache", "Cache interval plot", 2),
+    ("site/data/FINAL-PRODUCT/palace.json", "palace", "Palace of Web", 3),
+    ("site/data/FINAL-PRODUCT/gram.json", "convo", "Gram", 2),
+    ("site/data/FINAL-PRODUCT/comb.json", "convo", "Comb", 2),
+    ("site/data/FINAL-PRODUCT/corps_full.json", "convo", "Corps full", 2),
+    ("docs/HUM_CACHE_ASSEMBLY.generated.md", "cache", "Cache assembly notes", 2),
+    ("docs/DESKTOP_AGENT_SHOW_AND_TELL.md", "handoff", "Posted transcript pointer", 3),
+)
+
+
+def wealth_target_name(relative: str) -> str:
+    name = Path(relative).name
+    if "FINAL-PRODUCT" in relative:
+        return f"final-{name}"
+    return name
+
+
+def copy_wealth(cache: Path) -> list[dict[str, Any]]:
+    wealth = cache / "from-inside" / "wealth"
+    wealth.mkdir(parents=True, exist_ok=True)
+    entries: list[dict[str, Any]] = []
+    for relative, kind, title, warmth in WEALTH_FILES:
+        source = ROOT / relative
+        if not source.is_file():
+            continue
+        target = wealth / wealth_target_name(relative)
+        shutil.copy2(source, target)
+        entries.append(
+            {
+                "id": target.stem.replace("_", "-"),
+                "title": title,
+                "path": f"/from-inside/wealth/{target.name}",
+                "kind": kind,
+                "tags": ["wealth", kind, source.name],
+                "warmth": warmth,
+            }
+        )
+    recup_home = Path(os.environ.get("RECUP_HOME", "/home/troy"))
+    recup_lines = [f"RECUP_HOME={recup_home}"]
+    for name in ("recup_summary.json", "recup_manifest.json"):
+        source = recup_home / name
+        recup_lines.append(f"{name} exists={source.is_file()}")
+        if source.is_file():
+            shutil.copy2(source, wealth / name)
+            entries.append(
+                {
+                    "id": source.stem.replace("_", "-"),
+                    "title": f"Recup {name}",
+                    "path": f"/from-inside/wealth/{name}",
+                    "kind": "recup",
+                    "tags": ["wealth", "recup"],
+                    "warmth": 3,
+                }
+            )
+    (wealth / "recup-status.txt").write_text("\n".join(recup_lines) + "\n", encoding="utf-8")
+    entries.append(
+        {
+            "id": "recup-status",
+            "title": "Recup import status",
+            "path": "/from-inside/wealth/recup-status.txt",
+            "kind": "recup",
+            "tags": ["wealth", "recup", "photorec"],
+            "warmth": 3,
+        }
+    )
+
+    telemetry_db = Path(os.environ.get("HUM_TELEMETRY_DB", str(ROOT / "data" / "telemetry.db")))
+    if telemetry_db.is_file():
+        conn = sqlite3.connect(f"file:{telemetry_db}?mode=ro", uri=True)
+        try:
+            snap = conn.execute("SELECT COUNT(*) FROM snapshots").fetchone()
+            hop = conn.execute("SELECT COUNT(*) FROM hops").fetchone()
+            status = f"telemetry.db snapshots={snap[0] if snap else 0} hops={hop[0] if hop else 0}\n"
+        except sqlite3.Error as exc:
+            status = f"telemetry.db present but unread: {exc}\n"
+        finally:
+            conn.close()
+    else:
+        status = (
+            "telemetry.db not present. Collect with:\n"
+            "sudo bash scripts/hum-dev-netns.sh collect > diagnostics/netns-snapshot.json\n"
+            "python3 scripts/hum-telemetry-db.py ingest --database data/telemetry.db "
+            "--file diagnostics/netns-snapshot.json\n"
+        )
+    (wealth / "telemetry-status.txt").write_text(status, encoding="utf-8")
+    entries.append(
+        {
+            "id": "telemetry-status",
+            "title": "Telemetry database status",
+            "path": "/from-inside/wealth/telemetry-status.txt",
+            "kind": "telemetry",
+            "tags": ["wealth", "telemetry", "netns"],
+            "warmth": 3,
+        }
+    )
+    convo = {
+        "convo": "House of Corps JSON Conversation API",
+        "lab_paths": {
+            "list": "/site/convo.php?source=list",
+            "corps": "/from-inside/wealth/corps.json",
+            "palace": "/from-inside/wealth/final-palace.json",
+            "topology": "/from-inside/wealth/topology.json",
+        },
+    }
+    (wealth / "convo-sources.json").write_text(json.dumps(convo, indent=2) + "\n", encoding="utf-8")
+    entries.append(
+        {
+            "id": "convo-sources",
+            "title": "Convo source map",
+            "path": "/from-inside/wealth/convo-sources.json",
+            "kind": "convo",
+            "tags": ["wealth", "convo", "api"],
+            "warmth": 3,
+        }
+    )
+    return entries
 
 
 def inside_out_entries() -> list[dict[str, Any]]:
@@ -177,13 +304,14 @@ def write_inside_out(cache: Path) -> dict[str, Any]:
                 target.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(path, target)
 
-    entries = inside_out_entries()
+    entries = inside_out_entries() + copy_wealth(cache)
     index = {
         "generated_at": utc_now(),
         "housing": "lvm-cache-or-local-fallback",
         "cache": str(cache),
         "bind_default": f"{DEFAULT_BIND}:{DEFAULT_PORT}",
         "vnc_nbd": "denied",
+        "wealth_count": sum(1 for entry in entries if "wealth" in entry.get("tags", [])),
         "entries": entries,
         "trends": trend_rows(entries),
         "concert": [
@@ -209,6 +337,7 @@ def search_index(index: dict[str, Any], query: str) -> list[dict[str, Any]]:
                 str(entry.get("id", "")),
                 str(entry.get("title", "")),
                 str(entry.get("kind", "")),
+                str(entry.get("path", "")),
                 " ".join(str(tag) for tag in entry.get("tags", [])),
             ]
         ).lower()
@@ -283,7 +412,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--port", type=int, default=DEFAULT_PORT)
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("cache-root", help="Print the resolved cache directory.")
-    sub.add_parser("build", help="Write inside-out hypertext and the search index.")
+    sub.add_parser("build", help="Write inside-out hypertext, wealth index, and search.")
+    sub.add_parser("wealth", help="Print wealth entry counts after a build.")
     sub.add_parser("cert", help="Mint a local self-signed certificate. Does not print the key.")
     sub.add_parser("serve", help="Serve the cache over HTTPS and broadcast the public cert.")
     return parser.parse_args()
@@ -298,7 +428,13 @@ def main() -> int:
         return 0
     if args.command == "build":
         index = write_inside_out(cache)
-        print(f"entries={len(index['entries'])} cache={cache}")
+        print(f"entries={len(index['entries'])} wealth={index.get('wealth_count', 0)} cache={cache}")
+        return 0
+    if args.command == "wealth":
+        index_path = cache / "index.json"
+        index = load_json(index_path) if index_path.is_file() else write_inside_out(cache)
+        wealth = [entry for entry in index.get("entries", []) if "wealth" in entry.get("tags", [])]
+        print(json.dumps({"wealth_count": len(wealth), "entries": wealth}, indent=2))
         return 0
     if args.command == "cert":
         info = generate_cert(tls_dir)
