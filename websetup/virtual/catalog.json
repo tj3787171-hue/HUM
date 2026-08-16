@@ -42,6 +42,11 @@
       "path": "schemas/bindings.schema.json",
       "format": "json-schema",
       "role": "validation_schema"
+    },
+    {
+      "path": "../../site/circuits/data/iso-catalog.json",
+      "format": "json",
+      "role": "iso_housing_catalog"
     }
   ]
 }

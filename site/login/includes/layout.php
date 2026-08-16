@@ -22,7 +22,7 @@ function login_render_start(string $title, ?array $user = null, string $error = 
     echo '<title>' . login_h($title) . '</title>';
     echo '<link rel="stylesheet" href="assets/login.css"/></head><body>';
     echo '<header><span class="logo">HUM.org</span><nav>';
-    echo '<a href="index.html">Home</a><a href="../welcome.html">Lab</a>';
+    echo '<a href="index.html">Home</a><a href="../circuits/">Circuits</a><a href="../welcome.html">Lab</a>';
     echo $nav_login . $nav_register . '</nav>' . $logout . '</header>';
     echo '<div class="container auth-wrap">';
     if ($notice !== '') {

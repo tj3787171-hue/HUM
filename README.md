@@ -27,6 +27,7 @@ Private-by-default development container configuration for online/local developm
 - `websetup/` bundle for SDV + virtual phase configuration (`.yml`, `.csv`, `.json`)
 - `scripts/fix_cursor_cli_json.py` to repair Penguin/Chromebook Cursor Agent `cli.json` schema errors (`display` belongs in `cli-config.json`)
 - `site/login/` SQL login desk (SQLite + PHP pages + stdlib Python server)
+- `site/circuits/` blogspot delivery for virtio ISO tracks and isolation zones
 
 ## Use it
 
@@ -477,6 +478,25 @@ python3 site/login/tools/login_server.py --host 127.0.0.1 --port 8088
 
 Open `http://127.0.0.1:8088/`. The SQLite file is `site/login/var/auth.sqlite`
 and is gitignored.
+
+## Virtio housing + isolation zones
+
+Guest `/dev/vda` maps to host `/dev/sda`. Present ISO tracks are Ubuntu
+Server, Kali Desktop, and Zorin. Fedora and other Debian rebuilds stay
+optional. macOS Sequoia and Windows 11 stay operator-provided onsite ISOs
+and are not bundled.
+
+`/dev/nbd0` is treated as a high-risk block export. VNC stays on
+`127.0.0.1` display zones and is never attached to nbd0.
+
+```bash
+python3 scripts/hum-isolation-zones.py plan
+python3 scripts/hum-isolation-zones.py nbd-risk
+python3 scripts/hum-ip-drift.py plan
+```
+
+The blogspot pages live at `site/circuits/` and at `http://127.0.0.1:8088/circuits/`
+when the login server is running.
 
 ## DeepSeek backup -> SQLite database linking
 

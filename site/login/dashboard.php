@@ -20,7 +20,8 @@ login_render_start('Dashboard', $user);
         <tr><th>Last login</th><td><?= login_h($last) ?></td></tr>
       </tbody>
     </table>
-    <p><a class="enter-btn" href="account.php">Account</a> <a class="enter-btn" href="../index.php">Open lab map</a></p>
+    <p class="lede">This session covers the URL desk, a future APK/PKG on the same origin, and loopback VNC in a display zone. It does not open nbd0.</p>
+    <p><a class="enter-btn" href="account.php">Account</a> <a class="enter-btn" href="../circuits/">Circuits</a> <a class="enter-btn" href="../index.php">Open lab map</a></p>
   </section>
 <?php
 login_render_end();

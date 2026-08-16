@@ -23,8 +23,15 @@ if str(TOOLS_DIR) not in sys.path:
 import authlib
 import templates
 
+CIRCUITS_TOOLS = authlib.LOGIN_ROOT.parent / "circuits" / "tools"
+if str(CIRCUITS_TOOLS) not in sys.path:
+    sys.path.insert(0, str(CIRCUITS_TOOLS))
+
+import circuit_pages
+
 LOGIN_ROOT = authlib.LOGIN_ROOT
-STATIC_PREFIXES = ("/assets/", "/xml/", "/docs/")
+CIRCUITS_ROOT = LOGIN_ROOT.parent / "circuits"
+STATIC_PREFIXES = ("/assets/", "/xml/", "/docs/", "/circuits/assets/", "/circuits/data/")
 
 
 def parse_args() -> argparse.Namespace:
@@ -119,8 +126,13 @@ class LoginHandler(http.server.BaseHTTPRequestHandler):
 
     def send_static(self, url_path: str) -> None:
         relative = url_path.lstrip("/")
-        target = (LOGIN_ROOT / relative).resolve()
-        if not str(target).startswith(str(LOGIN_ROOT.resolve())) or not target.is_file():
+        if relative.startswith("circuits/"):
+            target = (CIRCUITS_ROOT / relative[len("circuits/") :]).resolve()
+            root = CIRCUITS_ROOT.resolve()
+        else:
+            target = (LOGIN_ROOT / relative).resolve()
+            root = LOGIN_ROOT.resolve()
+        if not str(target).startswith(str(root)) or not target.is_file():
             self.send_error(404)
             return
         data = target.read_bytes()
@@ -182,6 +194,18 @@ class LoginHandler(http.server.BaseHTTPRequestHandler):
                 return
             if path in ("/api/session.xml", "/api/session.php"):
                 self.send_xml(templates.session_xml(user))
+                return
+            if path in ("/circuits", "/circuits/", "/circuits/index.html", "/circuits/index.php"):
+                self.send_html(circuit_pages.blog())
+                return
+            if path in ("/circuits/iso", "/circuits/iso.php"):
+                self.send_html(circuit_pages.iso_page())
+                return
+            if path in ("/circuits/zones", "/circuits/zones.php"):
+                self.send_html(circuit_pages.zones_page())
+                return
+            if path in ("/circuits/risk", "/circuits/risk.php"):
+                self.send_html(circuit_pages.risk_page())
                 return
             self.send_error(404)
         finally:

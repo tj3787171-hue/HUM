@@ -84,6 +84,7 @@ $photos_tree    = scan_dir("$recup_home/PHOTOS");
     <a href="palace.php">Palace</a>
     <a href="playbook.php">Playbook</a>
     <a href="recover.php">Recover</a>
+    <a href="circuits/">Circuits</a>
     <a href="login/">Login</a>
     <a href="convo.php?source=list" target="_blank">API</a>
   </nav>
