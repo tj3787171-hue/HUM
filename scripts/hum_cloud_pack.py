@@ -7,6 +7,7 @@ import argparse
 import base64
 import hashlib
 import hmac
+import html
 import json
 import os
 import shutil
@@ -116,39 +117,6 @@ def _reset_output_dir(path: Path, force: bool) -> None:
 
 def _write_online_index(cloud_dir: Path, manifest: dict[str, Any]) -> None:
     summary = manifest["summary"]
-    html = [
-        "<!doctype html>",
-        '<html lang="en"><head><meta charset="utf-8">',
-        "<title>HUM Cloud Directory</title>",
-        "<style>body{font-family:system-ui,sans-serif;margin:2rem;}"
-        "code{background:#f5f5f5;padding:.1rem .3rem;border-radius:4px;}"
-        "table{border-collapse:collapse;margin-top:1rem;}"
-        "td,th{border:1px solid #ddd;padding:.4rem .6rem;text-align:left;}"
-        "</style></head><body>",
-        "<h1>HUM cloud directory</h1>",
-        f"<p><strong>Aggregate SHA-256:</strong> "
-        f"<code>{summary['aggregate_sha256']}</code></p>",
-        "<table><thead><tr><th>File</th><th>Bytes</th><th>SHA-256</th></tr>"
-        "</thead><tbody>",
-    ]
-    for item in manifest["files"]:
-        html.append(
-            "<tr>"
-            f"<td>{item['path']}</td>"
-            f"<td>{item['size']}</td>"
-            f"<td><code>{item['sha256']}</code></td>"
-            "</tr>"
-        )
-    html.extend(
-        [
-            "</tbody></table>",
-            '<p>Manifest: <a href="./index.json">index.json</a></p>',
-            "</body></html>",
-        ]
-    )
-    (cloud_dir / "online-index.html").write_text(
-        "\n".join(html), encoding="utf-8"
-    )
     html_rows = []
     for item in manifest["files"]:
         html_rows.append(
