@@ -245,10 +245,35 @@ def create_schema(conn: sqlite3.Connection) -> None:
             details_json TEXT
         );
 
+        CREATE TABLE IF NOT EXISTS api_connections (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            connection_key TEXT NOT NULL UNIQUE,
+            api_name TEXT NOT NULL,
+            status TEXT NOT NULL,
+            endpoint TEXT,
+            initiated_at TEXT NOT NULL,
+            last_seen TEXT NOT NULL,
+            metadata_json TEXT NOT NULL DEFAULT '{}'
+        );
+
+        CREATE TABLE IF NOT EXISTS phone_data_flows (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            connection_id INTEGER NOT NULL REFERENCES api_connections(id) ON DELETE CASCADE,
+            device_id INTEGER NOT NULL REFERENCES devices(id) ON DELETE CASCADE,
+            direction TEXT NOT NULL,
+            payload_kind TEXT NOT NULL,
+            byte_count INTEGER CHECK(byte_count IS NULL OR byte_count >= 0),
+            source_ref TEXT,
+            captured_at TEXT NOT NULL,
+            metadata_json TEXT NOT NULL DEFAULT '{}'
+        );
+
         CREATE INDEX IF NOT EXISTS idx_evidence_device_id ON evidence_blobs(device_id);
         CREATE INDEX IF NOT EXISTS idx_evidence_paper_id ON evidence_blobs(paper_id);
         CREATE INDEX IF NOT EXISTS idx_evidence_sha ON evidence_blobs(payload_sha256);
         CREATE INDEX IF NOT EXISTS idx_matrix_network_id ON network_matrix_snapshots(network_id);
+        CREATE INDEX IF NOT EXISTS idx_phone_flows_connection_id ON phone_data_flows(connection_id);
+        CREATE INDEX IF NOT EXISTS idx_phone_flows_device_id ON phone_data_flows(device_id);
         """
     )
     ensure_column(conn, "devices", "ipv6_link_local", "TEXT")
@@ -320,6 +345,121 @@ def upsert_device(
         (label, mac_raw, mac_text, now, now, ipv6_link_local, gateway_udn, presentation_url),
     )
     row = conn.execute("SELECT id FROM devices WHERE mac_text = ?", (mac_text,)).fetchone()
+    return int(row[0])
+
+
+def parse_json_object(raw: str, option_name: str) -> dict[str, Any]:
+    payload = json.loads(raw)
+    if not isinstance(payload, dict):
+        raise ValueError(f"{option_name} must decode to a JSON object")
+    return payload
+
+
+def get_api_connection(conn: sqlite3.Connection, connection_key: str) -> sqlite3.Row | None:
+    return conn.execute(
+        """
+        SELECT id, api_name, status, endpoint, initiated_at, last_seen, metadata_json
+        FROM api_connections
+        WHERE connection_key = ?
+        """,
+        (connection_key,),
+    ).fetchone()
+
+
+def upsert_api_connection(
+    conn: sqlite3.Connection,
+    connection_key: str,
+    api_name: str,
+    status: str,
+    endpoint: str | None,
+    metadata: dict[str, Any] | None,
+) -> int:
+    now = utc_now()
+    existing = get_api_connection(conn, connection_key)
+    if metadata is not None:
+        metadata_payload = metadata
+    elif existing:
+        metadata_payload = json.loads(existing[6] or "{}")
+    else:
+        metadata_payload = {}
+    conn.execute(
+        """
+        INSERT INTO api_connections (
+            connection_key, api_name, status, endpoint, initiated_at, last_seen, metadata_json
+        ) VALUES (?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT(connection_key) DO UPDATE SET
+            api_name = excluded.api_name,
+            status = excluded.status,
+            endpoint = COALESCE(excluded.endpoint, api_connections.endpoint),
+            last_seen = excluded.last_seen,
+            metadata_json = excluded.metadata_json
+        """,
+        (
+            connection_key,
+            api_name,
+            status,
+            endpoint,
+            now,
+            now,
+            json.dumps(metadata_payload, ensure_ascii=False),
+        ),
+    )
+    row = conn.execute("SELECT id FROM api_connections WHERE connection_key = ?", (connection_key,)).fetchone()
+    return int(row[0])
+
+
+def resolve_api_name(conn: sqlite3.Connection, connection_key: str, api_name: str | None) -> str:
+    if api_name:
+        return api_name
+    row = get_api_connection(conn, connection_key)
+    if row is None:
+        raise ValueError("provide --api-name when recording a flow for a new API connection")
+    return str(row[1])
+
+
+def resolve_api_status(conn: sqlite3.Connection, connection_key: str, status: str | None) -> str:
+    if status:
+        return status
+    row = get_api_connection(conn, connection_key)
+    if row is None:
+        return "initiated"
+    return str(row[2])
+
+
+def record_phone_flow(
+    conn: sqlite3.Connection,
+    connection_key: str,
+    api_name: str,
+    status: str,
+    endpoint: str | None,
+    device_mac: str,
+    device_label: str | None,
+    direction: str,
+    payload_kind: str,
+    byte_count: int | None,
+    source_ref: str | None,
+    metadata: dict[str, Any] | None,
+) -> int:
+    connection_id = upsert_api_connection(conn, connection_key, api_name, status, endpoint, None)
+    device_id = upsert_device(conn, mac=device_mac, label=device_label)
+    conn.execute(
+        """
+        INSERT INTO phone_data_flows (
+            connection_id, device_id, direction, payload_kind, byte_count, source_ref, captured_at, metadata_json
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """,
+        (
+            connection_id,
+            device_id,
+            direction,
+            payload_kind,
+            byte_count,
+            source_ref,
+            utc_now(),
+            json.dumps(metadata or {}, ensure_ascii=False),
+        ),
+    )
+    row = conn.execute("SELECT last_insert_rowid()").fetchone()
     return int(row[0])
 
 
@@ -514,6 +654,38 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     add_device.add_argument("--gateway-udn", default=None, help="Optional gateway UDN/UUID")
     add_device.add_argument("--presentation-url", default=None, help="Optional presentation URL")
 
+    add_api = sub.add_parser(
+        "upsert-api-connection",
+        aliases=["add-api-connection"],
+        help="Insert or update an external API connection record.",
+    )
+    add_api.add_argument("--connection-key", required=True, help="Stable connection key, e.g. api5")
+    add_api.add_argument("--api-name", required=True, help="Human-friendly API name, e.g. API5")
+    add_api.add_argument("--status", required=True, help="Connection status, e.g. initiated")
+    add_api.add_argument("--endpoint", default=None, help="Optional non-secret API endpoint label")
+    add_api.add_argument("--metadata-json", default="{}", help="JSON object string")
+
+    record_flow = sub.add_parser(
+        "record-phone-flow",
+        help="Record directional data flow between an API connection and a phone device.",
+    )
+    record_flow.add_argument("--connection-key", required=True, help="Stable connection key, e.g. api5")
+    record_flow.add_argument("--api-name", default=None, help="Required when the connection is new")
+    record_flow.add_argument("--status", default=None, help="Optional connection status update")
+    record_flow.add_argument("--endpoint", default=None, help="Optional non-secret API endpoint label")
+    record_flow.add_argument("--device-mac", required=True, help="Phone device MAC address")
+    record_flow.add_argument("--device-label", default=None, help="Optional phone device label")
+    record_flow.add_argument(
+        "--direction",
+        required=True,
+        choices=("to-phone", "from-phone", "bidirectional"),
+        help="Data direction relative to the phone device",
+    )
+    record_flow.add_argument("--payload-kind", required=True, help="Payload class, e.g. telemetry")
+    record_flow.add_argument("--byte-count", type=int, default=None, help="Optional payload size in bytes")
+    record_flow.add_argument("--source-ref", default=None, help="Optional session, log, or capture reference")
+    record_flow.add_argument("--metadata-json", default="{}", help="JSON object string")
+
     add_paper = sub.add_parser("add-paper", help="Insert or update a paper record.")
     add_paper.add_argument("--slug", "--paper-key", dest="slug", required=True, help="Stable paper key")
     add_paper.add_argument("--title", required=True, help="Paper title")
@@ -621,6 +793,10 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
 
     sub.add_parser("export-summary", help="Print JSON summary of key table counts.")
     sub.add_parser("list-devices", help="Print devices as JSON.")
+    sub.add_parser("list-api-connections", help="Print API connection rows as JSON.")
+
+    list_phone_flows = sub.add_parser("list-phone-flows", help="Print phone data-flow rows as JSON.")
+    list_phone_flows.add_argument("--limit", type=int, default=100, help="Max rows (default: 100)")
 
     list_evidence = sub.add_parser("list-evidence", help="Print evidence rows as JSON.")
     list_evidence.add_argument("--limit", type=int, default=100, help="Max rows (default: 100)")
@@ -642,6 +818,8 @@ def cmd_export_summary(conn: sqlite3.Connection) -> None:
         "papers": conn.execute("SELECT COUNT(*) FROM paper_records").fetchone()[0],
         "evidence_blobs": conn.execute("SELECT COUNT(*) FROM evidence_blobs").fetchone()[0],
         "network_snapshots": conn.execute("SELECT COUNT(*) FROM network_matrix_snapshots").fetchone()[0],
+        "api_connections": conn.execute("SELECT COUNT(*) FROM api_connections").fetchone()[0],
+        "phone_data_flows": conn.execute("SELECT COUNT(*) FROM phone_data_flows").fetchone()[0],
     }
     latest = conn.execute(
         """
@@ -680,6 +858,60 @@ def cmd_list_devices(conn: sqlite3.Connection) -> None:
             "last_seen": row[5],
             "gateway_udn": row[6],
             "presentation_url": row[7],
+        }
+        for row in rows
+    ]
+    print(json.dumps(payload, indent=2, ensure_ascii=False))
+
+
+def cmd_list_api_connections(conn: sqlite3.Connection) -> None:
+    rows = conn.execute(
+        """
+        SELECT connection_key, api_name, status, endpoint, initiated_at, last_seen, metadata_json
+        FROM api_connections
+        ORDER BY id ASC
+        """
+    ).fetchall()
+    payload = [
+        {
+            "connection_key": row[0],
+            "api_name": row[1],
+            "status": row[2],
+            "endpoint": row[3],
+            "initiated_at": row[4],
+            "last_seen": row[5],
+            "metadata": json.loads(row[6] or "{}"),
+        }
+        for row in rows
+    ]
+    print(json.dumps(payload, indent=2, ensure_ascii=False))
+
+
+def cmd_list_phone_flows(conn: sqlite3.Connection, limit: int) -> None:
+    rows = conn.execute(
+        """
+        SELECT c.connection_key, c.api_name, d.mac_text, d.label, f.direction, f.payload_kind,
+               f.byte_count, f.source_ref, f.captured_at, f.metadata_json
+        FROM phone_data_flows f
+        JOIN api_connections c ON f.connection_id = c.id
+        JOIN devices d ON f.device_id = d.id
+        ORDER BY f.id DESC
+        LIMIT ?
+        """,
+        (limit,),
+    ).fetchall()
+    payload = [
+        {
+            "connection_key": row[0],
+            "api_name": row[1],
+            "device_mac": row[2],
+            "device_label": row[3],
+            "direction": row[4],
+            "payload_kind": row[5],
+            "byte_count": row[6],
+            "source_ref": row[7],
+            "captured_at": row[8],
+            "metadata": json.loads(row[9] or "{}"),
         }
         for row in rows
     ]
@@ -803,6 +1035,44 @@ def main() -> int:
             print(f"Device upserted id={device_id} mac={normalize_mac(args.mac)}")
             return 0
 
+        if args.command in {"upsert-api-connection", "add-api-connection"}:
+            metadata = parse_json_object(args.metadata_json, "--metadata-json")
+            connection_id = upsert_api_connection(
+                conn,
+                connection_key=args.connection_key,
+                api_name=args.api_name,
+                status=args.status,
+                endpoint=args.endpoint,
+                metadata=metadata,
+            )
+            conn.commit()
+            print(f"API connection upserted id={connection_id} key={args.connection_key}")
+            return 0
+
+        if args.command == "record-phone-flow":
+            if args.byte_count is not None and args.byte_count < 0:
+                raise ValueError("--byte-count must be greater than or equal to 0")
+            metadata = parse_json_object(args.metadata_json, "--metadata-json")
+            api_name = resolve_api_name(conn, args.connection_key, args.api_name)
+            status = resolve_api_status(conn, args.connection_key, args.status)
+            flow_id = record_phone_flow(
+                conn,
+                connection_key=args.connection_key,
+                api_name=api_name,
+                status=status,
+                endpoint=args.endpoint,
+                device_mac=args.device_mac,
+                device_label=args.device_label,
+                direction=args.direction,
+                payload_kind=args.payload_kind,
+                byte_count=args.byte_count,
+                source_ref=args.source_ref,
+                metadata=metadata,
+            )
+            conn.commit()
+            print(f"Phone flow recorded id={flow_id} connection={args.connection_key}")
+            return 0
+
         if args.command == "add-paper":
             authors = args.authors if args.authors else ", ".join(args.author) if args.author else None
             paper_id = upsert_paper(conn, args.slug, args.title, authors, args.summary, args.source_path)
@@ -816,9 +1086,7 @@ def main() -> int:
                 raise FileNotFoundError(f"payload file not found: {payload}")
             paper_id = get_paper_id(conn, args.paper_slug) if args.paper_slug else None
             device_id = upsert_device(conn, mac=args.device_mac, label=None) if args.device_mac else None
-            metadata = json.loads(args.metadata_json)
-            if not isinstance(metadata, dict):
-                raise ValueError("--metadata-json must decode to a JSON object")
+            metadata = parse_json_object(args.metadata_json, "--metadata-json")
             if args.source_kind:
                 metadata["source_kind"] = args.source_kind
             if args.source_ref:
@@ -860,9 +1128,7 @@ def main() -> int:
             if not evidence_payload.exists() or not evidence_payload.is_file():
                 raise FileNotFoundError(f"evidence payload file not found: {evidence_payload}")
 
-            evidence_metadata = json.loads(args.evidence_metadata_json)
-            if not isinstance(evidence_metadata, dict):
-                raise ValueError("--evidence-metadata-json must decode to a JSON object")
+            evidence_metadata = parse_json_object(args.evidence_metadata_json, "--evidence-metadata-json")
             if args.evidence_source_kind:
                 evidence_metadata["source_kind"] = args.evidence_source_kind
             if args.evidence_source_ref:
@@ -1026,6 +1292,14 @@ def main() -> int:
 
         if args.command == "list-devices":
             cmd_list_devices(conn)
+            return 0
+
+        if args.command == "list-api-connections":
+            cmd_list_api_connections(conn)
+            return 0
+
+        if args.command == "list-phone-flows":
+            cmd_list_phone_flows(conn, args.limit)
             return 0
 
         if args.command == "list-evidence":

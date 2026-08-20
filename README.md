@@ -741,6 +741,30 @@ python3 scripts/project_evidence_db.py --database data/project_evidence.db list-
 python3 scripts/project_evidence_db.py --database data/project_evidence.db list-evidence
 ```
 
+Track an initiated API5 connection and phone-device data flow:
+
+```bash
+python3 scripts/project_evidence_db.py --database data/project_evidence.db upsert-api-connection \
+  --connection-key api5 \
+  --api-name API5 \
+  --status initiated \
+  --endpoint https://api5.local/phone-sync
+
+python3 scripts/project_evidence_db.py --database data/project_evidence.db record-phone-flow \
+  --connection-key api5 \
+  --device-mac AA:BB:CC:DD:EE:FF \
+  --direction from-phone \
+  --payload-kind telemetry \
+  --source-ref api5-session-001
+
+python3 scripts/project_evidence_db.py --database data/project_evidence.db list-api-connections
+python3 scripts/project_evidence_db.py --database data/project_evidence.db list-phone-flows
+```
+
+Use `--direction to-phone`, `--direction from-phone`, or
+`--direction bidirectional` to distinguish API-to-device, device-to-API, and
+two-way records.
+
 Capture UPnP root description metadata (from file or URL):
 
 ```bash
