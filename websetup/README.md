@@ -94,6 +94,18 @@ python3 scripts/project_evidence_db.py add-evidence \
 python3 scripts/project_evidence_db.py export-network-json \
   --database data/project_evidence.db \
   --output data/network-matrix.export.json
+python3 scripts/project_evidence_db.py upsert-api-connection \
+  --database data/project_evidence.db \
+  --connection-key api5 \
+  --api-name API5 \
+  --status initiated
+python3 scripts/project_evidence_db.py record-phone-flow \
+  --database data/project_evidence.db \
+  --connection-key api5 \
+  --device-mac AA:BB:CC:DD:EE:FF \
+  --direction from-phone \
+  --payload-kind telemetry \
+  --source-ref api5-session-001
 python3 scripts/project_evidence_db.py ingest-upnp-xml \
   --database data/project_evidence.db \
   --xml-url http://192.168.68.1:1900/pttlb/rootDesc.xml \
